@@ -63,7 +63,7 @@ const AppSidebar = () => {
   };
 
   return (
-    <Sidebar className={collapsed ? "w-14" : "w-64"} collapsible>
+    <Sidebar className={collapsed ? "w-14" : "w-64"} collapsible="icon">
       <div className="p-4 border-b">
         <SidebarTrigger className="mb-2" />
         {!collapsed && (
