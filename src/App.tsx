@@ -10,6 +10,7 @@ import Login from "./pages/Login";
 import TimeKeeping from "./pages/TimeKeeping";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
+import { SettingsProvider } from "./contexts/SettingsContext";
 
 const queryClient = new QueryClient();
 
@@ -31,7 +32,7 @@ const App = () => (
           <Route path="/employees" element={<Layout><div>Employee Management - Coming Soon</div></Layout>} />
           <Route path="/scheduling" element={<Layout><div>Scheduling - Coming Soon</div></Layout>} />
           <Route path="/reports" element={<Layout><div>Reports - Coming Soon</div></Layout>} />
-          <Route path="/settings" element={<Layout><Settings /></Layout>} />
+          <Route path="/settings" element={<Layout><SettingsProvider><Settings /></SettingsProvider></Layout>} />
           <Route path="/engineering" element={<Layout><div>Engineering Dashboard - Coming Soon</div></Layout>} />
           <Route path="/service-tickets" element={<Layout><div>Service Tickets - Coming Soon</div></Layout>} />
           <Route path="/incident-tickets" element={<Layout><div>Incident Tickets - Coming Soon</div></Layout>} />
