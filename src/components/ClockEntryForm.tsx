@@ -1,32 +1,60 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { AlertTriangle } from 'lucide-react';
+import { useSettings } from '@/contexts/SettingsContext';
 
 interface ClockEntryFormProps {
   onSubmit: (data: any) => void;
   onCancel: () => void;
+  existingEntries?: Array<{date: string, timeIn: string}>;
 }
 
-const ClockEntryForm = ({ onSubmit, onCancel }: ClockEntryFormProps) => {
+const ClockEntryForm = ({ onSubmit, onCancel, existingEntries = [] }: ClockEntryFormProps) => {
+  const { locations, shifts, getScheduledEvents } = useSettings();
+  const [selectedDate, setSelectedDate] = useState('');
+  const [selectedLocation, setSelectedLocation] = useState('');
+  const [selectedShift, setSelectedShift] = useState('');
+  const [scheduledEvents, setScheduledEvents] = useState<Array<{id: string, name: string, time: string}>>([]);
+  const [hasExistingEntry, setHasExistingEntry] = useState(false);
+
+  const today = new Date().toISOString().split('T')[0];
+
+  useEffect(() => {
+    if (selectedDate) {
+      // Get scheduled events for the selected date
+      const events = getScheduledEvents(selectedDate);
+      setScheduledEvents(events);
+      
+      // Check for existing entries on this date
+      const existingOnDate = existingEntries.some(entry => entry.date === selectedDate);
+      setHasExistingEntry(existingOnDate);
+    }
+  }, [selectedDate, existingEntries, getScheduledEvents]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const formData = new FormData(e.target as HTMLFormElement);
     const data = {
-      date: formData.get('date'),
+      date: selectedDate,
       timeIn: formData.get('timeIn'),
       timeOut: formData.get('timeOut'),
-      location: formData.get('location'),
-      shift: formData.get('shift'),
+      location: selectedLocation,
+      shift: selectedShift,
       notes: formData.get('notes'),
     };
     onSubmit(data);
   };
 
-  const today = new Date().toISOString().split('T')[0];
+  const allShiftOptions = [
+    ...shifts,
+    ...scheduledEvents.map(event => `${event.name} (${event.time})`)
+  ];
 
   return (
     <DialogContent className="sm:max-w-[425px]">
@@ -45,23 +73,30 @@ const ClockEntryForm = ({ onSubmit, onCancel }: ClockEntryFormProps) => {
               name="date"
               type="date"
               defaultValue={today}
+              onChange={(e) => setSelectedDate(e.target.value)}
               required
             />
           </div>
           <div className="space-y-2">
             <Label htmlFor="location">Location</Label>
-            <Input
-              id="location"
-              name="location"
-              placeholder="Studio A"
-              required
-            />
+            <Select value={selectedLocation} onValueChange={setSelectedLocation} required>
+              <SelectTrigger>
+                <SelectValue placeholder="Select location" />
+              </SelectTrigger>
+              <SelectContent>
+                {locations.map((location) => (
+                  <SelectItem key={location} value={location}>
+                    {location}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
         
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="timeIn">Time In</Label>
+            <Label htmlFor="timeIn">Time In (24hr)</Label>
             <Input
               id="timeIn"
               name="timeIn"
@@ -70,7 +105,7 @@ const ClockEntryForm = ({ onSubmit, onCancel }: ClockEntryFormProps) => {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="timeOut">Time Out</Label>
+            <Label htmlFor="timeOut">Time Out (24hr)</Label>
             <Input
               id="timeOut"
               name="timeOut"
@@ -81,11 +116,19 @@ const ClockEntryForm = ({ onSubmit, onCancel }: ClockEntryFormProps) => {
 
         <div className="space-y-2">
           <Label htmlFor="shift">Shift/Event</Label>
-          <Input
-            id="shift"
-            name="shift"
-            placeholder="Morning Show, Evening News, etc."
-          />
+          <Select value={selectedShift} onValueChange={setSelectedShift}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select shift or event" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="custom">Custom Entry</SelectItem>
+              {allShiftOptions.map((option) => (
+                <SelectItem key={option} value={option}>
+                  {option}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="space-y-2">
@@ -97,6 +140,15 @@ const ClockEntryForm = ({ onSubmit, onCancel }: ClockEntryFormProps) => {
             rows={3}
           />
         </div>
+
+        {hasExistingEntry && (
+          <div className="flex items-center gap-2 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
+            <AlertTriangle className="h-4 w-4 text-yellow-600" />
+            <span className="text-sm text-yellow-800">
+              Warning: You already have a clock entry for this date. Multiple entries per day are allowed.
+            </span>
+          </div>
+        )}
 
         <div className="flex justify-end gap-3 pt-4">
           <Button type="button" variant="outline" onClick={onCancel}>
