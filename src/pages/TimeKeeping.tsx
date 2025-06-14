@@ -2,10 +2,13 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import { Clock, Calendar, Plus, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
+import ClockEntryForm from '@/components/ClockEntryForm';
+import { useToast } from '@/hooks/use-toast';
 
 const TimeKeeping = () => {
-  const [timeEntries] = useState([
+  const [timeEntries, setTimeEntries] = useState([
     {
       id: 1,
       date: '2025-06-14',
@@ -47,6 +50,9 @@ const TimeKeeping = () => {
     },
   ]);
 
+  const [isClockEntryOpen, setIsClockEntryOpen] = useState(false);
+  const { toast } = useToast();
+
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'approved':
@@ -60,15 +66,54 @@ const TimeKeeping = () => {
     }
   };
 
+  const handleClockEntrySubmit = (data: any) => {
+    // Calculate hours if both timeIn and timeOut are provided
+    let hours = 0;
+    if (data.timeIn && data.timeOut) {
+      const [inHour, inMin] = data.timeIn.split(':').map(Number);
+      const [outHour, outMin] = data.timeOut.split(':').map(Number);
+      const timeInMinutes = inHour * 60 + inMin;
+      const timeOutMinutes = outHour * 60 + outMin;
+      hours = Math.round((timeOutMinutes - timeInMinutes) / 60 * 10) / 10;
+    }
+
+    const newEntry = {
+      id: timeEntries.length + 1,
+      date: data.date,
+      timeIn: data.timeIn,
+      timeOut: data.timeOut || '--:--',
+      location: data.location,
+      shift: data.shift || 'General',
+      status: 'pending',
+      hours: hours
+    };
+
+    setTimeEntries([newEntry, ...timeEntries]);
+    setIsClockEntryOpen(false);
+    
+    toast({
+      title: "Clock Entry Created",
+      description: "Your time entry has been submitted for approval.",
+    });
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Time Keeping</h1>
         <div className="flex gap-3">
-          <Button>
-            <Plus className="h-4 w-4 mr-2" />
-            Clock Entry
-          </Button>
+          <Dialog open={isClockEntryOpen} onOpenChange={setIsClockEntryOpen}>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus className="h-4 w-4 mr-2" />
+                Clock Entry
+              </Button>
+            </DialogTrigger>
+            <ClockEntryForm 
+              onSubmit={handleClockEntrySubmit}
+              onCancel={() => setIsClockEntryOpen(false)}
+            />
+          </Dialog>
           <Button variant="outline">
             <Calendar className="h-4 w-4 mr-2" />
             Time Off Request
