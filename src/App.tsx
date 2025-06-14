@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -10,6 +9,7 @@ import Login from "./pages/Login";
 import TimeKeeping from "./pages/TimeKeeping";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
+import IncidentTickets from "./pages/IncidentTickets";
 import { SettingsProvider } from "./contexts/SettingsContext";
 
 const queryClient = new QueryClient();
@@ -35,7 +35,7 @@ const App = () => (
           <Route path="/settings" element={<Layout><SettingsProvider><Settings /></SettingsProvider></Layout>} />
           <Route path="/engineering" element={<Layout><div>Engineering Dashboard - Coming Soon</div></Layout>} />
           <Route path="/service-tickets" element={<Layout><div>Service Tickets - Coming Soon</div></Layout>} />
-          <Route path="/incident-tickets" element={<Layout><div>Incident Tickets - Coming Soon</div></Layout>} />
+          <Route path="/incident-tickets" element={<Layout><IncidentTickets /></Layout>} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
