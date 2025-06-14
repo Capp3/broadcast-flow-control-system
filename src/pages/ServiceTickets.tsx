@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -5,88 +6,88 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { AlertTriangle, Calendar, Clock, User, ArrowRight } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { Wrench, Calendar, Clock, User, ArrowRight } from 'lucide-react';
 
-// Mock data for incident tickets
-const mockIncidentTickets = [
+// Mock data for service tickets
+const mockServiceTickets = [
   {
-    id: 'INC-001',
-    title: 'Transmitter Power Failure - Studio A',
-    description: 'Main transmitter lost power during morning broadcast',
-    status: 'open',
-    priority: 'high',
-    assignedTo: 'John Engineer',
-    reportedBy: 'Mike Operator',
-    createdAt: '2024-06-14T08:30:00Z',
-    updatedAt: '2024-06-14T09:15:00Z',
-    category: 'Equipment Failure'
-  },
-  {
-    id: 'INC-002',
-    title: 'Audio Distortion on FM Channel',
-    description: 'Listeners reporting audio quality issues on 101.5 FM',
+    id: 'SRV-001',
+    title: 'Antenna Maintenance - Tower 2',
+    description: 'Scheduled maintenance for primary antenna system',
     status: 'open',
     priority: 'medium',
-    assignedTo: 'Sarah Tech',
-    reportedBy: 'Lisa Operator',
-    createdAt: '2024-06-14T10:00:00Z',
-    updatedAt: '2024-06-14T10:30:00Z',
-    category: 'Signal Quality'
+    assignedTo: 'John Engineer',
+    requestedBy: 'Mike Operator',
+    createdAt: '2024-06-14T09:00:00Z',
+    updatedAt: '2024-06-14T09:30:00Z',
+    category: 'Maintenance',
+    type: 'scheduled',
+    estimatedHours: 4
   },
   {
-    id: 'INC-003',
-    title: 'Backup Generator Test Failed',
-    description: 'Weekly generator test showed fuel system issues',
+    id: 'SRV-002',
+    title: 'Audio Processing Unit Upgrade',
+    description: 'Install new digital audio processing equipment',
+    status: 'open',
+    priority: 'high',
+    assignedTo: 'Sarah Tech',
+    requestedBy: 'Engineering Team',
+    createdAt: '2024-06-14T10:15:00Z',
+    updatedAt: '2024-06-14T11:00:00Z',
+    category: 'Upgrade',
+    type: 'project',
+    estimatedHours: 8
+  },
+  {
+    id: 'SRV-003',
+    title: 'Generator Oil Change',
+    description: 'Routine oil change for backup generator',
     status: 'closed',
     priority: 'low',
     assignedTo: 'Tom Maintenance',
-    reportedBy: 'System Automated',
-    createdAt: '2024-06-13T14:00:00Z',
-    updatedAt: '2024-06-13T16:30:00Z',
-    category: 'Maintenance'
+    requestedBy: 'Maintenance Schedule',
+    createdAt: '2024-06-13T08:00:00Z',
+    updatedAt: '2024-06-13T10:30:00Z',
+    category: 'Maintenance',
+    type: 'routine',
+    estimatedHours: 2
   },
   {
-    id: 'INC-004',
-    title: 'Network Connectivity Issues',
-    description: 'Intermittent internet connection affecting streaming services',
+    id: 'SRV-004',
+    title: 'Network Infrastructure Review',
+    description: 'Security audit and performance optimization',
     status: 'open',
-    priority: 'high',
+    priority: 'medium',
     assignedTo: 'Alex Network',
-    reportedBy: 'Dave Operator',
-    createdAt: '2024-06-14T11:45:00Z',
-    updatedAt: '2024-06-14T12:00:00Z',
-    category: 'Network'
+    requestedBy: 'IT Security',
+    createdAt: '2024-06-14T13:00:00Z',
+    updatedAt: '2024-06-14T13:15:00Z',
+    category: 'Security',
+    type: 'audit',
+    estimatedHours: 6
   },
   {
-    id: 'INC-005',
-    title: 'Studio Lighting Malfunction',
-    description: 'Emergency lighting system not functioning properly',
+    id: 'SRV-005',
+    title: 'Studio Lighting Replacement',
+    description: 'Replace LED panels in Studio B',
     status: 'closed',
-    priority: 'medium',
+    priority: 'low',
     assignedTo: 'Bob Electrician',
-    reportedBy: 'Jane Host',
-    createdAt: '2024-06-12T16:20:00Z',
-    updatedAt: '2024-06-13T08:00:00Z',
-    category: 'Facilities'
+    requestedBy: 'Studio Manager',
+    createdAt: '2024-06-12T14:00:00Z',
+    updatedAt: '2024-06-13T16:00:00Z',
+    category: 'Facilities',
+    type: 'repair',
+    estimatedHours: 3
   }
 ];
 
-const IncidentTickets = () => {
+const ServiceTickets = () => {
   const [statusFilter, setStatusFilter] = useState('open');
-  const { toast } = useToast();
 
-  const filteredTickets = mockIncidentTickets.filter(ticket => 
+  const filteredTickets = mockServiceTickets.filter(ticket => 
     statusFilter === 'all' ? true : ticket.status === statusFilter
   );
-
-  const handleConvertToServiceTicket = (incidentId: string, title: string) => {
-    // This would typically make an API call to convert the incident
-    toast({
-      title: "Incident Converted",
-      description: `Incident ${incidentId} has been converted to a service ticket.`,
-    });
-  };
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -105,6 +106,17 @@ const IncidentTickets = () => {
     }
   };
 
+  const getTypeColor = (type: string) => {
+    switch (type) {
+      case 'scheduled': return 'bg-purple-100 text-purple-800';
+      case 'project': return 'bg-indigo-100 text-indigo-800';
+      case 'routine': return 'bg-green-100 text-green-800';
+      case 'audit': return 'bg-orange-100 text-orange-800';
+      case 'repair': return 'bg-red-100 text-red-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleString();
   };
@@ -113,8 +125,8 @@ const IncidentTickets = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold flex items-center gap-2">
-          <AlertTriangle className="h-8 w-8" />
-          Incident Tickets
+          <Wrench className="h-8 w-8" />
+          Service Tickets
         </h1>
         <div className="flex items-center gap-4">
           <Select value={statusFilter} onValueChange={setStatusFilter}>
@@ -128,17 +140,17 @@ const IncidentTickets = () => {
             </SelectContent>
           </Select>
           <Button>
-            <AlertTriangle className="h-4 w-4 mr-2" />
-            New Incident
+            <Wrench className="h-4 w-4 mr-2" />
+            New Service Request
           </Button>
         </div>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Incident Tickets ({filteredTickets.length})</CardTitle>
+          <CardTitle>Service Tickets ({filteredTickets.length})</CardTitle>
           <CardDescription>
-            Manage and track incident reports and resolutions
+            Manage engineering tasks, maintenance, and service requests
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -150,11 +162,11 @@ const IncidentTickets = () => {
                   <TableHead>Title</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Priority</TableHead>
+                  <TableHead>Type</TableHead>
                   <TableHead>Assigned To</TableHead>
-                  <TableHead>Category</TableHead>
+                  <TableHead>Est. Hours</TableHead>
                   <TableHead>Created</TableHead>
                   <TableHead>Updated</TableHead>
-                  <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -180,12 +192,22 @@ const IncidentTickets = () => {
                       </Badge>
                     </TableCell>
                     <TableCell>
+                      <Badge className={getTypeColor(ticket.type)}>
+                        {ticket.type.toUpperCase()}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
                       <div className="flex items-center gap-2">
                         <User className="h-4 w-4" />
                         {ticket.assignedTo}
                       </div>
                     </TableCell>
-                    <TableCell>{ticket.category}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Clock className="h-4 w-4" />
+                        {ticket.estimatedHours}h
+                      </div>
+                    </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2 text-sm">
                         <Calendar className="h-4 w-4" />
@@ -198,28 +220,13 @@ const IncidentTickets = () => {
                         {formatDate(ticket.updatedAt)}
                       </div>
                     </TableCell>
-                    <TableCell>
-                      {ticket.status === 'open' && (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleConvertToServiceTicket(ticket.id, ticket.title);
-                          }}
-                        >
-                          <ArrowRight className="h-4 w-4 mr-2" />
-                          Convert
-                        </Button>
-                      )}
-                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
             {filteredTickets.length === 0 && (
               <div className="text-center py-12 text-muted-foreground">
-                No {statusFilter} tickets found.
+                No {statusFilter} service tickets found.
               </div>
             )}
           </ScrollArea>
@@ -229,4 +236,4 @@ const IncidentTickets = () => {
   );
 };
 
-export default IncidentTickets;
+export default ServiceTickets;
