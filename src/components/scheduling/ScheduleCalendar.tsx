@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { format, addDays, startOfWeek, isSameDay } from 'date-fns';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -45,7 +44,9 @@ const ScheduleCalendar = ({ currentWeek, mode, onEventEdit, onShiftEdit }: Sched
 
   const [draggedItem, setDraggedItem] = useState<any>(null);
   const [dragMode, setDragMode] = useState<'move' | 'resize-start' | 'resize-end' | null>(null);
-  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const dragStartPos = useRef({ x: 0, y: 0 });
+  const calendarRef = useRef<HTMLDivElement>(null);
 
   // Mock data - in real app this would come from state management
   const [events, setEvents] = useState<Event[]>([
@@ -124,8 +125,6 @@ const ScheduleCalendar = ({ currentWeek, mode, onEventEdit, onShiftEdit }: Sched
   const calculateItemPosition = (startTime: string, endTime: string) => {
     const startMinutes = timeToMinutes(startTime);
     const endMinutes = timeToMinutes(endTime);
-    const startHour = Math.floor(startMinutes / 60);
-    const endHour = Math.floor(endMinutes / 60);
     
     // Calculate position from 6 AM
     const topOffset = ((startMinutes - 6 * 60) / 60) * HOUR_HEIGHT;
@@ -134,8 +133,6 @@ const ScheduleCalendar = ({ currentWeek, mode, onEventEdit, onShiftEdit }: Sched
     return {
       top: topOffset,
       height: height,
-      startHour,
-      endHour,
       startMinutes
     };
   };
@@ -144,31 +141,42 @@ const ScheduleCalendar = ({ currentWeek, mode, onEventEdit, onShiftEdit }: Sched
     // Sort items by start time first
     const sortedItems = [...items].sort((a, b) => a.position.startMinutes - b.position.startMinutes);
     
-    // Assign layers based on overlaps
-    const layeredItems = sortedItems.map((item, index) => {
-      let layer = 0;
+    // Group overlapping items into columns
+    const columns: any[][] = [];
+    
+    sortedItems.forEach(item => {
+      const itemStart = item.position.startMinutes;
+      const itemEnd = item.position.startMinutes + (item.position.height / HOUR_HEIGHT) * 60;
       
-      // Check for overlaps with previous items
-      for (let i = 0; i < index; i++) {
-        const prevItem = sortedItems[i];
-        const itemStart = item.position.startMinutes;
-        const itemEnd = item.position.startMinutes + (item.position.height / HOUR_HEIGHT) * 60;
-        const prevStart = prevItem.position.startMinutes;
-        const prevEnd = prevItem.position.startMinutes + (prevItem.position.height / HOUR_HEIGHT) * 60;
+      // Find a column where this item doesn't overlap with the last item in that column
+      let placed = false;
+      for (let i = 0; i < columns.length; i++) {
+        const lastItemInColumn = columns[i][columns[i].length - 1];
+        const lastItemEnd = lastItemInColumn.position.startMinutes + (lastItemInColumn.position.height / HOUR_HEIGHT) * 60;
         
-        // Check if items overlap
-        if (itemStart < prevEnd && itemEnd > prevStart) {
-          layer = Math.max(layer, (prevItem.calculatedLayer || 0) + 1);
+        if (itemStart >= lastItemEnd) {
+          columns[i].push({ ...item, calculatedLayer: i, totalColumns: 0 });
+          placed = true;
+          break;
         }
       }
       
-      return {
-        ...item,
-        calculatedLayer: layer
-      };
+      // If not placed in existing column, create new column
+      if (!placed) {
+        columns.push([{ ...item, calculatedLayer: columns.length, totalColumns: 0 }]);
+      }
     });
-
-    return layeredItems;
+    
+    // Update totalColumns for all items
+    const totalColumns = columns.length;
+    const result = [];
+    for (const column of columns) {
+      for (const item of column) {
+        result.push({ ...item, totalColumns });
+      }
+    }
+    
+    return result;
   };
 
   const getItemsForDay = (date: Date) => {
@@ -234,6 +242,8 @@ const ScheduleCalendar = ({ currentWeek, mode, onEventEdit, onShiftEdit }: Sched
 
   const handleItemClick = (item: any, e: React.MouseEvent) => {
     e.stopPropagation();
+    if (isDragging) return; // Don't handle clicks during drag
+    
     if (item.itemType === 'event') {
       onEventEdit(item);
     } else {
@@ -241,8 +251,31 @@ const ScheduleCalendar = ({ currentWeek, mode, onEventEdit, onShiftEdit }: Sched
     }
   };
 
+  const getDropZoneFromPosition = (clientX: number, clientY: number) => {
+    if (!calendarRef.current) return null;
+    
+    const calendarRect = calendarRef.current.getBoundingClientRect();
+    const relativeX = clientX - calendarRect.left;
+    const relativeY = clientY - calendarRect.top;
+    
+    // Calculate day (subtract time column width)
+    const timeColumnWidth = calendarRect.width / 8;
+    const dayWidth = timeColumnWidth;
+    const dayIndex = Math.floor((relativeX - timeColumnWidth) / dayWidth);
+    
+    // Calculate hour (with 15-minute precision)
+    const quarterHours = Math.round(relativeY / (HOUR_HEIGHT / 4));
+    const minutes = quarterHours * 15 + 6 * 60; // 6 AM start
+    
+    if (dayIndex >= 0 && dayIndex < 7 && minutes >= 6 * 60 && minutes < 24 * 60) {
+      return { dayIndex, minutes };
+    }
+    
+    return null;
+  };
+
   const handleMouseDown = (e: React.MouseEvent, item: any) => {
-    if (item.itemType !== 'event') return; // Only allow dragging events for now
+    if (item.itemType !== 'event') return; // Only allow dragging events
     
     e.preventDefault();
     e.stopPropagation();
@@ -253,18 +286,16 @@ const ScheduleCalendar = ({ currentWeek, mode, onEventEdit, onShiftEdit }: Sched
     
     // Determine drag mode based on where user clicked
     let mode: 'move' | 'resize-start' | 'resize-end' = 'move';
-    if (relativeY < 10) {
+    if (relativeY < 15) {
       mode = 'resize-start';
-    } else if (relativeY > itemHeight - 10) {
+    } else if (relativeY > itemHeight - 15) {
       mode = 'resize-end';
     }
     
     setDraggedItem(item);
     setDragMode(mode);
-    setDragOffset({
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top
-    });
+    setIsDragging(false);
+    dragStartPos.current = { x: e.clientX, y: e.clientY };
     
     document.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('mouseup', handleMouseUp);
@@ -273,33 +304,32 @@ const ScheduleCalendar = ({ currentWeek, mode, onEventEdit, onShiftEdit }: Sched
   const handleMouseMove = (e: MouseEvent) => {
     if (!draggedItem || !dragMode) return;
     
-    // Update cursor based on drag mode
-    document.body.style.cursor = dragMode === 'move' ? 'grabbing' : 'ns-resize';
+    const distance = Math.sqrt(
+      Math.pow(e.clientX - dragStartPos.current.x, 2) + 
+      Math.pow(e.clientY - dragStartPos.current.y, 2)
+    );
+    
+    if (distance > 5 && !isDragging) {
+      setIsDragging(true);
+    }
+    
+    if (isDragging) {
+      // Update cursor based on drag mode
+      document.body.style.cursor = dragMode === 'move' ? 'grabbing' : 'ns-resize';
+    }
   };
 
   const handleMouseUp = (e: MouseEvent) => {
     if (!draggedItem || !dragMode) return;
     
-    // Calculate new position based on mouse position
-    const calendarGrid = document.querySelector('.calendar-grid');
-    if (calendarGrid) {
-      const gridRect = calendarGrid.getBoundingClientRect();
-      const relativeX = e.clientX - gridRect.left;
-      const relativeY = e.clientY - gridRect.top;
+    if (isDragging) {
+      const dropZone = getDropZoneFromPosition(e.clientX, e.clientY);
       
-      // Calculate which day column (accounting for time column)
-      const dayWidth = gridRect.width / 8; // 8 columns total (1 time + 7 days)
-      const dayIndex = Math.floor((relativeX - dayWidth) / dayWidth); // Subtract time column width
-      
-      if (dayIndex >= 0 && dayIndex < 7) {
-        // Calculate time based on Y position
-        const hourFromTop = Math.max(0, Math.floor(relativeY / HOUR_HEIGHT));
-        const newStartHour = 6 + hourFromTop; // 6 AM start
-        
+      if (dropZone) {
         if (dragMode === 'move') {
           // Move entire event
           const duration = timeToMinutes(draggedItem.endTime) - timeToMinutes(draggedItem.startTime);
-          const newStartMinutes = newStartHour * 60;
+          const newStartMinutes = dropZone.minutes;
           const newEndMinutes = newStartMinutes + duration;
           
           // Update event
@@ -313,32 +343,30 @@ const ScheduleCalendar = ({ currentWeek, mode, onEventEdit, onShiftEdit }: Sched
               : event
           ));
           
-          console.log(`Moved event ${draggedItem.title} to day ${dayIndex}, time ${minutesToTime(newStartMinutes)}-${minutesToTime(newEndMinutes)}`);
+          console.log(`Moved event ${draggedItem.title} to day ${dropZone.dayIndex}, time ${minutesToTime(newStartMinutes)}-${minutesToTime(newEndMinutes)}`);
         } else if (dragMode === 'resize-start') {
           // Resize start time
-          const newStartMinutes = newStartHour * 60;
           const endMinutes = timeToMinutes(draggedItem.endTime);
           
-          if (newStartMinutes < endMinutes) {
+          if (dropZone.minutes < endMinutes) {
             setEvents(prev => prev.map(event => 
               event.id === draggedItem.id 
-                ? { ...event, startTime: minutesToTime(newStartMinutes) }
+                ? { ...event, startTime: minutesToTime(dropZone.minutes) }
                 : event
             ));
-            console.log(`Resized event start to ${minutesToTime(newStartMinutes)}`);
+            console.log(`Resized event start to ${minutesToTime(dropZone.minutes)}`);
           }
         } else if (dragMode === 'resize-end') {
           // Resize end time
           const startMinutes = timeToMinutes(draggedItem.startTime);
-          const newEndMinutes = newStartHour * 60 + 60; // Add 1 hour minimum
           
-          if (newEndMinutes > startMinutes) {
+          if (dropZone.minutes > startMinutes) {
             setEvents(prev => prev.map(event => 
               event.id === draggedItem.id 
-                ? { ...event, endTime: minutesToTime(newEndMinutes) }
+                ? { ...event, endTime: minutesToTime(dropZone.minutes) }
                 : event
             ));
-            console.log(`Resized event end to ${minutesToTime(newEndMinutes)}`);
+            console.log(`Resized event end to ${minutesToTime(dropZone.minutes)}`);
           }
         }
       }
@@ -347,7 +375,7 @@ const ScheduleCalendar = ({ currentWeek, mode, onEventEdit, onShiftEdit }: Sched
     // Cleanup
     setDraggedItem(null);
     setDragMode(null);
-    setDragOffset({ x: 0, y: 0 });
+    setIsDragging(false);
     document.body.style.cursor = 'default';
     
     document.removeEventListener('mousemove', handleMouseMove);
@@ -375,7 +403,7 @@ const ScheduleCalendar = ({ currentWeek, mode, onEventEdit, onShiftEdit }: Sched
             </div>
 
             {/* Calendar Grid Container */}
-            <div className="relative calendar-grid">
+            <div className="relative" ref={calendarRef}>
               {/* Time Slots Background */}
               {hours.map((hour) => (
                 <div key={hour} className="grid grid-cols-8 border-b hover:bg-gray-50" style={{ height: `${HOUR_HEIGHT}px` }}>
@@ -398,11 +426,13 @@ const ScheduleCalendar = ({ currentWeek, mode, onEventEdit, onShiftEdit }: Sched
                 const dayItems = getItemsForDay(day);
                 return dayItems.map((item, itemIndex) => {
                   const layer = item.calculatedLayer || 0;
-                  const maxLayers = Math.max(...dayItems.map(i => i.calculatedLayer || 0)) + 1;
-                  const widthReduction = Math.min(layer * 8, 40); // Max 40% width reduction
-                  const leftOffset = layer * 4; // 4% left offset per layer
+                  const totalColumns = Math.max(item.totalColumns || 1, 1);
                   
-                  const isDragging = draggedItem && draggedItem.id === item.id;
+                  // Better layering calculation
+                  const itemWidth = Math.max(100 / 8 / totalColumns - 0.5, 8); // Minimum 8% width
+                  const leftOffset = (100 / 8) * (dayIndex + 1) + (layer * itemWidth);
+                  
+                  const isBeingDragged = draggedItem && draggedItem.id === item.id && isDragging;
                   const isEvent = item.itemType === 'event';
                   
                   return (
@@ -410,21 +440,21 @@ const ScheduleCalendar = ({ currentWeek, mode, onEventEdit, onShiftEdit }: Sched
                       key={`${dayIndex}-${itemIndex}`}
                       className={`absolute text-xs p-2 rounded border transition-all select-none ${item.color} shadow-sm ${
                         isEvent ? 'cursor-grab hover:shadow-md' : 'cursor-pointer hover:opacity-80'
-                      } ${isDragging ? 'opacity-50 cursor-grabbing' : ''}`}
+                      } ${isBeingDragged ? 'opacity-50 cursor-grabbing z-50' : ''}`}
                       style={{
                         top: `${item.position.top}px`,
-                        height: `${item.position.height}px`,
-                        left: `${(100 / 8) * (dayIndex + 1) + leftOffset}%`,
-                        width: `${(100 / 8) - widthReduction/8 - 0.5}%`,
-                        zIndex: 10 + layer, // Higher z-index for later items
+                        height: `${Math.max(item.position.height, 40)}px`,
+                        left: `${leftOffset}%`,
+                        width: `${itemWidth}%`,
+                        zIndex: isBeingDragged ? 1000 : (20 + layer),
                         minHeight: '40px'
                       }}
                       onMouseDown={isEvent ? (e) => handleMouseDown(e, item) : undefined}
                       onClick={!isEvent ? (e) => handleItemClick(item, e) : undefined}
                     >
-                      {/* Resize handle top */}
+                      {/* Resize handle top - only visible for events */}
                       {isEvent && (
-                        <div className="absolute top-0 left-0 right-0 h-2 cursor-ns-resize opacity-0 hover:opacity-100 bg-gray-400 rounded-t" />
+                        <div className="absolute top-0 left-0 right-0 h-3 cursor-ns-resize opacity-0 hover:opacity-100 bg-gray-400 rounded-t transition-opacity" />
                       )}
                       
                       <div className="flex items-center gap-1 mb-1">
@@ -436,22 +466,26 @@ const ScheduleCalendar = ({ currentWeek, mode, onEventEdit, onShiftEdit }: Sched
                         <span className="font-medium truncate">{item.title}</span>
                         {item.isRecurring && <Repeat className="h-2 w-2 ml-auto flex-shrink-0" />}
                       </div>
-                      <div className="flex items-center gap-1 text-xs opacity-75 mb-1">
-                        <MapPin className="h-2 w-2 flex-shrink-0" />
-                        <span className="truncate">{item.facility}</span>
-                      </div>
-                      <div className="text-xs opacity-75 mb-1">
-                        {item.startTime} - {item.endTime}
-                      </div>
-                      {mode === 'rota' && item.assignedStaff && (
-                        <div className="text-xs opacity-75">
-                          Staff: {item.assignedStaff.join(', ')}
-                        </div>
+                      {totalColumns <= 3 && (
+                        <>
+                          <div className="flex items-center gap-1 text-xs opacity-75 mb-1">
+                            <MapPin className="h-2 w-2 flex-shrink-0" />
+                            <span className="truncate">{item.facility}</span>
+                          </div>
+                          <div className="text-xs opacity-75 mb-1">
+                            {item.startTime} - {item.endTime}
+                          </div>
+                          {mode === 'rota' && item.assignedStaff && (
+                            <div className="text-xs opacity-75">
+                              Staff: {item.assignedStaff.join(', ')}
+                            </div>
+                          )}
+                        </>
                       )}
                       
-                      {/* Resize handle bottom */}
+                      {/* Resize handle bottom - only visible for events */}
                       {isEvent && (
-                        <div className="absolute bottom-0 left-0 right-0 h-2 cursor-ns-resize opacity-0 hover:opacity-100 bg-gray-400 rounded-b" />
+                        <div className="absolute bottom-0 left-0 right-0 h-3 cursor-ns-resize opacity-0 hover:opacity-100 bg-gray-400 rounded-b transition-opacity" />
                       )}
                     </div>
                   );
