@@ -3,66 +3,87 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. */
+
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222.2 84% 4.9%;
-    --muted: 210 40% 96%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96%;
-    --accent-foreground: 222.2 84% 4.9%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
+    --background: 253 246 227; /* Solarized base3 - cream white */
+    --foreground: 101 123 131; /* Solarized base00 - dark gray */
+
+    --card: 253 246 227; /* Solarized base3 */
+    --card-foreground: 101 123 131; /* Solarized base00 */
+
+    --popover: 253 246 227; /* Solarized base3 */
+    --popover-foreground: 101 123 131; /* Solarized base00 */
+
+    --primary: 38 139 210; /* Solarized blue */
+    --primary-foreground: 253 246 227; /* Solarized base3 */
+
+    --secondary: 238 232 213; /* Solarized base2 - light gray */
+    --secondary-foreground: 88 110 117; /* Solarized base01 */
+
+    --muted: 238 232 213; /* Solarized base2 */
+    --muted-foreground: 147 161 161; /* Solarized base1 */
+
+    --accent: 238 232 213; /* Solarized base2 */
+    --accent-foreground: 88 110 117; /* Solarized base01 */
+
+    --destructive: 220 50 47; /* Solarized red */
+    --destructive-foreground: 253 246 227; /* Solarized base3 */
+
+    --border: 238 232 213; /* Solarized base2 */
+    --input: 238 232 213; /* Solarized base2 */
+    --ring: 38 139 210; /* Solarized blue */
+
     --radius: 0.5rem;
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+
+    --sidebar-background: 238 232 213; /* Solarized base2 */
+    --sidebar-foreground: 101 123 131; /* Solarized base00 */
+    --sidebar-primary: 38 139 210; /* Solarized blue */
+    --sidebar-primary-foreground: 253 246 227; /* Solarized base3 */
+    --sidebar-accent: 253 246 227; /* Solarized base3 */
+    --sidebar-accent-foreground: 88 110 117; /* Solarized base01 */
+    --sidebar-border: 238 232 213; /* Solarized base2 */
+    --sidebar-ring: 38 139 210; /* Solarized blue */
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 84% 4.9%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 94.1%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 94.1%;
-    --sidebar-primary-foreground: 240 5.9% 10%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --background: 0 43 54; /* Solarized base03 - dark blue */
+    --foreground: 131 148 150; /* Solarized base0 - light gray */
+
+    --card: 7 54 66; /* Solarized base02 - dark gray */
+    --card-foreground: 131 148 150; /* Solarized base0 */
+
+    --popover: 7 54 66; /* Solarized base02 */
+    --popover-foreground: 131 148 150; /* Solarized base0 */
+
+    --primary: 38 139 210; /* Solarized blue */
+    --primary-foreground: 0 43 54; /* Solarized base03 */
+
+    --secondary: 7 54 66; /* Solarized base02 */
+    --secondary-foreground: 131 148 150; /* Solarized base0 */
+
+    --muted: 7 54 66; /* Solarized base02 */
+    --muted-foreground: 88 110 117; /* Solarized base01 */
+
+    --accent: 7 54 66; /* Solarized base02 */
+    --accent-foreground: 131 148 150; /* Solarized base0 */
+
+    --destructive: 220 50 47; /* Solarized red */
+    --destructive-foreground: 131 148 150; /* Solarized base0 */
+
+    --border: 7 54 66; /* Solarized base02 */
+    --input: 7 54 66; /* Solarized base02 */
+    --ring: 38 139 210; /* Solarized blue */
+
+    --sidebar-background: 7 54 66; /* Solarized base02 */
+    --sidebar-foreground: 131 148 150; /* Solarized base0 */
+    --sidebar-primary: 42 161 152; /* Solarized cyan */
+    --sidebar-primary-foreground: 0 43 54; /* Solarized base03 */
+    --sidebar-accent: 0 43 54; /* Solarized base03 */
+    --sidebar-accent-foreground: 131 148 150; /* Solarized base0 */
+    --sidebar-border: 7 54 66; /* Solarized base02 */
+    --sidebar-ring: 42 161 152; /* Solarized cyan */
   }
 }
 
@@ -72,6 +93,6 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground transition-colors duration-300;
   }
 }
