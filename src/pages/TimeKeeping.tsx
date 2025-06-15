@@ -5,6 +5,7 @@ import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import { Clock, Calendar, Plus, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
 import EnhancedClockEntryForm from '@/components/EnhancedClockEntryForm';
 import TimeOffRequestForm from '@/components/TimeOffRequestForm';
+import MonthlyTimeCalendar from '@/components/MonthlyTimeCalendar';
 import { useToast } from '@/hooks/use-toast';
 import { SettingsProvider } from '@/contexts/SettingsContext';
 
@@ -29,6 +30,17 @@ const TimeKeeping = () => {
       location: 'Studio B',
       shift: 'Evening News',
       status: 'pending',
+      hours: 8,
+      lunchTaken: 0.5
+    },
+    {
+      id: 3,
+      date: '2025-06-12',
+      timeIn: '09:00',
+      timeOut: '17:00',
+      location: 'Studio A',
+      shift: 'Morning Show',
+      status: 'approved',
       hours: 8,
       lunchTaken: 0.5
     },
@@ -269,6 +281,12 @@ const TimeKeeping = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Monthly Calendar */}
+        <MonthlyTimeCalendar 
+          timeEntries={timeEntries} 
+          holidayRequests={holidayRequests} 
+        />
       </div>
     </SettingsProvider>
   );
