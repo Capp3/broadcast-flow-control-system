@@ -24,36 +24,37 @@ import { SettingsProvider } from "./contexts/SettingsContext";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/" element={<Layout><Dashboard /></Layout>} />
-          <Route path="/time-keeping" element={<Layout><TimeKeeping /></Layout>} />
-          <Route path="/schedule" element={<Layout><Schedule /></Layout>} />
-          <Route path="/incident-report" element={<Layout><SettingsProvider><IncidentReport /></SettingsProvider></Layout>} />
-          <Route path="/change-request" element={<Layout><SettingsProvider><ChangeRequest /></SettingsProvider></Layout>} />
-          <Route path="/system-check" element={<Layout><SettingsProvider><SystemCheck /></SettingsProvider></Layout>} />
-          <Route path="/management" element={<Layout><div>Management Dashboard - Coming Soon</div></Layout>} />
-          <Route path="/employees" element={<Layout><EmployeeManagement /></Layout>} />
-          <Route path="/employees/:id" element={<Layout><EmployeeDetail /></Layout>} />
-          <Route path="/scheduling" element={<Layout><SettingsProvider><Scheduling /></SettingsProvider></Layout>} />
-          <Route path="/ticket-review" element={<Layout><TicketReview /></Layout>} />
-          <Route path="/reports" element={<Layout><div>Reports - Coming Soon</div></Layout>} />
-          <Route path="/settings" element={<Layout><SettingsProvider><Settings /></SettingsProvider></Layout>} />
-          <Route path="/engineering" element={<Layout><div>Engineering Dashboard - Coming Soon</div></Layout>} />
-          <Route path="/service-tickets" element={<Layout><ServiceTickets /></Layout>} />
-          <Route path="/incident-tickets" element={<Layout><IncidentTickets /></Layout>} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+const App = () => {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/" element={<Layout><Dashboard /></Layout>} />
+            <Route path="/time-keeping" element={<Layout><TimeKeeping /></Layout>} />
+            <Route path="/schedule" element={<Layout><Schedule /></Layout>} />
+            <Route path="/incident-report" element={<Layout><SettingsProvider><IncidentReport /></SettingsProvider></Layout>} />
+            <Route path="/change-request" element={<Layout><SettingsProvider><ChangeRequest /></SettingsProvider></Layout>} />
+            <Route path="/system-check" element={<Layout><SettingsProvider><SystemCheck /></SettingsProvider></Layout>} />
+            <Route path="/management" element={<Layout><div>Management Dashboard - Coming Soon</div></Layout>} />
+            <Route path="/employees" element={<Layout><EmployeeManagement /></Layout>} />
+            <Route path="/employees/:id" element={<Layout><EmployeeDetail /></Layout>} />
+            <Route path="/scheduling" element={<Layout><SettingsProvider><Scheduling /></SettingsProvider></Layout>} />
+            <Route path="/ticket-review" element={<Layout><TicketReview /></Layout>} />
+            <Route path="/reports" element={<Layout><div>Reports - Coming Soon</div></Layout>} />
+            <Route path="/settings" element={<Layout><SettingsProvider><Settings /></SettingsProvider></Layout>} />
+            <Route path="/engineering" element={<Layout><div>Engineering Dashboard - Coming Soon</div></Layout>} />
+            <Route path="/service-tickets" element={<Layout><ServiceTickets /></Layout>} />
+            <Route path="/incident-tickets" element={<Layout><IncidentTickets /></Layout>} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+        <Toaster />
+        <Sonner />
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;
