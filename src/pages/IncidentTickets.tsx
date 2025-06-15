@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { AlertTriangle, Calendar, Clock, User, ArrowRight } from 'lucide-react';
+import { AlertTriangle, Calendar, Clock, User, Building, ArrowRight } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import TicketDetail from '@/components/TicketDetail';
 
@@ -19,6 +19,7 @@ const mockIncidentTickets = [
     priority: 'high',
     assignedTo: 'John Engineer',
     reportedBy: 'Mike Operator',
+    facility: 'Studio A',
     createdAt: '2024-06-14T08:30:00Z',
     updatedAt: '2024-06-14T09:15:00Z',
     category: 'Equipment Failure'
@@ -31,6 +32,7 @@ const mockIncidentTickets = [
     priority: 'medium',
     assignedTo: 'Sarah Tech',
     reportedBy: 'Lisa Operator',
+    facility: 'Control Room A',
     createdAt: '2024-06-14T10:00:00Z',
     updatedAt: '2024-06-14T10:30:00Z',
     category: 'Signal Quality'
@@ -43,6 +45,7 @@ const mockIncidentTickets = [
     priority: 'low',
     assignedTo: 'Tom Maintenance',
     reportedBy: 'System Automated',
+    facility: 'Server Room',
     createdAt: '2024-06-13T14:00:00Z',
     updatedAt: '2024-06-13T16:30:00Z',
     category: 'Maintenance'
@@ -55,6 +58,7 @@ const mockIncidentTickets = [
     priority: 'high',
     assignedTo: 'Alex Network',
     reportedBy: 'Dave Operator',
+    facility: 'Control Room B',
     createdAt: '2024-06-14T11:45:00Z',
     updatedAt: '2024-06-14T12:00:00Z',
     category: 'Network'
@@ -67,6 +71,7 @@ const mockIncidentTickets = [
     priority: 'medium',
     assignedTo: 'Bob Electrician',
     reportedBy: 'Jane Host',
+    facility: 'Studio B',
     createdAt: '2024-06-12T16:20:00Z',
     updatedAt: '2024-06-13T08:00:00Z',
     category: 'Facilities'
@@ -161,6 +166,7 @@ const IncidentTickets = () => {
                 <TableRow>
                   <TableHead>ID</TableHead>
                   <TableHead>Title</TableHead>
+                  <TableHead>Facility</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Priority</TableHead>
                   <TableHead>Assigned To</TableHead>
@@ -189,6 +195,12 @@ const IncidentTickets = () => {
                         <div className="text-sm text-muted-foreground truncate max-w-xs">
                           {ticket.description}
                         </div>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Building className="h-4 w-4" />
+                        <span className="text-sm">{ticket.facility}</span>
                       </div>
                     </TableCell>
                     <TableCell>

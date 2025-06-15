@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Wrench, Calendar, Clock, User, ArrowRight } from 'lucide-react';
+import { Wrench, Calendar, Clock, User, Building } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import TicketDetail from '@/components/TicketDetail';
 
@@ -19,6 +19,7 @@ const mockServiceTickets = [
     priority: 'medium',
     assignedTo: 'John Engineer',
     requestedBy: 'Mike Operator',
+    facility: 'Main Transmission Tower',
     createdAt: '2024-06-14T09:00:00Z',
     updatedAt: '2024-06-14T09:30:00Z',
     category: 'Maintenance',
@@ -33,6 +34,7 @@ const mockServiceTickets = [
     priority: 'high',
     assignedTo: 'Sarah Tech',
     requestedBy: 'Engineering Team',
+    facility: 'Studio A',
     createdAt: '2024-06-14T10:15:00Z',
     updatedAt: '2024-06-14T11:00:00Z',
     category: 'Upgrade',
@@ -47,6 +49,7 @@ const mockServiceTickets = [
     priority: 'low',
     assignedTo: 'Tom Maintenance',
     requestedBy: 'Maintenance Schedule',
+    facility: 'Server Room',
     createdAt: '2024-06-13T08:00:00Z',
     updatedAt: '2024-06-13T10:30:00Z',
     category: 'Maintenance',
@@ -61,6 +64,7 @@ const mockServiceTickets = [
     priority: 'medium',
     assignedTo: 'Alex Network',
     requestedBy: 'IT Security',
+    facility: 'Control Room A',
     createdAt: '2024-06-14T13:00:00Z',
     updatedAt: '2024-06-14T13:15:00Z',
     category: 'Security',
@@ -75,6 +79,7 @@ const mockServiceTickets = [
     priority: 'low',
     assignedTo: 'Bob Electrician',
     requestedBy: 'Studio Manager',
+    facility: 'Studio B',
     createdAt: '2024-06-12T14:00:00Z',
     updatedAt: '2024-06-13T16:00:00Z',
     category: 'Facilities',
@@ -174,6 +179,7 @@ const ServiceTickets = () => {
                 <TableRow>
                   <TableHead>ID</TableHead>
                   <TableHead>Title</TableHead>
+                  <TableHead>Facility</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Priority</TableHead>
                   <TableHead>Type</TableHead>
@@ -197,6 +203,12 @@ const ServiceTickets = () => {
                         <div className="text-sm text-muted-foreground truncate max-w-xs">
                           {ticket.description}
                         </div>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Building className="h-4 w-4" />
+                        <span className="text-sm">{ticket.facility}</span>
                       </div>
                     </TableCell>
                     <TableCell>

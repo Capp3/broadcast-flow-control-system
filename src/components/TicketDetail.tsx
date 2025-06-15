@@ -92,15 +92,24 @@ const TicketDetail = ({ ticket, ticketType, isOpen, onClose, onSubmitForApproval
             {getTicketIcon()}
             {getTicketTypeLabel()} - {ticket.id}
           </DialogTitle>
-          <DialogDescription>
-            {ticket.title}
+          <DialogDescription className="flex items-center gap-2">
+            <span>{ticket.title}</span>
+            {ticket.facility && (
+              <>
+                <span>•</span>
+                <div className="flex items-center gap-1">
+                  <Building className="h-4 w-4" />
+                  <span className="font-medium">{ticket.facility}</span>
+                </div>
+              </>
+            )}
           </DialogDescription>
         </DialogHeader>
 
         <ScrollArea className="max-h-[70vh]">
           <div className="space-y-6">
-            {/* Status and Priority */}
-            <div className="flex gap-4">
+            {/* Status, Priority, and Facility */}
+            <div className="flex gap-4 flex-wrap">
               <div>
                 <Label className="text-sm font-medium">Status</Label>
                 <Badge className={getStatusColor(ticket.status)}>
@@ -113,6 +122,15 @@ const TicketDetail = ({ ticket, ticketType, isOpen, onClose, onSubmitForApproval
                   {ticket.priority?.toUpperCase() || 'MEDIUM'}
                 </Badge>
               </div>
+              {ticket.facility && (
+                <div>
+                  <Label className="text-sm font-medium">Facility</Label>
+                  <div className="flex items-center gap-2 p-2 bg-blue-50 rounded-md border">
+                    <Building className="h-4 w-4 text-blue-600" />
+                    <span className="font-medium text-blue-800">{ticket.facility}</span>
+                  </div>
+                </div>
+              )}
               {ticket.category && (
                 <div>
                   <Label className="text-sm font-medium">Category</Label>
