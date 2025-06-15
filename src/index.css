@@ -1,9 +1,13 @@
 
+@import url(http://fonts.googleapis.com/css?family=Inconsolata);
+@import url(http://fonts.googleapis.com/css?family=PT+Sans);
+@import url(http://fonts.googleapis.com/css?family=PT+Sans+Narrow:400,700);
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. */
+/* Solarized Color Palette with Typography */
 
 @layer base {
   :root {
@@ -11,10 +15,10 @@
     --background: 253 246 227; /* base3 #fdf6e3 */
     --foreground: 101 123 131; /* base00 #657b83 */
 
-    --card: 238 232 213; /* base2 #eee8d5 */
+    --card: 253 246 227; /* base3 #fdf6e3 */
     --card-foreground: 101 123 131; /* base00 #657b83 */
 
-    --popover: 238 232 213; /* base2 #eee8d5 */
+    --popover: 253 246 227; /* base3 #fdf6e3 */
     --popover-foreground: 101 123 131; /* base00 #657b83 */
 
     --primary: 38 139 210; /* blue #268bd2 */
@@ -32,8 +36,8 @@
     --destructive: 220 50 47; /* red #dc322f */
     --destructive-foreground: 253 246 227; /* base3 #fdf6e3 */
 
-    --border: 238 232 213; /* base2 #eee8d5 */
-    --input: 238 232 213; /* base2 #eee8d5 */
+    --border: 147 161 161; /* base1 #93a1a1 */
+    --input: 253 246 227; /* base3 #fdf6e3 */
     --ring: 38 139 210; /* blue #268bd2 */
 
     --radius: 0.5rem;
@@ -44,8 +48,18 @@
     --sidebar-primary-foreground: 253 246 227; /* base3 #fdf6e3 */
     --sidebar-accent: 253 246 227; /* base3 #fdf6e3 */
     --sidebar-accent-foreground: 101 123 131; /* base00 #657b83 */
-    --sidebar-border: 238 232 213; /* base2 #eee8d5 */
+    --sidebar-border: 147 161 161; /* base1 #93a1a1 */
     --sidebar-ring: 42 161 152; /* cyan #2aa198 */
+
+    /* Solarized accent colors */
+    --solarized-yellow: 181 137 0; /* #b58900 */
+    --solarized-orange: 203 75 22; /* #cb4b16 */
+    --solarized-red: 220 50 47; /* #dc322f */
+    --solarized-magenta: 211 54 130; /* #d33682 */
+    --solarized-violet: 108 113 196; /* #6c71c4 */
+    --solarized-blue: 38 139 210; /* #268bd2 */
+    --solarized-cyan: 42 161 152; /* #2aa198 */
+    --solarized-green: 133 153 0; /* #859900 */
   }
 
   .dark {
@@ -74,7 +88,7 @@
     --destructive: 220 50 47; /* red #dc322f */
     --destructive-foreground: 131 148 150; /* base0 #839496 */
 
-    --border: 7 54 66; /* base02 #073642 */
+    --border: 88 110 117; /* base01 #586e75 */
     --input: 7 54 66; /* base02 #073642 */
     --ring: 38 139 210; /* blue #268bd2 */
 
@@ -84,7 +98,7 @@
     --sidebar-primary-foreground: 0 43 54; /* base03 #002b36 */
     --sidebar-accent: 0 43 54; /* base03 #002b36 */
     --sidebar-accent-foreground: 131 148 150; /* base0 #839496 */
-    --sidebar-border: 7 54 66; /* base02 #073642 */
+    --sidebar-border: 88 110 117; /* base01 #586e75 */
     --sidebar-ring: 42 161 152; /* cyan #2aa198 */
   }
 }
@@ -94,7 +108,140 @@
     @apply border-border;
   }
 
+  html {
+    font-family: 'PT Sans', sans-serif;
+  }
+
   body {
     @apply bg-background text-foreground transition-colors duration-300;
+    font-family: 'PT Sans', sans-serif;
+    margin: 0;
   }
+
+  /* Typography from Solarized theme */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'PT Sans Narrow', sans-serif;
+    font-weight: 700;
+  }
+
+  h1 {
+    @apply text-4xl;
+    color: rgb(var(--solarized-magenta));
+  }
+
+  h2, h3, h4, h5, h6 {
+    color: rgb(var(--solarized-green));
+  }
+
+  h2 {
+    @apply text-3xl;
+  }
+
+  h3 {
+    @apply text-2xl;
+  }
+
+  h4 {
+    @apply text-xl;
+  }
+
+  h5 {
+    @apply text-lg;
+  }
+
+  h6 {
+    @apply text-base;
+  }
+
+  pre, code {
+    font-family: 'Inconsolata', monospace;
+  }
+
+  code {
+    background-color: rgb(var(--muted));
+    @apply px-1 py-0.5 rounded text-sm;
+  }
+
+  pre {
+    background-color: rgb(var(--background));
+    border: 1px solid rgb(var(--border));
+    @apply p-4 rounded-lg shadow-sm;
+  }
+
+  pre code {
+    background-color: transparent;
+    padding: 0;
+  }
+
+  a {
+    color: rgb(var(--solarized-yellow));
+    text-decoration: none;
+  }
+
+  a:visited {
+    color: rgb(var(--solarized-orange));
+  }
+
+  a:hover {
+    color: rgb(var(--solarized-orange));
+    text-decoration: underline;
+  }
+
+  /* Status badges and tags */
+  .tag {
+    background-color: rgb(var(--muted));
+    color: rgb(var(--solarized-magenta));
+    @apply px-2 py-1 rounded-md text-sm;
+  }
+
+  .status-todo {
+    background-color: rgb(var(--solarized-cyan));
+    color: rgb(var(--background));
+    @apply px-2 py-1 rounded text-sm;
+  }
+
+  .status-next, .status-active {
+    background-color: rgb(var(--solarized-blue));
+    color: rgb(var(--background));
+    @apply px-2 py-1 rounded text-sm;
+  }
+
+  .status-done, .status-cancelled {
+    background-color: rgb(var(--solarized-green));
+    color: rgb(var(--background));
+    @apply px-2 py-1 rounded text-sm;
+  }
+
+  .status-waiting {
+    background-color: rgb(var(--solarized-orange));
+    color: rgb(var(--background));
+    @apply px-2 py-1 rounded text-sm;
+  }
+
+  .status-hold, .status-note {
+    background-color: rgb(var(--solarized-magenta));
+    color: rgb(var(--background));
+    @apply px-2 py-1 rounded text-sm;
+  }
+}
+
+/* Custom utilities for Solarized colors */
+@layer utilities {
+  .text-solarized-yellow { color: rgb(var(--solarized-yellow)); }
+  .text-solarized-orange { color: rgb(var(--solarized-orange)); }
+  .text-solarized-red { color: rgb(var(--solarized-red)); }
+  .text-solarized-magenta { color: rgb(var(--solarized-magenta)); }
+  .text-solarized-violet { color: rgb(var(--solarized-violet)); }
+  .text-solarized-blue { color: rgb(var(--solarized-blue)); }
+  .text-solarized-cyan { color: rgb(var(--solarized-cyan)); }
+  .text-solarized-green { color: rgb(var(--solarized-green)); }
+
+  .bg-solarized-yellow { background-color: rgb(var(--solarized-yellow)); }
+  .bg-solarized-orange { background-color: rgb(var(--solarized-orange)); }
+  .bg-solarized-red { background-color: rgb(var(--solarized-red)); }
+  .bg-solarized-magenta { background-color: rgb(var(--solarized-magenta)); }
+  .bg-solarized-violet { background-color: rgb(var(--solarized-violet)); }
+  .bg-solarized-blue { background-color: rgb(var(--solarized-blue)); }
+  .bg-solarized-cyan { background-color: rgb(var(--solarized-cyan)); }
+  .bg-solarized-green { background-color: rgb(var(--solarized-green)); }
 }
