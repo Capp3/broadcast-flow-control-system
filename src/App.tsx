@@ -4,7 +4,6 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { ThemeProvider } from "./components/ThemeProvider";
 import Layout from "./components/Layout";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
@@ -27,36 +26,34 @@ const queryClient = new QueryClient();
 
 const App = () => {
   return (
-    <ThemeProvider defaultTheme="system" storageKey="bms-ui-theme">
-      <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <BrowserRouter>
-            <Routes>
-              <Route path="/login" element={<Login />} />
-              <Route path="/" element={<Layout><Dashboard /></Layout>} />
-              <Route path="/time-keeping" element={<Layout><TimeKeeping /></Layout>} />
-              <Route path="/schedule" element={<Layout><Schedule /></Layout>} />
-              <Route path="/incident-report" element={<Layout><SettingsProvider><IncidentReport /></SettingsProvider></Layout>} />
-              <Route path="/change-request" element={<Layout><SettingsProvider><ChangeRequest /></SettingsProvider></Layout>} />
-              <Route path="/system-check" element={<Layout><SettingsProvider><SystemCheck /></SettingsProvider></Layout>} />
-              <Route path="/management" element={<Layout><div>Management Dashboard - Coming Soon</div></Layout>} />
-              <Route path="/employees" element={<Layout><EmployeeManagement /></Layout>} />
-              <Route path="/employees/:id" element={<Layout><EmployeeDetail /></Layout>} />
-              <Route path="/scheduling" element={<Layout><SettingsProvider><Scheduling /></SettingsProvider></Layout>} />
-              <Route path="/ticket-review" element={<Layout><TicketReview /></Layout>} />
-              <Route path="/reports" element={<Layout><div>Reports - Coming Soon</div></Layout>} />
-              <Route path="/settings" element={<Layout><SettingsProvider><Settings /></SettingsProvider></Layout>} />
-              <Route path="/engineering" element={<Layout><div>Engineering Dashboard - Coming Soon</div></Layout>} />
-              <Route path="/service-tickets" element={<Layout><ServiceTickets /></Layout>} />
-              <Route path="/incident-tickets" element={<Layout><IncidentTickets /></Layout>} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-          <Toaster />
-          <Sonner />
-        </TooltipProvider>
-      </QueryClientProvider>
-    </ThemeProvider>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/" element={<Layout><Dashboard /></Layout>} />
+            <Route path="/time-keeping" element={<Layout><TimeKeeping /></Layout>} />
+            <Route path="/schedule" element={<Layout><Schedule /></Layout>} />
+            <Route path="/incident-report" element={<Layout><SettingsProvider><IncidentReport /></SettingsProvider></Layout>} />
+            <Route path="/change-request" element={<Layout><SettingsProvider><ChangeRequest /></SettingsProvider></Layout>} />
+            <Route path="/system-check" element={<Layout><SettingsProvider><SystemCheck /></SettingsProvider></Layout>} />
+            <Route path="/management" element={<Layout><div>Management Dashboard - Coming Soon</div></Layout>} />
+            <Route path="/employees" element={<Layout><EmployeeManagement /></Layout>} />
+            <Route path="/employees/:id" element={<Layout><EmployeeDetail /></Layout>} />
+            <Route path="/scheduling" element={<Layout><SettingsProvider><Scheduling /></SettingsProvider></Layout>} />
+            <Route path="/ticket-review" element={<Layout><TicketReview /></Layout>} />
+            <Route path="/reports" element={<Layout><div>Reports - Coming Soon</div></Layout>} />
+            <Route path="/settings" element={<Layout><SettingsProvider><Settings /></SettingsProvider></Layout>} />
+            <Route path="/engineering" element={<Layout><div>Engineering Dashboard - Coming Soon</div></Layout>} />
+            <Route path="/service-tickets" element={<Layout><ServiceTickets /></Layout>} />
+            <Route path="/incident-tickets" element={<Layout><IncidentTickets /></Layout>} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+        <Toaster />
+        <Sonner />
+      </TooltipProvider>
+    </QueryClientProvider>
   );
 };
 
