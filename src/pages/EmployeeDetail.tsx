@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Save, Edit, User, Phone, Mail, Calendar, Shield, Clock } from 'lucide-react';
@@ -51,8 +50,9 @@ const EmployeeDetail = () => {
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   
-  // Mock data - replace with actual API call
-  const employee = mockEmployeeData[id as keyof typeof mockEmployeeData];
+  // Convert string id to number and get employee data
+  const employeeId = id ? parseInt(id, 10) : null;
+  const employee = employeeId ? mockEmployeeData[employeeId as keyof typeof mockEmployeeData] : null;
   
   if (!employee) {
     return (
@@ -67,7 +67,7 @@ const EmployeeDetail = () => {
     );
   }
 
-  const [formData, setFormData] = useState(employee);
+  const [formData, setFormData] = useState({ ...employee });
 
   const handleSave = () => {
     // Here you would typically save to API
@@ -83,7 +83,7 @@ const EmployeeDetail = () => {
     setFormData({
       ...formData,
       [parent]: {
-        ...formData[parent as keyof typeof formData],
+        ...formData[parent as keyof typeof formData] as any,
         [field]: value
       }
     });
