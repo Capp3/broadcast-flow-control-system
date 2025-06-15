@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { format, addDays, startOfWeek, isSameDay } from 'date-fns';
 import { Card, CardContent } from '@/components/ui/card';
@@ -125,8 +124,40 @@ const ScheduleCalendar = ({ currentWeek, mode, onEventEdit, onShiftEdit }: Sched
       top: topOffset,
       height: height,
       startHour,
-      endHour
+      endHour,
+      startMinutes
     };
+  };
+
+  const detectOverlaps = (items: any[]) => {
+    // Sort items by start time first
+    const sortedItems = [...items].sort((a, b) => a.position.startMinutes - b.position.startMinutes);
+    
+    // Assign layers based on overlaps
+    const layeredItems = sortedItems.map((item, index) => {
+      let layer = 0;
+      
+      // Check for overlaps with previous items
+      for (let i = 0; i < index; i++) {
+        const prevItem = sortedItems[i];
+        const itemStart = item.position.startMinutes;
+        const itemEnd = item.position.startMinutes + (item.position.height / HOUR_HEIGHT) * 60;
+        const prevStart = prevItem.position.startMinutes;
+        const prevEnd = prevItem.position.startMinutes + (prevItem.position.height / HOUR_HEIGHT) * 60;
+        
+        // Check if items overlap
+        if (itemStart < prevEnd && itemEnd > prevStart) {
+          layer = Math.max(layer, (prevItem.calculatedLayer || 0) + 1);
+        }
+      }
+      
+      return {
+        ...item,
+        calculatedLayer: layer
+      };
+    });
+
+    return layeredItems;
   };
 
   const getItemsForDay = (date: Date) => {
@@ -140,7 +171,7 @@ const ScheduleCalendar = ({ currentWeek, mode, onEventEdit, onShiftEdit }: Sched
           ...event, 
           itemType: 'event', 
           position,
-          layerIndex: 0
+          originalLayerIndex: 0
         });
         
         // Add event shifts if in schedule mode
@@ -151,7 +182,7 @@ const ScheduleCalendar = ({ currentWeek, mode, onEventEdit, onShiftEdit }: Sched
               ...shift, 
               itemType: 'shift', 
               position: shiftPosition,
-              layerIndex: index + 1
+              originalLayerIndex: index + 1
             });
           });
         }
@@ -166,12 +197,13 @@ const ScheduleCalendar = ({ currentWeek, mode, onEventEdit, onShiftEdit }: Sched
           ...shift, 
           itemType: 'shift', 
           position,
-          layerIndex: 0
+          originalLayerIndex: 0
         });
       }
     });
 
-    return items;
+    // Detect overlaps and assign proper layers
+    return detectOverlaps(items);
   };
 
   const shouldShowOnDate = (date: Date, isRecurring: boolean) => {
@@ -239,43 +271,50 @@ const ScheduleCalendar = ({ currentWeek, mode, onEventEdit, onShiftEdit }: Sched
               {/* Floating Items */}
               {weekDays.map((day, dayIndex) => {
                 const dayItems = getItemsForDay(day);
-                return dayItems.map((item, itemIndex) => (
-                  <div
-                    key={`${dayIndex}-${itemIndex}`}
-                    className={`absolute text-xs p-2 rounded border cursor-pointer hover:opacity-80 ${item.color}`}
-                    style={{
-                      top: `${item.position.top}px`,
-                      height: `${item.position.height}px`,
-                      left: `${(100 / 8) * (dayIndex + 1) + item.layerIndex * 2}%`,
-                      width: `${(100 / 8) - item.layerIndex * 2 - 0.5}%`,
-                      zIndex: item.layerIndex + 1,
-                      minHeight: '40px'
-                    }}
-                    onClick={() => handleItemClick(item)}
-                  >
-                    <div className="flex items-center gap-1 mb-1">
-                      {item.itemType === 'event' ? (
-                        <Clock className="h-3 w-3 flex-shrink-0" />
-                      ) : (
-                        <User className="h-3 w-3 flex-shrink-0" />
-                      )}
-                      <span className="font-medium truncate">{item.title}</span>
-                      {item.isRecurring && <Repeat className="h-2 w-2 ml-auto flex-shrink-0" />}
-                    </div>
-                    <div className="flex items-center gap-1 text-xs opacity-75 mb-1">
-                      <MapPin className="h-2 w-2 flex-shrink-0" />
-                      <span className="truncate">{item.facility}</span>
-                    </div>
-                    <div className="text-xs opacity-75 mb-1">
-                      {item.startTime} - {item.endTime}
-                    </div>
-                    {mode === 'rota' && item.assignedStaff && (
-                      <div className="text-xs opacity-75">
-                        Staff: {item.assignedStaff.join(', ')}
+                return dayItems.map((item, itemIndex) => {
+                  const layer = item.calculatedLayer || 0;
+                  const maxLayers = Math.max(...dayItems.map(i => i.calculatedLayer || 0)) + 1;
+                  const widthReduction = Math.min(layer * 8, 40); // Max 40% width reduction
+                  const leftOffset = layer * 4; // 4% left offset per layer
+                  
+                  return (
+                    <div
+                      key={`${dayIndex}-${itemIndex}`}
+                      className={`absolute text-xs p-2 rounded border cursor-pointer hover:opacity-80 transition-all ${item.color} shadow-sm`}
+                      style={{
+                        top: `${item.position.top}px`,
+                        height: `${item.position.height}px`,
+                        left: `${(100 / 8) * (dayIndex + 1) + leftOffset}%`,
+                        width: `${(100 / 8) - widthReduction/8 - 0.5}%`,
+                        zIndex: 10 + layer, // Higher z-index for later items
+                        minHeight: '40px'
+                      }}
+                      onClick={() => handleItemClick(item)}
+                    >
+                      <div className="flex items-center gap-1 mb-1">
+                        {item.itemType === 'event' ? (
+                          <Clock className="h-3 w-3 flex-shrink-0" />
+                        ) : (
+                          <User className="h-3 w-3 flex-shrink-0" />
+                        )}
+                        <span className="font-medium truncate">{item.title}</span>
+                        {item.isRecurring && <Repeat className="h-2 w-2 ml-auto flex-shrink-0" />}
                       </div>
-                    )}
-                  </div>
-                ));
+                      <div className="flex items-center gap-1 text-xs opacity-75 mb-1">
+                        <MapPin className="h-2 w-2 flex-shrink-0" />
+                        <span className="truncate">{item.facility}</span>
+                      </div>
+                      <div className="text-xs opacity-75 mb-1">
+                        {item.startTime} - {item.endTime}
+                      </div>
+                      {mode === 'rota' && item.assignedStaff && (
+                        <div className="text-xs opacity-75">
+                          Staff: {item.assignedStaff.join(', ')}
+                        </div>
+                      )}
+                    </div>
+                  );
+                });
               })}
             </div>
           </div>
