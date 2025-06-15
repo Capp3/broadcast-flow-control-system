@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,11 +8,15 @@ import { useToast } from '@/hooks/use-toast';
 import { useSettings } from '@/contexts/SettingsContext';
 
 const Settings = () => {
-  const { locations, shifts } = useSettings();
+  const { locations, shifts, facilities, incidentTypes } = useSettings();
   const [localLocations, setLocalLocations] = useState(locations);
   const [localShifts, setLocalShifts] = useState(shifts);
+  const [localFacilities, setLocalFacilities] = useState(facilities);
+  const [localIncidentTypes, setLocalIncidentTypes] = useState(incidentTypes);
   const [newLocation, setNewLocation] = useState('');
   const [newShift, setNewShift] = useState('');
+  const [newFacility, setNewFacility] = useState('');
+  const [newIncidentType, setNewIncidentType] = useState('');
   const { toast } = useToast();
 
   const addLocation = () => {
@@ -51,6 +54,44 @@ const Settings = () => {
     toast({
       title: "Shift Removed",
       description: `"${shift}" has been removed from the shifts list.`,
+    });
+  };
+
+  const addFacility = () => {
+    if (newFacility.trim() && !localFacilities.includes(newFacility.trim())) {
+      setLocalFacilities([...localFacilities, newFacility.trim()]);
+      setNewFacility('');
+      toast({
+        title: "Facility Added",
+        description: `"${newFacility.trim()}" has been added to the facilities list.`,
+      });
+    }
+  };
+
+  const removeFacility = (facility: string) => {
+    setLocalFacilities(localFacilities.filter(f => f !== facility));
+    toast({
+      title: "Facility Removed",
+      description: `"${facility}" has been removed from the facilities list.`,
+    });
+  };
+
+  const addIncidentType = () => {
+    if (newIncidentType.trim() && !localIncidentTypes.includes(newIncidentType.trim())) {
+      setLocalIncidentTypes([...localIncidentTypes, newIncidentType.trim()]);
+      setNewIncidentType('');
+      toast({
+        title: "Incident Type Added",
+        description: `"${newIncidentType.trim()}" has been added to the incident types list.`,
+      });
+    }
+  };
+
+  const removeIncidentType = (type: string) => {
+    setLocalIncidentTypes(localIncidentTypes.filter(t => t !== type));
+    toast({
+      title: "Incident Type Removed",
+      description: `"${type}" has been removed from the incident types list.`,
     });
   };
 
@@ -161,6 +202,104 @@ const Settings = () => {
                     variant="ghost"
                     size="sm"
                     onClick={() => removeShift(shift)}
+                    className="text-red-500 hover:text-red-700"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Facilities Management */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Facility Management</CardTitle>
+          <CardDescription>
+            Manage the list of available facilities for incident reports.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex gap-2">
+            <div className="flex-1">
+              <Label htmlFor="newFacility">Add New Facility</Label>
+              <Input
+                id="newFacility"
+                placeholder="Enter facility name..."
+                value={newFacility}
+                onChange={(e) => setNewFacility(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && addFacility()}
+              />
+            </div>
+            <div className="flex items-end">
+              <Button onClick={addFacility} disabled={!newFacility.trim()}>
+                <Plus className="h-4 w-4 mr-2" />
+                Add
+              </Button>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Current Facilities ({localFacilities.length})</Label>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-60 overflow-y-auto">
+              {localFacilities.map((facility, index) => (
+                <div key={index} className="flex items-center justify-between p-2 border rounded-md">
+                  <span className="text-sm">{facility}</span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => removeFacility(facility)}
+                    className="text-red-500 hover:text-red-700"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Incident Types Management */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Incident Type Management</CardTitle>
+          <CardDescription>
+            Manage the list of available incident types for incident reports.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex gap-2">
+            <div className="flex-1">
+              <Label htmlFor="newIncidentType">Add New Incident Type</Label>
+              <Input
+                id="newIncidentType"
+                placeholder="Enter incident type..."
+                value={newIncidentType}
+                onChange={(e) => setNewIncidentType(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && addIncidentType()}
+              />
+            </div>
+            <div className="flex items-end">
+              <Button onClick={addIncidentType} disabled={!newIncidentType.trim()}>
+                <Plus className="h-4 w-4 mr-2" />
+                Add
+              </Button>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Current Incident Types ({localIncidentTypes.length})</Label>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-60 overflow-y-auto">
+              {localIncidentTypes.map((type, index) => (
+                <div key={index} className="flex items-center justify-between p-2 border rounded-md">
+                  <span className="text-sm">{type}</span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => removeIncidentType(type)}
                     className="text-red-500 hover:text-red-700"
                   >
                     <Trash2 className="h-4 w-4" />

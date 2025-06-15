@@ -1,9 +1,10 @@
-
 import React, { createContext, useContext, useState } from 'react';
 
 interface SettingsContextType {
   locations: string[];
   shifts: string[];
+  facilities: string[];
+  incidentTypes: string[];
   getScheduledEvents: (date: string) => Array<{id: string, name: string, time: string}>;
 }
 
@@ -41,6 +42,32 @@ export const SettingsProvider = ({ children }: { children: React.ReactNode }) =>
     'Live Event Coverage'
   ]);
 
+  const [facilities] = useState([
+    'Main Studio',
+    'Control Room A',
+    'Control Room B',
+    'Edit Suite 1',
+    'Edit Suite 2',
+    'Transmission Room',
+    'Server Room',
+    'Reception Area',
+    'Conference Room',
+    'Archive Storage'
+  ]);
+
+  const [incidentTypes] = useState([
+    'User Error',
+    'Operator Error', 
+    'Equipment Failure',
+    'Unknown',
+    'Ongoing Issue',
+    'System Outage',
+    'Network Issue',
+    'Software Bug',
+    'Hardware Malfunction',
+    'Power Issue'
+  ]);
+
   // Mock scheduled events lookup
   const getScheduledEvents = (date: string) => {
     // Mock events for demonstration
@@ -57,6 +84,8 @@ export const SettingsProvider = ({ children }: { children: React.ReactNode }) =>
   const value = {
     locations,
     shifts,
+    facilities,
+    incidentTypes,
     getScheduledEvents
   };
 
