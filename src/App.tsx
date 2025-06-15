@@ -19,6 +19,7 @@ import TicketReview from "./pages/TicketReview";
 import EmployeeManagement from "./pages/EmployeeManagement";
 import EmployeeDetail from "./pages/EmployeeDetail";
 import SystemCheck from "./pages/SystemCheck";
+import Scheduling from "./pages/Scheduling";
 import { SettingsProvider } from "./contexts/SettingsContext";
 
 const queryClient = new QueryClient();
