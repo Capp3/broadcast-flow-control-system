@@ -15,6 +15,8 @@ import IncidentTickets from "./pages/IncidentTickets";
 import ServiceTickets from "./pages/ServiceTickets";
 import IncidentReport from "./pages/IncidentReport";
 import TicketReview from "./pages/TicketReview";
+import EmployeeManagement from "./pages/EmployeeManagement";
+import EmployeeDetail from "./pages/EmployeeDetail";
 import { SettingsProvider } from "./contexts/SettingsContext";
 
 const queryClient = new QueryClient();
@@ -34,7 +36,8 @@ const App = () => (
           <Route path="/change-request" element={<Layout><div>Change Request Page - Coming Soon</div></Layout>} />
           <Route path="/system-check" element={<Layout><div>System Check Page - Coming Soon</div></Layout>} />
           <Route path="/management" element={<Layout><div>Management Dashboard - Coming Soon</div></Layout>} />
-          <Route path="/employees" element={<Layout><div>Employee Management - Coming Soon</div></Layout>} />
+          <Route path="/employees" element={<Layout><EmployeeManagement /></Layout>} />
+          <Route path="/employees/:id" element={<Layout><EmployeeDetail /></Layout>} />
           <Route path="/scheduling" element={<Layout><div>Scheduling - Coming Soon</div></Layout>} />
           <Route path="/ticket-review" element={<Layout><TicketReview /></Layout>} />
           <Route path="/reports" element={<Layout><div>Reports - Coming Soon</div></Layout>} />
