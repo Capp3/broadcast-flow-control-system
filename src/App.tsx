@@ -40,7 +40,7 @@ const App = () => (
           <Route path="/management" element={<Layout><div>Management Dashboard - Coming Soon</div></Layout>} />
           <Route path="/employees" element={<Layout><EmployeeManagement /></Layout>} />
           <Route path="/employees/:id" element={<Layout><EmployeeDetail /></Layout>} />
-          <Route path="/scheduling" element={<Layout><div>Scheduling - Coming Soon</div></Layout>} />
+          <Route path="/scheduling" element={<Layout><SettingsProvider><Scheduling /></SettingsProvider></Layout>} />
           <Route path="/ticket-review" element={<Layout><TicketReview /></Layout>} />
           <Route path="/reports" element={<Layout><div>Reports - Coming Soon</div></Layout>} />
           <Route path="/settings" element={<Layout><SettingsProvider><Settings /></SettingsProvider></Layout>} />
