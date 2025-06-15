@@ -13,6 +13,7 @@ import NotFound from "./pages/NotFound";
 import IncidentTickets from "./pages/IncidentTickets";
 import ServiceTickets from "./pages/ServiceTickets";
 import IncidentReport from "./pages/IncidentReport";
+import TicketReview from "./pages/TicketReview";
 import { SettingsProvider } from "./contexts/SettingsContext";
 
 const queryClient = new QueryClient();
@@ -34,6 +35,7 @@ const App = () => (
           <Route path="/management" element={<Layout><div>Management Dashboard - Coming Soon</div></Layout>} />
           <Route path="/employees" element={<Layout><div>Employee Management - Coming Soon</div></Layout>} />
           <Route path="/scheduling" element={<Layout><div>Scheduling - Coming Soon</div></Layout>} />
+          <Route path="/ticket-review" element={<Layout><TicketReview /></Layout>} />
           <Route path="/reports" element={<Layout><div>Reports - Coming Soon</div></Layout>} />
           <Route path="/settings" element={<Layout><SettingsProvider><Settings /></SettingsProvider></Layout>} />
           <Route path="/engineering" element={<Layout><div>Engineering Dashboard - Coming Soon</div></Layout>} />

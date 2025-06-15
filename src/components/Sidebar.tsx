@@ -10,7 +10,8 @@ import {
   BarChart3,
   Wrench,
   Shield,
-  Home
+  Home,
+  CheckCircle
 } from 'lucide-react';
 import {
   Sidebar,
@@ -44,6 +45,7 @@ const AppSidebar = () => {
     { title: 'Management Dashboard', url: '/management', icon: BarChart3 },
     { title: 'Employee Management', url: '/employees', icon: Users },
     { title: 'Scheduling', url: '/scheduling', icon: Calendar },
+    { title: 'Ticket Review', url: '/ticket-review', icon: CheckCircle },
     { title: 'Reporting', url: '/reports', icon: FileText },
     { title: 'Settings', url: '/settings', icon: Settings },
   ];
