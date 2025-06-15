@@ -14,6 +14,7 @@ import NotFound from "./pages/NotFound";
 import IncidentTickets from "./pages/IncidentTickets";
 import ServiceTickets from "./pages/ServiceTickets";
 import IncidentReport from "./pages/IncidentReport";
+import ChangeRequest from "./pages/ChangeRequest";
 import TicketReview from "./pages/TicketReview";
 import EmployeeManagement from "./pages/EmployeeManagement";
 import EmployeeDetail from "./pages/EmployeeDetail";
@@ -33,7 +34,7 @@ const App = () => (
           <Route path="/time-keeping" element={<Layout><TimeKeeping /></Layout>} />
           <Route path="/schedule" element={<Layout><Schedule /></Layout>} />
           <Route path="/incident-report" element={<Layout><SettingsProvider><IncidentReport /></SettingsProvider></Layout>} />
-          <Route path="/change-request" element={<Layout><div>Change Request Page - Coming Soon</div></Layout>} />
+          <Route path="/change-request" element={<Layout><SettingsProvider><ChangeRequest /></SettingsProvider></Layout>} />
           <Route path="/system-check" element={<Layout><div>System Check Page - Coming Soon</div></Layout>} />
           <Route path="/management" element={<Layout><div>Management Dashboard - Coming Soon</div></Layout>} />
           <Route path="/employees" element={<Layout><EmployeeManagement /></Layout>} />
