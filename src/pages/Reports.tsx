@@ -21,6 +21,7 @@ import {
 import ClientReports from '../components/reports/ClientReports';
 import ManagementReports from '../components/reports/ManagementReports';
 import ReportSettings from '../components/reports/ReportSettings';
+import RotaReport from '../components/reports/RotaReport';
 import ExportDialog from '../components/reports/ExportDialog';
 
 // Mock data for report summary
@@ -124,9 +125,10 @@ const Reports = () => {
 
       {/* Report Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="client">Client Reports</TabsTrigger>
           <TabsTrigger value="management">Management Reports</TabsTrigger>
+          <TabsTrigger value="rota">Crew Rota</TabsTrigger>
           <TabsTrigger value="settings">Settings & Branding</TabsTrigger>
         </TabsList>
 
@@ -136,6 +138,10 @@ const Reports = () => {
 
         <TabsContent value="management" className="space-y-4">
           <ManagementReports />
+        </TabsContent>
+
+        <TabsContent value="rota" className="space-y-4">
+          <RotaReport />
         </TabsContent>
 
         <TabsContent value="settings" className="space-y-4">
