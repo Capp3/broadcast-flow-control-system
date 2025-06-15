@@ -7,19 +7,60 @@
 
 @layer base {
   :root {
-    --background: 253 246 227; /* Solarized base3 - cream white */
-    --foreground: 101 123 131; /* Solarized base00 - dark gray */
+    --background: 0 43 54; /* Solarized base03 */
+    --foreground: 147 161 161; /* Solarized base1 */
 
-    --card: 253 246 227; /* Solarized base3 */
-    --card-foreground: 101 123 131; /* Solarized base00 */
+    --card: 7 54 66; /* Solarized base02 */
+    --card-foreground: 147 161 161; /* Solarized base1 */
 
-    --popover: 253 246 227; /* Solarized base3 */
-    --popover-foreground: 101 123 131; /* Solarized base00 */
+    --popover: 7 54 66; /* Solarized base02 */
+    --popover-foreground: 147 161 161; /* Solarized base1 */
+
+    --primary: 38 139 210; /* Solarized blue */
+    --primary-foreground: 0 43 54; /* Solarized base03 */
+
+    --secondary: 7 54 66; /* Solarized base02 */
+    --secondary-foreground: 147 161 161; /* Solarized base1 */
+
+    --muted: 7 54 66; /* Solarized base02 */
+    --muted-foreground: 88 110 117; /* Solarized base01 */
+
+    --accent: 7 54 66; /* Solarized base02 */
+    --accent-foreground: 147 161 161; /* Solarized base1 */
+
+    --destructive: 220 50 47; /* Solarized red */
+    --destructive-foreground: 147 161 161; /* Solarized base1 */
+
+    --border: 7 54 66; /* Solarized base02 */
+    --input: 7 54 66; /* Solarized base02 */
+    --ring: 38 139 210; /* Solarized blue */
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 7 54 66; /* Solarized base02 */
+    --sidebar-foreground: 147 161 161; /* Solarized base1 */
+    --sidebar-primary: 42 161 152; /* Solarized cyan */
+    --sidebar-primary-foreground: 0 43 54; /* Solarized base03 */
+    --sidebar-accent: 0 43 54; /* Solarized base03 */
+    --sidebar-accent-foreground: 147 161 161; /* Solarized base1 */
+    --sidebar-border: 7 54 66; /* Solarized base02 */
+    --sidebar-ring: 42 161 152; /* Solarized cyan */
+  }
+
+  .dark {
+    --background: 253 246 227; /* Solarized base3 */
+    --foreground: 88 110 117; /* Solarized base01 */
+
+    --card: 238 232 213; /* Solarized base2 */
+    --card-foreground: 88 110 117; /* Solarized base01 */
+
+    --popover: 238 232 213; /* Solarized base2 */
+    --popover-foreground: 88 110 117; /* Solarized base01 */
 
     --primary: 38 139 210; /* Solarized blue */
     --primary-foreground: 253 246 227; /* Solarized base3 */
 
-    --secondary: 238 232 213; /* Solarized base2 - light gray */
+    --secondary: 238 232 213; /* Solarized base2 */
     --secondary-foreground: 88 110 117; /* Solarized base01 */
 
     --muted: 238 232 213; /* Solarized base2 */
@@ -29,61 +70,20 @@
     --accent-foreground: 88 110 117; /* Solarized base01 */
 
     --destructive: 220 50 47; /* Solarized red */
-    --destructive-foreground: 253 246 227; /* Solarized base3 */
+    --destructive-foreground: 88 110 117; /* Solarized base01 */
 
     --border: 238 232 213; /* Solarized base2 */
     --input: 238 232 213; /* Solarized base2 */
     --ring: 38 139 210; /* Solarized blue */
 
-    --radius: 0.5rem;
-
     --sidebar-background: 238 232 213; /* Solarized base2 */
-    --sidebar-foreground: 101 123 131; /* Solarized base00 */
+    --sidebar-foreground: 88 110 117; /* Solarized base01 */
     --sidebar-primary: 38 139 210; /* Solarized blue */
     --sidebar-primary-foreground: 253 246 227; /* Solarized base3 */
     --sidebar-accent: 253 246 227; /* Solarized base3 */
     --sidebar-accent-foreground: 88 110 117; /* Solarized base01 */
     --sidebar-border: 238 232 213; /* Solarized base2 */
     --sidebar-ring: 38 139 210; /* Solarized blue */
-  }
-
-  .dark {
-    --background: 0 43 54; /* Solarized base03 - dark blue */
-    --foreground: 131 148 150; /* Solarized base0 - light gray */
-
-    --card: 7 54 66; /* Solarized base02 - dark gray */
-    --card-foreground: 131 148 150; /* Solarized base0 */
-
-    --popover: 7 54 66; /* Solarized base02 */
-    --popover-foreground: 131 148 150; /* Solarized base0 */
-
-    --primary: 38 139 210; /* Solarized blue */
-    --primary-foreground: 0 43 54; /* Solarized base03 */
-
-    --secondary: 7 54 66; /* Solarized base02 */
-    --secondary-foreground: 131 148 150; /* Solarized base0 */
-
-    --muted: 7 54 66; /* Solarized base02 */
-    --muted-foreground: 88 110 117; /* Solarized base01 */
-
-    --accent: 7 54 66; /* Solarized base02 */
-    --accent-foreground: 131 148 150; /* Solarized base0 */
-
-    --destructive: 220 50 47; /* Solarized red */
-    --destructive-foreground: 131 148 150; /* Solarized base0 */
-
-    --border: 7 54 66; /* Solarized base02 */
-    --input: 7 54 66; /* Solarized base02 */
-    --ring: 38 139 210; /* Solarized blue */
-
-    --sidebar-background: 7 54 66; /* Solarized base02 */
-    --sidebar-foreground: 131 148 150; /* Solarized base0 */
-    --sidebar-primary: 42 161 152; /* Solarized cyan */
-    --sidebar-primary-foreground: 0 43 54; /* Solarized base03 */
-    --sidebar-accent: 0 43 54; /* Solarized base03 */
-    --sidebar-accent-foreground: 131 148 150; /* Solarized base0 */
-    --sidebar-border: 7 54 66; /* Solarized base02 */
-    --sidebar-ring: 42 161 152; /* Solarized cyan */
   }
 }
 
