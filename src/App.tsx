@@ -20,6 +20,7 @@ import EmployeeManagement from "./pages/EmployeeManagement";
 import EmployeeDetail from "./pages/EmployeeDetail";
 import SystemCheck from "./pages/SystemCheck";
 import Scheduling from "./pages/Scheduling";
+import Engineering from "./pages/Engineering";
 import { SettingsProvider } from "./contexts/SettingsContext";
 
 const queryClient = new QueryClient();
@@ -44,7 +45,7 @@ const App = () => {
             <Route path="/ticket-review" element={<Layout><TicketReview /></Layout>} />
             <Route path="/reports" element={<Layout><div>Reports - Coming Soon</div></Layout>} />
             <Route path="/settings" element={<Layout><SettingsProvider><Settings /></SettingsProvider></Layout>} />
-            <Route path="/engineering" element={<Layout><div>Engineering Dashboard - Coming Soon</div></Layout>} />
+            <Route path="/engineering" element={<Layout><Engineering /></Layout>} />
             <Route path="/service-tickets" element={<Layout><ServiceTickets /></Layout>} />
             <Route path="/incident-tickets" element={<Layout><IncidentTickets /></Layout>} />
             <Route path="*" element={<NotFound />} />
