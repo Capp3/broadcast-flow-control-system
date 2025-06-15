@@ -7,83 +7,85 @@
 
 @layer base {
   :root {
-    --background: 0 43 54; /* Solarized base03 */
-    --foreground: 147 161 161; /* Solarized base1 */
+    /* Solarized Light Theme */
+    --background: 253 246 227; /* base3 #fdf6e3 */
+    --foreground: 101 123 131; /* base00 #657b83 */
 
-    --card: 7 54 66; /* Solarized base02 */
-    --card-foreground: 147 161 161; /* Solarized base1 */
+    --card: 238 232 213; /* base2 #eee8d5 */
+    --card-foreground: 101 123 131; /* base00 #657b83 */
 
-    --popover: 7 54 66; /* Solarized base02 */
-    --popover-foreground: 147 161 161; /* Solarized base1 */
+    --popover: 238 232 213; /* base2 #eee8d5 */
+    --popover-foreground: 101 123 131; /* base00 #657b83 */
 
-    --primary: 38 139 210; /* Solarized blue */
-    --primary-foreground: 0 43 54; /* Solarized base03 */
+    --primary: 38 139 210; /* blue #268bd2 */
+    --primary-foreground: 253 246 227; /* base3 #fdf6e3 */
 
-    --secondary: 7 54 66; /* Solarized base02 */
-    --secondary-foreground: 147 161 161; /* Solarized base1 */
+    --secondary: 238 232 213; /* base2 #eee8d5 */
+    --secondary-foreground: 88 110 117; /* base01 #586e75 */
 
-    --muted: 7 54 66; /* Solarized base02 */
-    --muted-foreground: 88 110 117; /* Solarized base01 */
+    --muted: 238 232 213; /* base2 #eee8d5 */
+    --muted-foreground: 147 161 161; /* base1 #93a1a1 */
 
-    --accent: 7 54 66; /* Solarized base02 */
-    --accent-foreground: 147 161 161; /* Solarized base1 */
+    --accent: 238 232 213; /* base2 #eee8d5 */
+    --accent-foreground: 88 110 117; /* base01 #586e75 */
 
-    --destructive: 220 50 47; /* Solarized red */
-    --destructive-foreground: 147 161 161; /* Solarized base1 */
+    --destructive: 220 50 47; /* red #dc322f */
+    --destructive-foreground: 253 246 227; /* base3 #fdf6e3 */
 
-    --border: 7 54 66; /* Solarized base02 */
-    --input: 7 54 66; /* Solarized base02 */
-    --ring: 38 139 210; /* Solarized blue */
+    --border: 238 232 213; /* base2 #eee8d5 */
+    --input: 238 232 213; /* base2 #eee8d5 */
+    --ring: 38 139 210; /* blue #268bd2 */
 
     --radius: 0.5rem;
 
-    --sidebar-background: 7 54 66; /* Solarized base02 */
-    --sidebar-foreground: 147 161 161; /* Solarized base1 */
-    --sidebar-primary: 42 161 152; /* Solarized cyan */
-    --sidebar-primary-foreground: 0 43 54; /* Solarized base03 */
-    --sidebar-accent: 0 43 54; /* Solarized base03 */
-    --sidebar-accent-foreground: 147 161 161; /* Solarized base1 */
-    --sidebar-border: 7 54 66; /* Solarized base02 */
-    --sidebar-ring: 42 161 152; /* Solarized cyan */
+    --sidebar-background: 238 232 213; /* base2 #eee8d5 */
+    --sidebar-foreground: 101 123 131; /* base00 #657b83 */
+    --sidebar-primary: 42 161 152; /* cyan #2aa198 */
+    --sidebar-primary-foreground: 253 246 227; /* base3 #fdf6e3 */
+    --sidebar-accent: 253 246 227; /* base3 #fdf6e3 */
+    --sidebar-accent-foreground: 101 123 131; /* base00 #657b83 */
+    --sidebar-border: 238 232 213; /* base2 #eee8d5 */
+    --sidebar-ring: 42 161 152; /* cyan #2aa198 */
   }
 
   .dark {
-    --background: 253 246 227; /* Solarized base3 */
-    --foreground: 88 110 117; /* Solarized base01 */
+    /* Solarized Dark Theme */
+    --background: 0 43 54; /* base03 #002b36 */
+    --foreground: 131 148 150; /* base0 #839496 */
 
-    --card: 238 232 213; /* Solarized base2 */
-    --card-foreground: 88 110 117; /* Solarized base01 */
+    --card: 7 54 66; /* base02 #073642 */
+    --card-foreground: 131 148 150; /* base0 #839496 */
 
-    --popover: 238 232 213; /* Solarized base2 */
-    --popover-foreground: 88 110 117; /* Solarized base01 */
+    --popover: 7 54 66; /* base02 #073642 */
+    --popover-foreground: 131 148 150; /* base0 #839496 */
 
-    --primary: 38 139 210; /* Solarized blue */
-    --primary-foreground: 253 246 227; /* Solarized base3 */
+    --primary: 38 139 210; /* blue #268bd2 */
+    --primary-foreground: 0 43 54; /* base03 #002b36 */
 
-    --secondary: 238 232 213; /* Solarized base2 */
-    --secondary-foreground: 88 110 117; /* Solarized base01 */
+    --secondary: 7 54 66; /* base02 #073642 */
+    --secondary-foreground: 147 161 161; /* base1 #93a1a1 */
 
-    --muted: 238 232 213; /* Solarized base2 */
-    --muted-foreground: 147 161 161; /* Solarized base1 */
+    --muted: 7 54 66; /* base02 #073642 */
+    --muted-foreground: 88 110 117; /* base01 #586e75 */
 
-    --accent: 238 232 213; /* Solarized base2 */
-    --accent-foreground: 88 110 117; /* Solarized base01 */
+    --accent: 7 54 66; /* base02 #073642 */
+    --accent-foreground: 147 161 161; /* base1 #93a1a1 */
 
-    --destructive: 220 50 47; /* Solarized red */
-    --destructive-foreground: 88 110 117; /* Solarized base01 */
+    --destructive: 220 50 47; /* red #dc322f */
+    --destructive-foreground: 131 148 150; /* base0 #839496 */
 
-    --border: 238 232 213; /* Solarized base2 */
-    --input: 238 232 213; /* Solarized base2 */
-    --ring: 38 139 210; /* Solarized blue */
+    --border: 7 54 66; /* base02 #073642 */
+    --input: 7 54 66; /* base02 #073642 */
+    --ring: 38 139 210; /* blue #268bd2 */
 
-    --sidebar-background: 238 232 213; /* Solarized base2 */
-    --sidebar-foreground: 88 110 117; /* Solarized base01 */
-    --sidebar-primary: 38 139 210; /* Solarized blue */
-    --sidebar-primary-foreground: 253 246 227; /* Solarized base3 */
-    --sidebar-accent: 253 246 227; /* Solarized base3 */
-    --sidebar-accent-foreground: 88 110 117; /* Solarized base01 */
-    --sidebar-border: 238 232 213; /* Solarized base2 */
-    --sidebar-ring: 38 139 210; /* Solarized blue */
+    --sidebar-background: 7 54 66; /* base02 #073642 */
+    --sidebar-foreground: 131 148 150; /* base0 #839496 */
+    --sidebar-primary: 42 161 152; /* cyan #2aa198 */
+    --sidebar-primary-foreground: 0 43 54; /* base03 #002b36 */
+    --sidebar-accent: 0 43 54; /* base03 #002b36 */
+    --sidebar-accent-foreground: 131 148 150; /* base0 #839496 */
+    --sidebar-border: 7 54 66; /* base02 #073642 */
+    --sidebar-ring: 42 161 152; /* cyan #2aa198 */
   }
 }
 
