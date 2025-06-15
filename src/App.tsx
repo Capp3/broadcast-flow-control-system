@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -21,6 +22,7 @@ import SystemCheck from "./pages/SystemCheck";
 import Scheduling from "./pages/Scheduling";
 import Engineering from "./pages/Engineering";
 import Management from "./pages/Management";
+import Reports from "./pages/Reports";
 import { SettingsProvider } from "./contexts/SettingsContext";
 
 const queryClient = new QueryClient();
@@ -43,7 +45,7 @@ const App = () => {
             <Route path="/employees/:id" element={<Layout><EmployeeDetail /></Layout>} />
             <Route path="/scheduling" element={<Layout><SettingsProvider><Scheduling /></SettingsProvider></Layout>} />
             <Route path="/ticket-review" element={<Layout><TicketReview /></Layout>} />
-            <Route path="/reports" element={<Layout><div>Reports - Coming Soon</div></Layout>} />
+            <Route path="/reports" element={<Layout><Reports /></Layout>} />
             <Route path="/settings" element={<Layout><SettingsProvider><Settings /></SettingsProvider></Layout>} />
             <Route path="/engineering" element={<Layout><Engineering /></Layout>} />
             <Route path="/service-tickets" element={<Layout><ServiceTickets /></Layout>} />
