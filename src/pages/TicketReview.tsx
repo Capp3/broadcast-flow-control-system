@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,6 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { CheckCircle, AlertTriangle, Calendar, Clock, User, X, ArrowRight } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import TicketDetail from '@/components/TicketDetail';
 
 // Mock data for tickets awaiting review
 const mockTicketsForReview = [
@@ -81,11 +81,18 @@ const mockTicketsForReview = [
 const TicketReview = () => {
   const [statusFilter, setStatusFilter] = useState('pending_review');
   const [tickets, setTickets] = useState(mockTicketsForReview);
+  const [selectedTicket, setSelectedTicket] = useState(null);
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
   const { toast } = useToast();
 
   const filteredTickets = tickets.filter(ticket => 
     statusFilter === 'all' ? true : ticket.status === statusFilter
   );
+
+  const handleTicketClick = (ticket: any) => {
+    setSelectedTicket(ticket);
+    setIsDetailOpen(true);
+  };
 
   const handleCloseTicket = (ticketId: string, title: string) => {
     setTickets(prevTickets => 
@@ -173,7 +180,7 @@ const TicketReview = () => {
         <CardHeader>
           <CardTitle>Tickets Awaiting Review ({filteredTickets.length})</CardTitle>
           <CardDescription>
-            Review and manage tickets before they are assigned to engineering teams
+            Review and manage tickets before they are assigned to engineering teams. Click on a row to view details.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -196,7 +203,16 @@ const TicketReview = () => {
               </TableHeader>
               <TableBody>
                 {filteredTickets.map((ticket) => (
-                  <TableRow key={ticket.id} className="cursor-pointer hover:bg-muted/50">
+                  <TableRow 
+                    key={ticket.id} 
+                    className="cursor-pointer hover:bg-muted/50"
+                    onClick={(e) => {
+                      // Don't open detail if clicking on action button
+                      if (!(e.target as HTMLElement).closest('button')) {
+                        handleTicketClick(ticket);
+                      }
+                    }}
+                  >
                     <TableCell className="font-medium">{ticket.id}</TableCell>
                     <TableCell>
                       <Badge className={getTypeColor(ticket.type)}>
@@ -279,6 +295,18 @@ const TicketReview = () => {
           </ScrollArea>
         </CardContent>
       </Card>
+
+      <TicketDetail
+        ticket={selectedTicket}
+        ticketType={selectedTicket?.type === 'change_request' ? 'change' : 'incident'}
+        isOpen={isDetailOpen}
+        onClose={() => setIsDetailOpen(false)}
+        onSubmitForApproval={(ticketId, notes) => {
+          // Handle approval from detail view
+          handleApproveForEngineering(ticketId, selectedTicket?.title || '');
+          setIsDetailOpen(false);
+        }}
+      />
     </div>
   );
 };
