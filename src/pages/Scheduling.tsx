@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Plus, Calendar, Clock, Settings, Upload, Download, RefreshCw } from 'lucide-react';
 import { format, addWeeks, subWeeks, startOfWeek } from 'date-fns';
 import ScheduleCalendar from '@/components/scheduling/ScheduleCalendar';
+import RotaView from '@/components/scheduling/RotaView';
 import AddEventDialog from '@/components/scheduling/AddEventDialog';
 import ImportExportDialog from '@/components/scheduling/ImportExportDialog';
 import EndpointConfigDialog from '@/components/scheduling/EndpointConfigDialog';
@@ -19,6 +20,88 @@ const Scheduling = () => {
   const [showEndpointDialog, setShowEndpointDialog] = useState(false);
 
   const weekStart = startOfWeek(currentWeek, { weekStartsOn: 1 });
+
+  // Mock data - in real app this would come from employee management
+  const [employees] = useState([
+    {
+      id: '1',
+      name: 'John Operator',
+      position: 'Senior Broadcast Operator',
+      department: 'Operations',
+      status: 'Active'
+    },
+    {
+      id: '2',
+      name: 'Sarah Engineer',
+      position: 'Broadcast Engineer',
+      department: 'Engineering',
+      status: 'Active'
+    },
+    {
+      id: '3',
+      name: 'Mike Manager',
+      position: 'Operations Manager',
+      department: 'Management',
+      status: 'Active'
+    },
+    {
+      id: '4',
+      name: 'Lisa Technician',
+      position: 'Maintenance Technician',
+      department: 'Engineering',
+      status: 'Active'
+    }
+  ]);
+
+  // Mock shifts data
+  const [shifts, setShifts] = useState([
+    {
+      id: 's1',
+      title: 'Morning Show Host',
+      startTime: '07:30',
+      endTime: '11:30',
+      facility: 'Studio A',
+      assignedStaff: ['1'],
+      date: new Date(2024, 11, 16) // Monday
+    },
+    {
+      id: 's2',
+      title: 'Evening News Anchor',
+      startTime: '17:30',
+      endTime: '19:30',
+      facility: 'Studio B',
+      assignedStaff: ['2'],
+      date: new Date(2024, 11, 16) // Monday
+    },
+    {
+      id: 's3',
+      title: 'Technical Support',
+      startTime: '09:00',
+      endTime: '17:00',
+      facility: 'Control Room',
+      assignedStaff: [],
+      date: new Date(2024, 11, 17) // Tuesday
+    },
+    {
+      id: 's4',
+      title: 'Weekend Show Host',
+      startTime: '08:00',
+      endTime: '12:00',
+      facility: 'Studio A',
+      assignedStaff: [],
+      date: new Date(2024, 11, 18) // Wednesday
+    }
+  ]);
+
+  // Mock time off requests
+  const [timeOffRequests] = useState([
+    {
+      employeeId: '3',
+      date: new Date(2024, 11, 17), // Tuesday
+      type: 'vacation' as const,
+      status: 'approved' as const
+    }
+  ]);
 
   const handlePreviousWeek = () => {
     setCurrentWeek(prev => subWeeks(prev, 1));
@@ -45,6 +128,32 @@ const Scheduling = () => {
   const handleShiftEdit = (shift: any) => {
     console.log('Editing shift:', shift);
     setShowAddDialog(true);
+  };
+
+  const handleShiftAssignment = (shiftId: string, employeeId: string) => {
+    setShifts(prev => prev.map(shift => {
+      if (shift.id === shiftId) {
+        const updatedStaff = shift.assignedStaff || [];
+        if (!updatedStaff.includes(employeeId)) {
+          return { ...shift, assignedStaff: [...updatedStaff, employeeId] };
+        }
+      }
+      return shift;
+    }));
+    console.log('Assigned employee', employeeId, 'to shift', shiftId);
+  };
+
+  const handleShiftUnassignment = (shiftId: string, employeeId: string) => {
+    setShifts(prev => prev.map(shift => {
+      if (shift.id === shiftId) {
+        return { 
+          ...shift, 
+          assignedStaff: (shift.assignedStaff || []).filter(id => id !== employeeId) 
+        };
+      }
+      return shift;
+    }));
+    console.log('Unassigned employee', employeeId, 'from shift', shiftId);
   };
 
   return (
@@ -111,13 +220,28 @@ const Scheduling = () => {
         </CardHeader>
       </Card>
 
-      {/* Calendar View */}
-      <ScheduleCalendar
-        currentWeek={currentWeek}
-        mode={viewMode}
-        onEventEdit={handleEventEdit}
-        onShiftEdit={handleShiftEdit}
-      />
+      {/* Content Views */}
+      <Tabs value={viewMode} className="space-y-6">
+        <TabsContent value="schedule">
+          <ScheduleCalendar
+            currentWeek={currentWeek}
+            mode={viewMode}
+            onEventEdit={handleEventEdit}
+            onShiftEdit={handleShiftEdit}
+          />
+        </TabsContent>
+        
+        <TabsContent value="rota">
+          <RotaView
+            currentWeek={currentWeek}
+            employees={employees}
+            shifts={shifts}
+            timeOffRequests={timeOffRequests}
+            onShiftAssignment={handleShiftAssignment}
+            onShiftUnassignment={handleShiftUnassignment}
+          />
+        </TabsContent>
+      </Tabs>
 
       {/* Summary Stats */}
       <div className="grid grid-cols-4 gap-4">
@@ -139,7 +263,7 @@ const Scheduling = () => {
               <Clock className="h-5 w-5 text-green-500" />
               <div>
                 <p className="text-sm text-gray-600">Shifts Scheduled</p>
-                <p className="text-2xl font-bold">28</p>
+                <p className="text-2xl font-bold">{shifts.length}</p>
               </div>
             </div>
           </CardContent>
@@ -150,8 +274,8 @@ const Scheduling = () => {
             <div className="flex items-center gap-2">
               <RefreshCw className="h-5 w-5 text-purple-500" />
               <div>
-                <p className="text-sm text-gray-600">Recurring Items</p>
-                <p className="text-2xl font-bold">8</p>
+                <p className="text-sm text-gray-600">Assigned Shifts</p>
+                <p className="text-2xl font-bold">{shifts.filter(s => s.assignedStaff && s.assignedStaff.length > 0).length}</p>
               </div>
             </div>
           </CardContent>
@@ -162,8 +286,8 @@ const Scheduling = () => {
             <div className="flex items-center gap-2">
               <Download className="h-5 w-5 text-orange-500" />
               <div>
-                <p className="text-sm text-gray-600">Last Sync</p>
-                <p className="text-sm font-medium">2 hours ago</p>
+                <p className="text-sm text-gray-600">Time Off Requests</p>
+                <p className="text-2xl font-bold">{timeOffRequests.length}</p>
               </div>
             </div>
           </CardContent>
