@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,6 +6,8 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Wrench, Calendar, Clock, User, ArrowRight } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import TicketDetail from '@/components/TicketDetail';
 
 // Mock data for service tickets
 const mockServiceTickets = [
@@ -84,10 +85,23 @@ const mockServiceTickets = [
 
 const ServiceTickets = () => {
   const [statusFilter, setStatusFilter] = useState('open');
+  const [selectedTicket, setSelectedTicket] = useState(null);
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const { toast } = useToast();
 
   const filteredTickets = mockServiceTickets.filter(ticket => 
     statusFilter === 'all' ? true : ticket.status === statusFilter
   );
+
+  const handleTicketClick = (ticket: any) => {
+    setSelectedTicket(ticket);
+    setIsDetailOpen(true);
+  };
+
+  const handleSubmitForApproval = (ticketId: string, notes: string) => {
+    // This would typically make an API call to submit for approval
+    console.log('Submitting ticket for approval:', ticketId, notes);
+  };
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -150,7 +164,7 @@ const ServiceTickets = () => {
         <CardHeader>
           <CardTitle>Service Tickets ({filteredTickets.length})</CardTitle>
           <CardDescription>
-            Manage engineering tasks, maintenance, and service requests
+            Manage engineering tasks, maintenance, and service requests. Click on a row to view details.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -171,7 +185,11 @@ const ServiceTickets = () => {
               </TableHeader>
               <TableBody>
                 {filteredTickets.map((ticket) => (
-                  <TableRow key={ticket.id} className="cursor-pointer hover:bg-muted/50">
+                  <TableRow 
+                    key={ticket.id} 
+                    className="cursor-pointer hover:bg-muted/50"
+                    onClick={() => handleTicketClick(ticket)}
+                  >
                     <TableCell className="font-medium">{ticket.id}</TableCell>
                     <TableCell>
                       <div>
@@ -232,6 +250,14 @@ const ServiceTickets = () => {
           </ScrollArea>
         </CardContent>
       </Card>
+
+      <TicketDetail
+        ticket={selectedTicket}
+        ticketType="service"
+        isOpen={isDetailOpen}
+        onClose={() => setIsDetailOpen(false)}
+        onSubmitForApproval={handleSubmitForApproval}
+      />
     </div>
   );
 };

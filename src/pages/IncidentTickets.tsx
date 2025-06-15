@@ -7,6 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { AlertTriangle, Calendar, Clock, User, ArrowRight } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import TicketDetail from '@/components/TicketDetail';
 
 // Mock data for incident tickets
 const mockIncidentTickets = [
@@ -74,11 +75,18 @@ const mockIncidentTickets = [
 
 const IncidentTickets = () => {
   const [statusFilter, setStatusFilter] = useState('open');
+  const [selectedTicket, setSelectedTicket] = useState(null);
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
   const { toast } = useToast();
 
   const filteredTickets = mockIncidentTickets.filter(ticket => 
     statusFilter === 'all' ? true : ticket.status === statusFilter
   );
+
+  const handleTicketClick = (ticket: any) => {
+    setSelectedTicket(ticket);
+    setIsDetailOpen(true);
+  };
 
   const handleConvertToServiceTicket = (incidentId: string, title: string) => {
     // This would typically make an API call to convert the incident
@@ -86,6 +94,11 @@ const IncidentTickets = () => {
       title: "Incident Converted",
       description: `Incident ${incidentId} has been converted to a service ticket.`,
     });
+  };
+
+  const handleSubmitForApproval = (ticketId: string, notes: string) => {
+    // This would typically make an API call to submit for approval
+    console.log('Submitting incident for approval:', ticketId, notes);
   };
 
   const getPriorityColor = (priority: string) => {
@@ -138,7 +151,7 @@ const IncidentTickets = () => {
         <CardHeader>
           <CardTitle>Incident Tickets ({filteredTickets.length})</CardTitle>
           <CardDescription>
-            Manage and track incident reports and resolutions
+            Manage and track incident reports and resolutions. Click on a row to view details.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -159,7 +172,16 @@ const IncidentTickets = () => {
               </TableHeader>
               <TableBody>
                 {filteredTickets.map((ticket) => (
-                  <TableRow key={ticket.id} className="cursor-pointer hover:bg-muted/50">
+                  <TableRow 
+                    key={ticket.id} 
+                    className="cursor-pointer hover:bg-muted/50"
+                    onClick={(e) => {
+                      // Don't open detail if clicking on action button
+                      if (!(e.target as HTMLElement).closest('button')) {
+                        handleTicketClick(ticket);
+                      }
+                    }}
+                  >
                     <TableCell className="font-medium">{ticket.id}</TableCell>
                     <TableCell>
                       <div>
@@ -225,6 +247,14 @@ const IncidentTickets = () => {
           </ScrollArea>
         </CardContent>
       </Card>
+
+      <TicketDetail
+        ticket={selectedTicket}
+        ticketType="incident"
+        isOpen={isDetailOpen}
+        onClose={() => setIsDetailOpen(false)}
+        onSubmitForApproval={handleSubmitForApproval}
+      />
     </div>
   );
 };
