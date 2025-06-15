@@ -8,6 +8,7 @@ import Layout from "./components/Layout";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import TimeKeeping from "./pages/TimeKeeping";
+import Schedule from "./pages/Schedule";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import IncidentTickets from "./pages/IncidentTickets";
