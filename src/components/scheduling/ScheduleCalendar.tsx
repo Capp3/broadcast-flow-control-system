@@ -141,20 +141,21 @@ const ScheduleCalendar = ({ currentWeek, mode, onEventEdit, onShiftEdit }: Sched
     // Sort items by start time first
     const sortedItems = [...items].sort((a, b) => a.position.startMinutes - b.position.startMinutes);
     
-    // Group overlapping items into columns
+    // Group overlapping items into columns with more lenient overlap detection
     const columns: any[][] = [];
     
     sortedItems.forEach(item => {
       const itemStart = item.position.startMinutes;
       const itemEnd = item.position.startMinutes + (item.position.height / HOUR_HEIGHT) * 60;
       
-      // Find a column where this item doesn't overlap with the last item in that column
+      // Find a column where this item has minimal overlap (allow 30 minutes of overlap)
       let placed = false;
       for (let i = 0; i < columns.length; i++) {
         const lastItemInColumn = columns[i][columns[i].length - 1];
         const lastItemEnd = lastItemInColumn.position.startMinutes + (lastItemInColumn.position.height / HOUR_HEIGHT) * 60;
         
-        if (itemStart >= lastItemEnd) {
+        // Allow overlap of up to 30 minutes
+        if (itemStart >= lastItemEnd - 30) {
           columns[i].push({ ...item, calculatedLayer: i, totalColumns: 0 });
           placed = true;
           break;
@@ -167,12 +168,14 @@ const ScheduleCalendar = ({ currentWeek, mode, onEventEdit, onShiftEdit }: Sched
       }
     });
     
-    // Update totalColumns for all items
-    const totalColumns = columns.length;
+    // Update totalColumns for all items - limit to max 4 columns for better visibility
+    const totalColumns = Math.min(columns.length, 4);
     const result = [];
-    for (const column of columns) {
-      for (const item of column) {
-        result.push({ ...item, totalColumns });
+    for (let i = 0; i < columns.length; i++) {
+      for (const item of columns[i]) {
+        // If we have more than 4 columns, compress later columns
+        const adjustedLayer = i >= 4 ? 3 : i;
+        result.push({ ...item, calculatedLayer: adjustedLayer, totalColumns });
       }
     }
     
@@ -428,9 +431,10 @@ const ScheduleCalendar = ({ currentWeek, mode, onEventEdit, onShiftEdit }: Sched
                   const layer = item.calculatedLayer || 0;
                   const totalColumns = Math.max(item.totalColumns || 1, 1);
                   
-                  // Better layering calculation
-                  const itemWidth = Math.max(100 / 8 / totalColumns - 0.5, 8); // Minimum 8% width
-                  const leftOffset = (100 / 8) * (dayIndex + 1) + (layer * itemWidth);
+                  // Better layering calculation with more generous width
+                  const baseWidth = 100 / 8; // Base column width (12.5%)
+                  const itemWidth = Math.max((baseWidth * 0.85) / totalColumns, baseWidth * 0.15); // Min 1.875% width
+                  const leftOffset = (baseWidth * (dayIndex + 1)) + (layer * itemWidth * 0.9); // Slight overlap
                   
                   const isBeingDragged = draggedItem && draggedItem.id === item.id && isDragging;
                   const isEvent = item.itemType === 'event';
