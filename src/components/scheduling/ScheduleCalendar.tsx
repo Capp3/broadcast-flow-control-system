@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { format, addDays, startOfWeek, isSameDay } from 'date-fns';
 import { Card, CardContent } from '@/components/ui/card';
@@ -42,8 +43,12 @@ const ScheduleCalendar = ({ currentWeek, mode, onEventEdit, onShiftEdit }: Sched
   const hours = Array.from({ length: 18 }, (_, i) => i + 6); // 6 AM to 12 AM
   const HOUR_HEIGHT = 80; // Height of each hour slot in pixels
 
+  const [draggedItem, setDraggedItem] = useState<any>(null);
+  const [dragMode, setDragMode] = useState<'move' | 'resize-start' | 'resize-end' | null>(null);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+
   // Mock data - in real app this would come from state management
-  const [events] = useState<Event[]>([
+  const [events, setEvents] = useState<Event[]>([
     {
       id: '1',
       title: 'Morning Show',
@@ -108,6 +113,12 @@ const ScheduleCalendar = ({ currentWeek, mode, onEventEdit, onShiftEdit }: Sched
   const timeToMinutes = (timeStr: string) => {
     const [hours, minutes] = timeStr.split(':').map(Number);
     return hours * 60 + minutes;
+  };
+
+  const minutesToTime = (minutes: number) => {
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
   };
 
   const calculateItemPosition = (startTime: string, endTime: string) => {
@@ -221,12 +232,126 @@ const ScheduleCalendar = ({ currentWeek, mode, onEventEdit, onShiftEdit }: Sched
     return `${hour - 12} PM`;
   };
 
-  const handleItemClick = (item: any) => {
+  const handleItemClick = (item: any, e: React.MouseEvent) => {
+    e.stopPropagation();
     if (item.itemType === 'event') {
       onEventEdit(item);
     } else {
       onShiftEdit(item);
     }
+  };
+
+  const handleMouseDown = (e: React.MouseEvent, item: any) => {
+    if (item.itemType !== 'event') return; // Only allow dragging events for now
+    
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const rect = (e.target as HTMLElement).getBoundingClientRect();
+    const relativeY = e.clientY - rect.top;
+    const itemHeight = rect.height;
+    
+    // Determine drag mode based on where user clicked
+    let mode: 'move' | 'resize-start' | 'resize-end' = 'move';
+    if (relativeY < 10) {
+      mode = 'resize-start';
+    } else if (relativeY > itemHeight - 10) {
+      mode = 'resize-end';
+    }
+    
+    setDraggedItem(item);
+    setDragMode(mode);
+    setDragOffset({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top
+    });
+    
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  };
+
+  const handleMouseMove = (e: MouseEvent) => {
+    if (!draggedItem || !dragMode) return;
+    
+    // Update cursor based on drag mode
+    document.body.style.cursor = dragMode === 'move' ? 'grabbing' : 'ns-resize';
+  };
+
+  const handleMouseUp = (e: MouseEvent) => {
+    if (!draggedItem || !dragMode) return;
+    
+    // Calculate new position based on mouse position
+    const calendarGrid = document.querySelector('.calendar-grid');
+    if (calendarGrid) {
+      const gridRect = calendarGrid.getBoundingClientRect();
+      const relativeX = e.clientX - gridRect.left;
+      const relativeY = e.clientY - gridRect.top;
+      
+      // Calculate which day column (accounting for time column)
+      const dayWidth = gridRect.width / 8; // 8 columns total (1 time + 7 days)
+      const dayIndex = Math.floor((relativeX - dayWidth) / dayWidth); // Subtract time column width
+      
+      if (dayIndex >= 0 && dayIndex < 7) {
+        // Calculate time based on Y position
+        const hourFromTop = Math.max(0, Math.floor(relativeY / HOUR_HEIGHT));
+        const newStartHour = 6 + hourFromTop; // 6 AM start
+        
+        if (dragMode === 'move') {
+          // Move entire event
+          const duration = timeToMinutes(draggedItem.endTime) - timeToMinutes(draggedItem.startTime);
+          const newStartMinutes = newStartHour * 60;
+          const newEndMinutes = newStartMinutes + duration;
+          
+          // Update event
+          setEvents(prev => prev.map(event => 
+            event.id === draggedItem.id 
+              ? {
+                  ...event,
+                  startTime: minutesToTime(newStartMinutes),
+                  endTime: minutesToTime(newEndMinutes)
+                }
+              : event
+          ));
+          
+          console.log(`Moved event ${draggedItem.title} to day ${dayIndex}, time ${minutesToTime(newStartMinutes)}-${minutesToTime(newEndMinutes)}`);
+        } else if (dragMode === 'resize-start') {
+          // Resize start time
+          const newStartMinutes = newStartHour * 60;
+          const endMinutes = timeToMinutes(draggedItem.endTime);
+          
+          if (newStartMinutes < endMinutes) {
+            setEvents(prev => prev.map(event => 
+              event.id === draggedItem.id 
+                ? { ...event, startTime: minutesToTime(newStartMinutes) }
+                : event
+            ));
+            console.log(`Resized event start to ${minutesToTime(newStartMinutes)}`);
+          }
+        } else if (dragMode === 'resize-end') {
+          // Resize end time
+          const startMinutes = timeToMinutes(draggedItem.startTime);
+          const newEndMinutes = newStartHour * 60 + 60; // Add 1 hour minimum
+          
+          if (newEndMinutes > startMinutes) {
+            setEvents(prev => prev.map(event => 
+              event.id === draggedItem.id 
+                ? { ...event, endTime: minutesToTime(newEndMinutes) }
+                : event
+            ));
+            console.log(`Resized event end to ${minutesToTime(newEndMinutes)}`);
+          }
+        }
+      }
+    }
+    
+    // Cleanup
+    setDraggedItem(null);
+    setDragMode(null);
+    setDragOffset({ x: 0, y: 0 });
+    document.body.style.cursor = 'default';
+    
+    document.removeEventListener('mousemove', handleMouseMove);
+    document.removeEventListener('mouseup', handleMouseUp);
   };
 
   return (
@@ -250,7 +375,7 @@ const ScheduleCalendar = ({ currentWeek, mode, onEventEdit, onShiftEdit }: Sched
             </div>
 
             {/* Calendar Grid Container */}
-            <div className="relative">
+            <div className="relative calendar-grid">
               {/* Time Slots Background */}
               {hours.map((hour) => (
                 <div key={hour} className="grid grid-cols-8 border-b hover:bg-gray-50" style={{ height: `${HOUR_HEIGHT}px` }}>
@@ -277,10 +402,15 @@ const ScheduleCalendar = ({ currentWeek, mode, onEventEdit, onShiftEdit }: Sched
                   const widthReduction = Math.min(layer * 8, 40); // Max 40% width reduction
                   const leftOffset = layer * 4; // 4% left offset per layer
                   
+                  const isDragging = draggedItem && draggedItem.id === item.id;
+                  const isEvent = item.itemType === 'event';
+                  
                   return (
                     <div
                       key={`${dayIndex}-${itemIndex}`}
-                      className={`absolute text-xs p-2 rounded border cursor-pointer hover:opacity-80 transition-all ${item.color} shadow-sm`}
+                      className={`absolute text-xs p-2 rounded border transition-all select-none ${item.color} shadow-sm ${
+                        isEvent ? 'cursor-grab hover:shadow-md' : 'cursor-pointer hover:opacity-80'
+                      } ${isDragging ? 'opacity-50 cursor-grabbing' : ''}`}
                       style={{
                         top: `${item.position.top}px`,
                         height: `${item.position.height}px`,
@@ -289,8 +419,14 @@ const ScheduleCalendar = ({ currentWeek, mode, onEventEdit, onShiftEdit }: Sched
                         zIndex: 10 + layer, // Higher z-index for later items
                         minHeight: '40px'
                       }}
-                      onClick={() => handleItemClick(item)}
+                      onMouseDown={isEvent ? (e) => handleMouseDown(e, item) : undefined}
+                      onClick={!isEvent ? (e) => handleItemClick(item, e) : undefined}
                     >
+                      {/* Resize handle top */}
+                      {isEvent && (
+                        <div className="absolute top-0 left-0 right-0 h-2 cursor-ns-resize opacity-0 hover:opacity-100 bg-gray-400 rounded-t" />
+                      )}
+                      
                       <div className="flex items-center gap-1 mb-1">
                         {item.itemType === 'event' ? (
                           <Clock className="h-3 w-3 flex-shrink-0" />
@@ -312,6 +448,11 @@ const ScheduleCalendar = ({ currentWeek, mode, onEventEdit, onShiftEdit }: Sched
                           Staff: {item.assignedStaff.join(', ')}
                         </div>
                       )}
+                      
+                      {/* Resize handle bottom */}
+                      {isEvent && (
+                        <div className="absolute bottom-0 left-0 right-0 h-2 cursor-ns-resize opacity-0 hover:opacity-100 bg-gray-400 rounded-b" />
+                      )}
                     </div>
                   );
                 });
@@ -325,7 +466,7 @@ const ScheduleCalendar = ({ currentWeek, mode, onEventEdit, onShiftEdit }: Sched
           <div className="flex items-center gap-6 text-sm">
             <div className="flex items-center gap-2">
               <Clock className="h-4 w-4" />
-              <span>Events</span>
+              <span>Events (Draggable)</span>
             </div>
             <div className="flex items-center gap-2">
               <User className="h-4 w-4" />
@@ -337,7 +478,7 @@ const ScheduleCalendar = ({ currentWeek, mode, onEventEdit, onShiftEdit }: Sched
             </div>
             <div className="flex items-center gap-2">
               <Edit className="h-4 w-4" />
-              <span>Click items to edit</span>
+              <span>Click top/bottom edge to resize, middle to move</span>
             </div>
           </div>
         </div>
