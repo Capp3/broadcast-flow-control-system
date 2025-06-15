@@ -45,21 +45,32 @@ const TicketDetail = ({ ticket, ticketType, isOpen, onClose, onSubmitForApproval
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'high': return 'bg-red-100 text-red-800';
-      case 'medium': return 'bg-yellow-100 text-yellow-800';
-      case 'low': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'high': return 'bg-red-100 text-red-800 border-red-200';
+      case 'medium': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'low': return 'bg-green-100 text-green-800 border-green-200';
+      default: return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'open': return 'bg-blue-100 text-blue-800';
-      case 'pending': return 'bg-yellow-100 text-yellow-800';
-      case 'closed': return 'bg-gray-100 text-gray-800';
-      case 'approved': return 'bg-green-100 text-green-800';
-      case 'rejected': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'open': return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'pending': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'closed': return 'bg-gray-100 text-gray-800 border-gray-200';
+      case 'approved': return 'bg-green-100 text-green-800 border-green-200';
+      case 'rejected': return 'bg-red-100 text-red-800 border-red-200';
+      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+    }
+  };
+
+  const getTypeColor = (type: string) => {
+    switch (type) {
+      case 'scheduled': return 'bg-purple-100 text-purple-800 border-purple-200';
+      case 'project': return 'bg-indigo-100 text-indigo-800 border-indigo-200';
+      case 'routine': return 'bg-green-100 text-green-800 border-green-200';
+      case 'audit': return 'bg-orange-100 text-orange-800 border-orange-200';
+      case 'repair': return 'bg-red-100 text-red-800 border-red-200';
+      default: return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
 
@@ -92,52 +103,69 @@ const TicketDetail = ({ ticket, ticketType, isOpen, onClose, onSubmitForApproval
             {getTicketIcon()}
             {getTicketTypeLabel()} - {ticket.id}
           </DialogTitle>
-          <DialogDescription className="flex items-center gap-2">
-            <span>{ticket.title}</span>
-            {ticket.facility && (
-              <>
-                <span>•</span>
-                <div className="flex items-center gap-1">
-                  <Building className="h-4 w-4" />
-                  <span className="font-medium">{ticket.facility}</span>
-                </div>
-              </>
-            )}
+          <DialogDescription>
+            <div className="flex items-center gap-2">
+              <span>{ticket.title}</span>
+              {ticket.facility && (
+                <>
+                  <span>•</span>
+                  <div className="flex items-center gap-1">
+                    <Building className="h-4 w-4" />
+                    <span className="font-medium">{ticket.facility}</span>
+                  </div>
+                </>
+              )}
+            </div>
           </DialogDescription>
         </DialogHeader>
 
         <ScrollArea className="max-h-[70vh]">
           <div className="space-y-6">
-            {/* Status, Priority, and Facility */}
-            <div className="flex gap-4 flex-wrap">
-              <div>
-                <Label className="text-sm font-medium">Status</Label>
-                <Badge className={getStatusColor(ticket.status)}>
+            {/* Status Tags - Improved Layout */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="space-y-2">
+                <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Status</Label>
+                <Badge className={`${getStatusColor(ticket.status)} border justify-center py-1.5`}>
                   {ticket.status?.toUpperCase() || 'UNKNOWN'}
                 </Badge>
               </div>
-              <div>
-                <Label className="text-sm font-medium">Priority</Label>
-                <Badge className={getPriorityColor(ticket.priority)}>
+              
+              <div className="space-y-2">
+                <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Priority</Label>
+                <Badge className={`${getPriorityColor(ticket.priority)} border justify-center py-1.5`}>
                   {ticket.priority?.toUpperCase() || 'MEDIUM'}
                 </Badge>
               </div>
-              {ticket.facility && (
-                <div>
-                  <Label className="text-sm font-medium">Facility</Label>
-                  <div className="flex items-center gap-2 p-2 bg-blue-50 rounded-md border">
-                    <Building className="h-4 w-4 text-blue-600" />
-                    <span className="font-medium text-blue-800">{ticket.facility}</span>
-                  </div>
+
+              {ticket.type && (
+                <div className="space-y-2">
+                  <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Type</Label>
+                  <Badge className={`${getTypeColor(ticket.type)} border justify-center py-1.5`}>
+                    {ticket.type?.toUpperCase()}
+                  </Badge>
                 </div>
               )}
+
               {ticket.category && (
-                <div>
-                  <Label className="text-sm font-medium">Category</Label>
-                  <Badge variant="outline">{ticket.category}</Badge>
+                <div className="space-y-2">
+                  <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Category</Label>
+                  <Badge variant="outline" className="justify-center py-1.5 border-gray-200">
+                    {ticket.category}
+                  </Badge>
                 </div>
               )}
             </div>
+
+            {/* Facility Badge - More Prominent */}
+            {ticket.facility && (
+              <div className="space-y-2">
+                <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Facility</Label>
+                <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-800 border border-blue-200 rounded-lg">
+                  <Building className="h-4 w-4" />
+                  <span className="font-medium">{ticket.facility}</span>
+                </div>
+              </div>
+            )}
 
             <Separator />
 
@@ -207,16 +235,6 @@ const TicketDetail = ({ ticket, ticketType, isOpen, onClose, onSubmitForApproval
                       <div>
                         <Label className="text-sm font-medium">Requested By</Label>
                         <p className="text-sm text-muted-foreground">{ticket.requestedBy}</p>
-                      </div>
-                    </div>
-                  )}
-
-                  {ticket.facility && (
-                    <div className="flex items-center gap-2">
-                      <Building className="h-4 w-4" />
-                      <div>
-                        <Label className="text-sm font-medium">Facility</Label>
-                        <p className="text-sm text-muted-foreground">{ticket.facility}</p>
                       </div>
                     </div>
                   )}
