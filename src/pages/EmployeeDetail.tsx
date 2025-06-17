@@ -49,6 +49,7 @@ const EmployeeDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
+  const [showTimeAudit, setShowTimeAudit] = useState(false);
   
   // Convert string id to number and get employee data
   const employeeId = id ? parseInt(id, 10) : null;
@@ -89,6 +90,17 @@ const EmployeeDetail = () => {
     });
   };
 
+  const handleTimeAdjustment = (field: string, value: number, reason: string) => {
+    console.log(`Adjusting ${field} by ${value} hours. Reason: ${reason}`);
+    setFormData({
+      ...formData,
+      yearlyStats: {
+        ...formData.yearlyStats,
+        [field]: Math.max(0, formData.yearlyStats[field as keyof typeof formData.yearlyStats] as number + value)
+      }
+    });
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -115,10 +127,16 @@ const EmployeeDetail = () => {
               </Button>
             </>
           ) : (
-            <Button onClick={() => setIsEditing(true)}>
-              <Edit className="h-4 w-4 mr-2" />
-              Edit Employee
-            </Button>
+            <>
+              <Button variant="outline" onClick={() => setShowTimeAudit(!showTimeAudit)}>
+                <Clock className="h-4 w-4 mr-2" />
+                Time Audit
+              </Button>
+              <Button onClick={() => setIsEditing(true)}>
+                <Edit className="h-4 w-4 mr-2" />
+                Edit Employee
+              </Button>
+            </>
           )}
         </div>
       </div>
@@ -208,12 +226,23 @@ const EmployeeDetail = () => {
           </CardContent>
         </Card>
 
-        {/* Time & Leave Balances */}
+        {/* Time & Leave Balances with Audit Controls */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center">
-              <Clock className="h-5 w-5 mr-2" />
-              Time & Leave
+            <CardTitle className="flex items-center justify-between">
+              <div className="flex items-center">
+                <Clock className="h-5 w-5 mr-2" />
+                Time & Leave
+              </div>
+              {showTimeAudit && (
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => setShowTimeAudit(false)}
+                >
+                  Close Audit
+                </Button>
+              )}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -226,22 +255,62 @@ const EmployeeDetail = () => {
                 <span className="text-sm text-gray-600">Overtime (YTD)</span>
                 <span className="font-medium">{formData.yearlyStats.overtime}h</span>
               </div>
-              <div className="border-t pt-3">
-                <div className="flex justify-between">
+              <div className="border-t pt-3 space-y-3">
+                <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600">Vacation Used/Total</span>
-                  <span className="font-medium">{formData.yearlyStats.vacationUsed}/{formData.yearlyStats.vacationAllowance}h</span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium">{formData.yearlyStats.vacationUsed}/{formData.yearlyStats.vacationAllowance}h</span>
+                    {showTimeAudit && (
+                      <TimeAdjustmentControls
+                        label="Vacation"
+                        onAdjust={(value, reason) => {
+                          handleTimeAdjustment('vacationUsed', value, reason);
+                        }}
+                      />
+                    )}
+                  </div>
                 </div>
-                <div className="flex justify-between">
+                <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600">Sick Used/Total</span>
-                  <span className="font-medium">{formData.yearlyStats.sickUsed}/{formData.yearlyStats.sickAllowance}h</span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium">{formData.yearlyStats.sickUsed}/{formData.yearlyStats.sickAllowance}h</span>
+                    {showTimeAudit && (
+                      <TimeAdjustmentControls
+                        label="Sick"
+                        onAdjust={(value, reason) => {
+                          handleTimeAdjustment('sickUsed', value, reason);
+                        }}
+                      />
+                    )}
+                  </div>
                 </div>
-                <div className="flex justify-between">
+                <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600">TOIL Balance</span>
-                  <span className="font-medium">{formData.yearlyStats.toilBalance}h</span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium">{formData.yearlyStats.toilBalance}h</span>
+                    {showTimeAudit && (
+                      <TimeAdjustmentControls
+                        label="TOIL"
+                        onAdjust={(value, reason) => {
+                          handleTimeAdjustment('toilBalance', value, reason);
+                        }}
+                      />
+                    )}
+                  </div>
                 </div>
-                <div className="flex justify-between">
+                <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600">Holiday Balance</span>
-                  <span className="font-medium">{formData.yearlyStats.holidayBalance}h</span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium">{formData.yearlyStats.holidayBalance}h</span>
+                    {showTimeAudit && (
+                      <TimeAdjustmentControls
+                        label="Holiday"
+                        onAdjust={(value, reason) => {
+                          handleTimeAdjustment('holidayBalance', value, reason);
+                        }}
+                      />
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -347,6 +416,91 @@ const EmployeeDetail = () => {
         </Card>
       </div>
     </div>
+  );
+};
+
+// Time Adjustment Controls Component
+const TimeAdjustmentControls = ({ 
+  label, 
+  onAdjust 
+}: { 
+  label: string; 
+  onAdjust: (value: number, reason: string) => void; 
+}) => {
+  const [showDialog, setShowDialog] = useState(false);
+  const [adjustmentValue, setAdjustmentValue] = useState(0);
+  const [reason, setReason] = useState('');
+
+  const handleSubmit = () => {
+    if (adjustmentValue !== 0 && reason.trim()) {
+      onAdjust(adjustmentValue, reason);
+      setAdjustmentValue(0);
+      setReason('');
+      setShowDialog(false);
+    }
+  };
+
+  return (
+    <>
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => setShowDialog(true)}
+        className="h-6 px-2 text-xs"
+      >
+        Adjust
+      </Button>
+      
+      {showDialog && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg w-96 space-y-4">
+            <h3 className="text-lg font-semibold">Adjust {label} Time</h3>
+            
+            <div className="space-y-2">
+              <Label>Adjustment (hours)</Label>
+              <Input
+                type="number"
+                value={adjustmentValue}
+                onChange={(e) => setAdjustmentValue(parseFloat(e.target.value) || 0)}
+                placeholder="Enter positive or negative hours"
+              />
+              <p className="text-xs text-gray-500">
+                Use positive numbers to add time, negative to subtract
+              </p>
+            </div>
+            
+            <div className="space-y-2">
+              <Label>Reason for adjustment</Label>
+              <Textarea
+                value={reason}
+                onChange={(e) => setReason(e.target.value)}
+                placeholder="Explain why this adjustment is needed..."
+                rows={3}
+              />
+            </div>
+            
+            <div className="flex gap-2 justify-end">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowDialog(false);
+                  setAdjustmentValue(0);
+                  setReason('');
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleSubmit}
+                disabled={adjustmentValue === 0 || !reason.trim()}
+              >
+                Apply Adjustment
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 
