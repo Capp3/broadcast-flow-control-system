@@ -11,7 +11,7 @@ import {
   Wrench,
   Shield,
   Home,
-  CheckCircle
+  TrendingUp
 } from 'lucide-react';
 import {
   Sidebar,
@@ -50,8 +50,7 @@ const AppSidebar = () => {
     { title: 'Management Dashboard', url: '/management', icon: BarChart3 },
     { title: 'Employee Management', url: '/employees', icon: Users },
     { title: 'Scheduling', url: '/scheduling', icon: Calendar },
-    { title: 'Incident Review', url: '/incident-tickets', icon: AlertTriangle },
-    { title: 'Ticket Review', url: '/ticket-review', icon: CheckCircle },
+    { title: 'Analytics', url: '/analytics', icon: TrendingUp },
     { title: 'Reporting', url: '/reports', icon: FileText },
     { title: 'Settings', url: '/settings', icon: Settings },
   ];

@@ -15,13 +15,13 @@ import IncidentTickets from "./pages/IncidentTickets";
 import ServiceTickets from "./pages/ServiceTickets";
 import IncidentReport from "./pages/IncidentReport";
 import ChangeRequest from "./pages/ChangeRequest";
-import TicketReview from "./pages/TicketReview";
 import EmployeeManagement from "./pages/EmployeeManagement";
 import EmployeeDetail from "./pages/EmployeeDetail";
 import SystemCheck from "./pages/SystemCheck";
 import Scheduling from "./pages/Scheduling";
 import Engineering from "./pages/Engineering";
 import Management from "./pages/Management";
+import Analytics from "./pages/Analytics";
 import Reports from "./pages/Reports";
 import { SettingsProvider } from "./contexts/SettingsContext";
 
@@ -41,10 +41,10 @@ const App = () => {
             <Route path="/change-request" element={<Layout><SettingsProvider><ChangeRequest /></SettingsProvider></Layout>} />
             <Route path="/system-check" element={<Layout><SettingsProvider><SystemCheck /></SettingsProvider></Layout>} />
             <Route path="/management" element={<Layout><Management /></Layout>} />
+            <Route path="/analytics" element={<Layout><Analytics /></Layout>} />
             <Route path="/employees" element={<Layout><EmployeeManagement /></Layout>} />
             <Route path="/employees/:id" element={<Layout><EmployeeDetail /></Layout>} />
             <Route path="/scheduling" element={<Layout><SettingsProvider><Scheduling /></SettingsProvider></Layout>} />
-            <Route path="/ticket-review" element={<Layout><TicketReview /></Layout>} />
             <Route path="/reports" element={<Layout><Reports /></Layout>} />
             <Route path="/settings" element={<Layout><SettingsProvider><Settings /></SettingsProvider></Layout>} />
             <Route path="/engineering" element={<Layout><Engineering /></Layout>} />

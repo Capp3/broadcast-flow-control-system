@@ -15,12 +15,12 @@ import {
   Calendar,
   Target,
   Award,
-  Activity,
-  Settings as SettingsIcon
+  Activity
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import TimeClockApproval from '@/components/TimeClockApproval';
-import ManagementSettings from '@/components/ManagementSettings';
+import IncidentReview from '@/components/IncidentReview';
+import TicketReview from '@/components/TicketReview';
 
 // Mock data for management metrics
 const kpiData = {
@@ -212,8 +212,8 @@ const Management = () => {
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="time-approval">Time Approval</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
-          <TabsTrigger value="settings">Settings</TabsTrigger>
+          <TabsTrigger value="incident-review">Incident Review</TabsTrigger>
+          <TabsTrigger value="ticket-review">Ticket Review</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
@@ -287,10 +287,10 @@ const Management = () => {
                 <Button 
                   className="w-full justify-start" 
                   variant="outline"
-                  onClick={() => navigate('/ticket-review')}
+                  onClick={() => navigate('/analytics')}
                 >
-                  <CheckCircle className="h-4 w-4 mr-2" />
-                  Review Pending Tickets
+                  <BarChart3 className="h-4 w-4 mr-2" />
+                  Advanced Analytics
                 </Button>
                 <Button 
                   className="w-full justify-start" 
@@ -299,14 +299,6 @@ const Management = () => {
                 >
                   <BarChart3 className="h-4 w-4 mr-2" />
                   Generate Reports
-                </Button>
-                <Button 
-                  className="w-full justify-start" 
-                  variant="outline"
-                  onClick={() => setActiveTab('settings')}
-                >
-                  <SettingsIcon className="h-4 w-4 mr-2" />
-                  Management Settings
                 </Button>
               </CardContent>
             </Card>
@@ -348,24 +340,12 @@ const Management = () => {
           <TimeClockApproval />
         </TabsContent>
 
-        <TabsContent value="analytics">
-          <Card>
-            <CardHeader>
-              <CardTitle>Advanced Analytics</CardTitle>
-              <CardDescription>
-                Detailed performance metrics and trend analysis
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-12 text-muted-foreground">
-                Advanced analytics dashboard coming soon...
-              </div>
-            </CardContent>
-          </Card>
+        <TabsContent value="incident-review">
+          <IncidentReview />
         </TabsContent>
 
-        <TabsContent value="settings">
-          <ManagementSettings />
+        <TabsContent value="ticket-review">
+          <TicketReview />
         </TabsContent>
       </Tabs>
     </div>
