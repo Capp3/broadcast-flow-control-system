@@ -15,10 +15,12 @@ import {
   Calendar,
   Target,
   Award,
-  Activity
+  Activity,
+  Settings as SettingsIcon
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import TimeClockApproval from '@/components/TimeClockApproval';
+import ManagementSettings from '@/components/ManagementSettings';
 
 // Mock data for management metrics
 const kpiData = {
@@ -207,10 +209,11 @@ const Management = () => {
 
       {/* Management Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="time-approval">Time Clock Approval</TabsTrigger>
+          <TabsTrigger value="time-approval">Time Approval</TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
+          <TabsTrigger value="settings">Settings</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
@@ -300,10 +303,10 @@ const Management = () => {
                 <Button 
                   className="w-full justify-start" 
                   variant="outline"
-                  onClick={() => navigate('/settings')}
+                  onClick={() => setActiveTab('settings')}
                 >
-                  <Target className="h-4 w-4 mr-2" />
-                  System Settings
+                  <SettingsIcon className="h-4 w-4 mr-2" />
+                  Management Settings
                 </Button>
               </CardContent>
             </Card>
@@ -359,6 +362,10 @@ const Management = () => {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="settings">
+          <ManagementSettings />
         </TabsContent>
       </Tabs>
     </div>
