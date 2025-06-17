@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Wrench, Calendar, Clock, User, Building } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import TicketDetail from '@/components/TicketDetail';
+import NewServiceRequestDialog from '@/components/NewServiceRequestDialog';
 
 // Mock data for service tickets
 const mockServiceTickets = [
@@ -92,6 +93,7 @@ const ServiceTickets = () => {
   const [statusFilter, setStatusFilter] = useState('open');
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [isNewRequestOpen, setIsNewRequestOpen] = useState(false);
   const { toast } = useToast();
 
   const filteredTickets = mockServiceTickets.filter(ticket => 
@@ -158,7 +160,7 @@ const ServiceTickets = () => {
               <SelectItem value="all">All Tickets</SelectItem>
             </SelectContent>
           </Select>
-          <Button>
+          <Button onClick={() => setIsNewRequestOpen(true)}>
             <Wrench className="h-4 w-4 mr-2" />
             New Service Request
           </Button>
@@ -269,6 +271,11 @@ const ServiceTickets = () => {
         isOpen={isDetailOpen}
         onClose={() => setIsDetailOpen(false)}
         onSubmitForApproval={handleSubmitForApproval}
+      />
+
+      <NewServiceRequestDialog
+        open={isNewRequestOpen}
+        onOpenChange={setIsNewRequestOpen}
       />
     </div>
   );

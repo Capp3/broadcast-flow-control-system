@@ -1,8 +1,8 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   BarChart3, 
   Users, 
@@ -18,6 +18,7 @@ import {
   Activity
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import TimeClockApproval from '@/components/TimeClockApproval';
 
 // Mock data for management metrics
 const kpiData = {
@@ -91,6 +92,7 @@ const recentAlerts = [
 
 const Management = () => {
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState("overview");
 
   const getPerformanceColor = (performance: string) => {
     switch (performance) {
@@ -203,131 +205,162 @@ const Management = () => {
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Department Performance */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5" />
-              Department Performance
-            </CardTitle>
-            <CardDescription>
-              Team metrics and utilization by department
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {departmentMetrics.map((dept, index) => (
-                <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="font-medium">{dept.name}</span>
-                      <Badge className={getPerformanceColor(dept.performance)}>
-                        {dept.performance.toUpperCase()}
-                      </Badge>
-                    </div>
-                    <div className="grid grid-cols-3 gap-4 text-sm text-muted-foreground">
-                      <div>
-                        <span className="block">Staff: {dept.employees}</span>
-                        <span className="block">Util: {dept.utilization}%</span>
-                      </div>
-                      <div>
-                        <span className="block">Avg Cost: {formatCurrency(dept.avgCost)}</span>
-                      </div>
-                      <div>
-                        <span className="block">Open Tickets: {dept.openTickets}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+      {/* Management Tabs */}
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="time-approval">Time Clock Approval</TabsTrigger>
+          <TabsTrigger value="analytics">Analytics</TabsTrigger>
+        </TabsList>
 
-        {/* Management Actions */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-            <CardDescription>
-              Common management tasks and reports
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <Button 
-              className="w-full justify-start" 
-              variant="outline"
-              onClick={() => navigate('/employees')}
-            >
-              <Users className="h-4 w-4 mr-2" />
-              Employee Management
-            </Button>
-            <Button 
-              className="w-full justify-start" 
-              variant="outline"
-              onClick={() => navigate('/scheduling')}
-            >
-              <Calendar className="h-4 w-4 mr-2" />
-              View Schedules
-            </Button>
-            <Button 
-              className="w-full justify-start" 
-              variant="outline"
-              onClick={() => navigate('/ticket-review')}
-            >
-              <CheckCircle className="h-4 w-4 mr-2" />
-              Review Pending Tickets
-            </Button>
-            <Button 
-              className="w-full justify-start" 
-              variant="outline"
-              onClick={() => navigate('/reports')}
-            >
-              <BarChart3 className="h-4 w-4 mr-2" />
-              Generate Reports
-            </Button>
-            <Button 
-              className="w-full justify-start" 
-              variant="outline"
-              onClick={() => navigate('/settings')}
-            >
-              <Target className="h-4 w-4 mr-2" />
-              System Settings
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Recent Alerts and Notifications */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <AlertTriangle className="h-5 w-5" />
-            Management Alerts
-          </CardTitle>
-          <CardDescription>
-            Important notifications requiring management attention
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            {recentAlerts.map((alert, index) => (
-              <div key={index} className={`flex items-start justify-between p-3 border rounded-lg ${getSeverityColor(alert.severity)}`}>
-                <div className="flex-1">
-                  <div className="font-medium">{alert.message}</div>
-                  <div className="text-sm text-muted-foreground mt-1">
-                    <Clock className="h-3 w-3 inline mr-1" />
-                    {alert.time}
-                  </div>
+        <TabsContent value="overview" className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Department Performance */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Users className="h-5 w-5" />
+                  Department Performance
+                </CardTitle>
+                <CardDescription>
+                  Team metrics and utilization by department
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {departmentMetrics.map((dept, index) => (
+                    <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="font-medium">{dept.name}</span>
+                          <Badge className={getPerformanceColor(dept.performance)}>
+                            {dept.performance.toUpperCase()}
+                          </Badge>
+                        </div>
+                        <div className="grid grid-cols-3 gap-4 text-sm text-muted-foreground">
+                          <div>
+                            <span className="block">Staff: {dept.employees}</span>
+                            <span className="block">Util: {dept.utilization}%</span>
+                          </div>
+                          <div>
+                            <span className="block">Avg Cost: {formatCurrency(dept.avgCost)}</span>
+                          </div>
+                          <div>
+                            <span className="block">Open Tickets: {dept.openTickets}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-                <Button size="sm" variant="outline">
-                  Review
+              </CardContent>
+            </Card>
+
+            {/* Management Actions */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Quick Actions</CardTitle>
+                <CardDescription>
+                  Common management tasks and reports
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <Button 
+                  className="w-full justify-start" 
+                  variant="outline"
+                  onClick={() => navigate('/employees')}
+                >
+                  <Users className="h-4 w-4 mr-2" />
+                  Employee Management
                 </Button>
-              </div>
-            ))}
+                <Button 
+                  className="w-full justify-start" 
+                  variant="outline"
+                  onClick={() => navigate('/scheduling')}
+                >
+                  <Calendar className="h-4 w-4 mr-2" />
+                  View Schedules
+                </Button>
+                <Button 
+                  className="w-full justify-start" 
+                  variant="outline"
+                  onClick={() => navigate('/ticket-review')}
+                >
+                  <CheckCircle className="h-4 w-4 mr-2" />
+                  Review Pending Tickets
+                </Button>
+                <Button 
+                  className="w-full justify-start" 
+                  variant="outline"
+                  onClick={() => navigate('/reports')}
+                >
+                  <BarChart3 className="h-4 w-4 mr-2" />
+                  Generate Reports
+                </Button>
+                <Button 
+                  className="w-full justify-start" 
+                  variant="outline"
+                  onClick={() => navigate('/settings')}
+                >
+                  <Target className="h-4 w-4 mr-2" />
+                  System Settings
+                </Button>
+              </CardContent>
+            </Card>
           </div>
-        </CardContent>
-      </Card>
+
+          {/* Recent Alerts and Notifications */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <AlertTriangle className="h-5 w-5" />
+                Management Alerts
+              </CardTitle>
+              <CardDescription>
+                Important notifications requiring management attention
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {recentAlerts.map((alert, index) => (
+                  <div key={index} className={`flex items-start justify-between p-3 border rounded-lg ${getSeverityColor(alert.severity)}`}>
+                    <div className="flex-1">
+                      <div className="font-medium">{alert.message}</div>
+                      <div className="text-sm text-muted-foreground mt-1">
+                        <Clock className="h-3 w-3 inline mr-1" />
+                        {alert.time}
+                      </div>
+                    </div>
+                    <Button size="sm" variant="outline">
+                      Review
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="time-approval">
+          <TimeClockApproval />
+        </TabsContent>
+
+        <TabsContent value="analytics">
+          <Card>
+            <CardHeader>
+              <CardTitle>Advanced Analytics</CardTitle>
+              <CardDescription>
+                Detailed performance metrics and trend analysis
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-12 text-muted-foreground">
+                Advanced analytics dashboard coming soon...
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };

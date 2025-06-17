@@ -44,13 +44,13 @@ const AppSidebar = () => {
   const engineeringItems = [
     { title: 'Engineering Dashboard', url: '/engineering', icon: Shield },
     { title: 'Service Tickets', url: '/service-tickets', icon: Wrench },
-    { title: 'Incident Tickets', url: '/incident-tickets', icon: AlertTriangle },
   ];
 
   const managementItems = [
     { title: 'Management Dashboard', url: '/management', icon: BarChart3 },
     { title: 'Employee Management', url: '/employees', icon: Users },
     { title: 'Scheduling', url: '/scheduling', icon: Calendar },
+    { title: 'Incident Review', url: '/incident-tickets', icon: AlertTriangle },
     { title: 'Ticket Review', url: '/ticket-review', icon: CheckCircle },
     { title: 'Reporting', url: '/reports', icon: FileText },
     { title: 'Settings', url: '/settings', icon: Settings },
