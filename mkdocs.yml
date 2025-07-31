@@ -1,0 +1,146 @@
+site_name: Broadcast Management System Documentation
+site_description: Comprehensive documentation for the Broadcast Management System frontend and backend
+site_url: https://your-org.github.io/broadcast
+repo_url: https://github.com/your-org/broadcast
+repo_name: your-org/broadcast
+
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.code.annotate
+  palette:
+    - scheme: default
+      primary: blue
+      accent: light blue
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: blue
+      accent: light blue
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - toc:
+      permalink: true
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.magiclink:
+      normalize_issue_symbols: true
+      repo_url_shorthand: true
+      user: your-org
+      repo: broadcast
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.snippets:
+      auto_append:
+        - includes/mkdocs.md
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+      combine_header_slug: true
+      slugify: !!python/object/apply:pymdownx.slugs.slugify
+        kwds:
+          case: lower
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+plugins:
+  - search:
+      separator: '[\s\-,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
+  - minify:
+      minify_html: true
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/your-org/broadcast
+  version:
+    provider: mike
+
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Overview: getting-started/overview.md
+    - Installation: getting-started/installation.md
+    - Development Setup: getting-started/development-setup.md
+  - Frontend Documentation:
+    - Architecture: frontend/architecture.md
+    - Components:
+      - Overview: frontend/components/overview.md
+      - Layout Components: frontend/components/layout.md
+      - Form Components: frontend/components/forms.md
+      - Data Display: frontend/components/data-display.md
+      - UI Components: frontend/components/ui.md
+    - Pages:
+      - Overview: frontend/pages/overview.md
+      - Dashboard: frontend/pages/dashboard.md
+      - User Management: frontend/pages/user-management.md
+      - Time Management: frontend/pages/time-management.md
+      - Scheduling: frontend/pages/scheduling.md
+      - Tickets: frontend/pages/tickets.md
+      - Reports: frontend/pages/reports.md
+      - Settings: frontend/pages/settings.md
+    - Data Types: frontend/types.md
+    - Services: frontend/services.md
+    - Context & State: frontend/context-state.md
+    - Routing: frontend/routing.md
+  - Backend Documentation:
+    - Architecture: backend/architecture.md
+    - Models: backend/models.md
+    - API Endpoints: backend/api-endpoints.md
+    - Authentication: backend/authentication.md
+    - Docker Setup: backend/docker-setup.md
+    - Deployment: backend/deployment.md
+  - Implementation Plan:
+    - Overview: implementation/overview.md
+    - Phase 1 - Docker: implementation/phase1-docker.md
+    - Phase 2 - Backend: implementation/phase2-backend.md
+    - Phase 3 - Integration: implementation/phase3-integration.md
+    - Phase 4 - Deployment: implementation/phase4-deployment.md
+    - Timeline: implementation/timeline.md
+  - API Reference:
+    - Authentication: api/authentication.md
+    - Users & Profiles: api/users-profiles.md
+    - Time Management: api/time-management.md
+    - Scheduling: api/scheduling.md
+    - Tickets: api/tickets.md
+    - Facilities: api/facilities.md
+  - Development:
+    - Contributing: development/contributing.md
+    - Code Standards: development/code-standards.md
+    - Testing: development/testing.md
+    - Debugging: development/debugging.md 
