@@ -156,8 +156,8 @@ const ChangeRequest = () => {
                         </FormControl>
                         <SelectContent>
                           {facilities.map((facility) => (
-                            <SelectItem key={facility} value={facility}>
-                              {facility}
+                            <SelectItem key={facility.id} value={facility.id.toString()}>
+                              {facility.name}
                             </SelectItem>
                           ))}
                         </SelectContent>

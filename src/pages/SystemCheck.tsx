@@ -171,7 +171,7 @@ const SystemCheck = () => {
                 </SelectTrigger>
                 <SelectContent>
                   {facilities.map((fac) => (
-                    <SelectItem key={fac} value={fac}>{fac}</SelectItem>
+                    <SelectItem key={fac.id} value={fac.id.toString()}>{fac.name}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>

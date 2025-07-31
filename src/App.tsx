@@ -24,38 +24,42 @@ import Management from "./pages/Management";
 import Analytics from "./pages/Analytics";
 import Reports from "./pages/Reports";
 import { SettingsProvider } from "./contexts/SettingsContext";
+import { AuthProvider } from "./contexts/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
 const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <BrowserRouter>
+      <AuthProvider>
+        <TooltipProvider>
+          <BrowserRouter>
           <Routes>
             <Route path="/login" element={<Login />} />
-            <Route path="/" element={<Layout><Dashboard /></Layout>} />
-            <Route path="/time-keeping" element={<Layout><TimeKeeping /></Layout>} />
-            <Route path="/schedule" element={<Layout><Schedule /></Layout>} />
-            <Route path="/incident-report" element={<Layout><SettingsProvider><IncidentReport /></SettingsProvider></Layout>} />
-            <Route path="/change-request" element={<Layout><SettingsProvider><ChangeRequest /></SettingsProvider></Layout>} />
-            <Route path="/system-check" element={<Layout><SettingsProvider><SystemCheck /></SettingsProvider></Layout>} />
-            <Route path="/management" element={<Layout><Management /></Layout>} />
-            <Route path="/analytics" element={<Layout><Analytics /></Layout>} />
-            <Route path="/employees" element={<Layout><EmployeeManagement /></Layout>} />
-            <Route path="/employees/:id" element={<Layout><EmployeeDetail /></Layout>} />
-            <Route path="/scheduling" element={<Layout><SettingsProvider><Scheduling /></SettingsProvider></Layout>} />
-            <Route path="/reports" element={<Layout><Reports /></Layout>} />
-            <Route path="/settings" element={<Layout><SettingsProvider><Settings /></SettingsProvider></Layout>} />
-            <Route path="/engineering" element={<Layout><Engineering /></Layout>} />
-            <Route path="/service-tickets" element={<Layout><ServiceTickets /></Layout>} />
-            <Route path="/incident-tickets" element={<Layout><IncidentTickets /></Layout>} />
+            <Route path="/" element={<ProtectedRoute><Layout><Dashboard /></Layout></ProtectedRoute>} />
+            <Route path="/time-keeping" element={<ProtectedRoute><Layout><TimeKeeping /></Layout></ProtectedRoute>} />
+            <Route path="/schedule" element={<ProtectedRoute><Layout><Schedule /></Layout></ProtectedRoute>} />
+            <Route path="/incident-report" element={<ProtectedRoute><Layout><SettingsProvider><IncidentReport /></SettingsProvider></Layout></ProtectedRoute>} />
+            <Route path="/change-request" element={<ProtectedRoute><Layout><SettingsProvider><ChangeRequest /></SettingsProvider></Layout></ProtectedRoute>} />
+            <Route path="/system-check" element={<ProtectedRoute><Layout><SettingsProvider><SystemCheck /></SettingsProvider></Layout></ProtectedRoute>} />
+            <Route path="/management" element={<ProtectedRoute><Layout><Management /></Layout></ProtectedRoute>} />
+            <Route path="/analytics" element={<ProtectedRoute><Layout><Analytics /></Layout></ProtectedRoute>} />
+            <Route path="/employees" element={<ProtectedRoute><Layout><EmployeeManagement /></Layout></ProtectedRoute>} />
+            <Route path="/employees/:id" element={<ProtectedRoute><Layout><EmployeeDetail /></Layout></ProtectedRoute>} />
+            <Route path="/scheduling" element={<ProtectedRoute><Layout><SettingsProvider><Scheduling /></SettingsProvider></Layout></ProtectedRoute>} />
+            <Route path="/reports" element={<ProtectedRoute><Layout><Reports /></Layout></ProtectedRoute>} />
+            <Route path="/settings" element={<ProtectedRoute><Layout><SettingsProvider><Settings /></SettingsProvider></Layout></ProtectedRoute>} />
+            <Route path="/engineering" element={<ProtectedRoute><Layout><Engineering /></Layout></ProtectedRoute>} />
+            <Route path="/service-tickets" element={<ProtectedRoute><Layout><ServiceTickets /></Layout></ProtectedRoute>} />
+            <Route path="/incident-tickets" element={<ProtectedRoute><Layout><IncidentTickets /></Layout></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
-        </BrowserRouter>
-        <Toaster />
-        <Sonner />
-      </TooltipProvider>
+          </BrowserRouter>
+          <Toaster />
+          <Sonner />
+        </TooltipProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 };

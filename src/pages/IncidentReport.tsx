@@ -125,8 +125,8 @@ const IncidentReport = () => {
                         </FormControl>
                         <SelectContent>
                           {facilities.map((facility) => (
-                            <SelectItem key={facility} value={facility}>
-                              {facility}
+                            <SelectItem key={facility.id} value={facility.id.toString()}>
+                              {facility.name}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -190,8 +190,8 @@ const IncidentReport = () => {
                         </FormControl>
                         <SelectContent>
                           {incidentTypes.map((type) => (
-                            <SelectItem key={type} value={type}>
-                              {type}
+                            <SelectItem key={type.id} value={type.id.toString()}>
+                              {type.name}
                             </SelectItem>
                           ))}
                         </SelectContent>

@@ -108,7 +108,7 @@ const AddEventDialog = ({ open, onOpenChange, onSave }: AddEventDialogProps) => 
                   </SelectTrigger>
                   <SelectContent>
                     {facilities.map((facility) => (
-                      <SelectItem key={facility} value={facility}>{facility}</SelectItem>
+                      <SelectItem key={facility.id} value={facility.id.toString()}>{facility.name}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -319,7 +319,7 @@ const AddEventDialog = ({ open, onOpenChange, onSave }: AddEventDialogProps) => 
                   </SelectTrigger>
                   <SelectContent>
                     {facilities.map((facility) => (
-                      <SelectItem key={facility} value={facility}>{facility}</SelectItem>
+                      <SelectItem key={facility.id} value={facility.id.toString()}>{facility.name}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>

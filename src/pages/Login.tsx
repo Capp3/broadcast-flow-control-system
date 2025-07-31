@@ -1,21 +1,39 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Radio, Lock } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Login = () => {
   const [credentials, setCredentials] = useState({
     username: '',
     password: ''
   });
+  const [isLoading, setIsLoading] = useState(false);
+  const { login, user } = useAuth();
+  const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user) {
+      navigate('/');
+    }
+  }, [user, navigate]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Login logic will be implemented when Supabase is connected
-    console.log('Login attempt:', credentials);
+    setIsLoading(true);
+    
+    const success = await login(credentials.username, credentials.password);
+    if (success) {
+      navigate('/');
+    }
+    
+    setIsLoading(false);
   };
 
   return (
@@ -52,13 +70,13 @@ const Login = () => {
                 required
               />
             </div>
-            <Button type="submit" className="w-full">
+            <Button type="submit" className="w-full" disabled={isLoading}>
               <Lock className="h-4 w-4 mr-2" />
-              Sign In
+              {isLoading ? 'Signing In...' : 'Sign In'}
             </Button>
           </form>
           <div className="mt-6 text-center text-sm text-gray-600">
-            <p>For demo purposes, use any credentials to access the system</p>
+            <p>Enter your Django credentials to access the system</p>
           </div>
         </CardContent>
       </Card>

@@ -4,12 +4,23 @@ import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import AppSidebar from './Sidebar';
 import { Button } from '@/components/ui/button';
 import { LogOut, Bell } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface LayoutProps {
   children: React.ReactNode;
 }
 
 const Layout = ({ children }: LayoutProps) => {
+  const { user, profile, logout } = useAuth();
+
+  const handleLogout = async () => {
+    await logout();
+  };
+
+  const displayName = profile?.full_name || user?.first_name 
+    ? `${user?.first_name} ${user?.last_name}`.trim() 
+    : user?.username || 'User';
+
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-gray-50">
@@ -28,8 +39,8 @@ const Layout = ({ children }: LayoutProps) => {
                   <Bell className="h-4 w-4" />
                 </Button>
                 <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-600">John Operator</span>
-                  <Button variant="outline" size="sm">
+                  <span className="text-sm text-gray-600">{displayName}</span>
+                  <Button variant="outline" size="sm" onClick={handleLogout}>
                     <LogOut className="h-4 w-4 mr-2" />
                     Logout
                   </Button>

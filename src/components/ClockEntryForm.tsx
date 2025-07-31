@@ -20,7 +20,7 @@ const ClockEntryForm = ({ onSubmit, onCancel, existingEntries = [] }: ClockEntry
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedLocation, setSelectedLocation] = useState('');
   const [selectedShift, setSelectedShift] = useState('');
-  const [scheduledEvents, setScheduledEvents] = useState<Array<{id: string, name: string, time: string}>>([]);
+  const [scheduledEvents, setScheduledEvents] = useState<Array<{id: number, name: string, time: string}>>([]);
   const [hasExistingEntry, setHasExistingEntry] = useState(false);
 
   const today = new Date().toISOString().split('T')[0];
@@ -28,8 +28,18 @@ const ClockEntryForm = ({ onSubmit, onCancel, existingEntries = [] }: ClockEntry
   useEffect(() => {
     if (selectedDate) {
       // Get scheduled events for the selected date
-      const events = getScheduledEvents(selectedDate);
-      setScheduledEvents(events);
+      getScheduledEvents(selectedDate).then(events => {
+        const formattedEvents = events.map(event => ({
+          id: event.id,
+          name: event.title,
+          time: new Date(event.start_time).toLocaleTimeString('en-US', { 
+            hour: '2-digit', 
+            minute: '2-digit',
+            hour12: false 
+          })
+        }));
+        setScheduledEvents(formattedEvents);
+      });
       
       // Check for existing entries on this date
       const existingOnDate = existingEntries.some(entry => entry.date === selectedDate);
@@ -52,7 +62,7 @@ const ClockEntryForm = ({ onSubmit, onCancel, existingEntries = [] }: ClockEntry
   };
 
   const allShiftOptions = [
-    ...shifts,
+    ...shifts.map(shift => shift.name),
     ...scheduledEvents.map(event => `${event.name} (${event.time})`)
   ];
 
@@ -85,8 +95,8 @@ const ClockEntryForm = ({ onSubmit, onCancel, existingEntries = [] }: ClockEntry
               </SelectTrigger>
               <SelectContent>
                 {locations.map((location) => (
-                  <SelectItem key={location} value={location}>
-                    {location}
+                  <SelectItem key={location.id} value={location.id.toString()}>
+                    {location.name}
                   </SelectItem>
                 ))}
               </SelectContent>

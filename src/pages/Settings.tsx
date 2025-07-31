@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -11,15 +11,23 @@ import { useSettings } from '@/contexts/SettingsContext';
 
 const Settings = () => {
   const { locations, shifts, facilities, incidentTypes } = useSettings();
-  const [localLocations, setLocalLocations] = useState(locations);
-  const [localShifts, setLocalShifts] = useState(shifts);
-  const [localFacilities, setLocalFacilities] = useState(facilities);
-  const [localIncidentTypes, setLocalIncidentTypes] = useState(incidentTypes);
+  const [localLocations, setLocalLocations] = useState<string[]>([]);
+  const [localShifts, setLocalShifts] = useState<string[]>([]);
+  const [localFacilities, setLocalFacilities] = useState<string[]>([]);
+  const [localIncidentTypes, setLocalIncidentTypes] = useState<string[]>([]);
   const [newLocation, setNewLocation] = useState('');
   const [newShift, setNewShift] = useState('');
   const [newFacility, setNewFacility] = useState('');
   const [newIncidentType, setNewIncidentType] = useState('');
   const { toast } = useToast();
+
+  // Convert objects to arrays of names for local state
+  useEffect(() => {
+    setLocalLocations(locations.map(loc => loc.name));
+    setLocalShifts(shifts.map(shift => shift.name));
+    setLocalFacilities(facilities.map(facility => facility.name));
+    setLocalIncidentTypes(incidentTypes.map(type => type.name));
+  }, [locations, shifts, facilities, incidentTypes]);
 
   // Management settings state
   const [managementSettings, setManagementSettings] = useState({

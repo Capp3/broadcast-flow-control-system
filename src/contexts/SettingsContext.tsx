@@ -1,11 +1,15 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { djangoApi } from '@/services/django-api';
+import { Location, Shift, Facility, IncidentType, ScheduledEvent } from '@/types/django';
 
 interface SettingsContextType {
-  locations: string[];
-  shifts: string[];
-  facilities: string[];
-  incidentTypes: string[];
-  getScheduledEvents: (date: string) => Array<{id: string, name: string, time: string}>;
+  locations: Location[];
+  shifts: Shift[];
+  facilities: Facility[];
+  incidentTypes: IncidentType[];
+  getScheduledEvents: (date: string) => Promise<ScheduledEvent[]>;
+  refreshData: () => Promise<void>;
+  isLoading: boolean;
 }
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
@@ -19,74 +23,61 @@ export const useSettings = () => {
 };
 
 export const SettingsProvider = ({ children }: { children: React.ReactNode }) => {
-  // Mock data - in real app this would come from management/settings panel
-  const [locations] = useState([
-    'Studio A',
-    'Studio B',
-    'Studio C',
-    'Control Room',
-    'Edit Suite 1',
-    'Edit Suite 2',
-    'Reception',
-    'Conference Room'
-  ]);
+  const [locations, setLocations] = useState<Location[]>([]);
+  const [shifts, setShifts] = useState<Shift[]>([]);
+  const [facilities, setFacilities] = useState<Facility[]>([]);
+  const [incidentTypes, setIncidentTypes] = useState<IncidentType[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const [shifts] = useState([
-    'Morning Show',
-    'Afternoon News',
-    'Evening News',
-    'Late Night',
-    'Weekend Special',
-    'Sports Coverage',
-    'Documentary Production',
-    'Live Event Coverage'
-  ]);
+  const refreshData = async () => {
+    try {
+      setIsLoading(true);
+      const [locationsRes, shiftsRes, facilitiesRes, incidentTypesRes] = await Promise.all([
+        djangoApi.getLocations(),
+        djangoApi.getShifts(),
+        djangoApi.getFacilities(),
+        djangoApi.getIncidentTypes(),
+      ]);
 
-  const [facilities] = useState([
-    'Main Studio',
-    'Control Room A',
-    'Control Room B',
-    'Edit Suite 1',
-    'Edit Suite 2',
-    'Transmission Room',
-    'Server Room',
-    'Reception Area',
-    'Conference Room',
-    'Archive Storage'
-  ]);
-
-  const [incidentTypes] = useState([
-    'User Error',
-    'Operator Error', 
-    'Equipment Failure',
-    'Unknown',
-    'Ongoing Issue',
-    'System Outage',
-    'Network Issue',
-    'Software Bug',
-    'Hardware Malfunction',
-    'Power Issue'
-  ]);
-
-  // Mock scheduled events lookup
-  const getScheduledEvents = (date: string) => {
-    // Mock events for demonstration
-    const mockEvents = [
-      { id: '1', name: 'Morning Briefing', time: '08:00' },
-      { id: '2', name: 'News at Six', time: '18:00' },
-      { id: '3', name: 'Sports Update', time: '20:30' }
-    ];
-    
-    // In real app, this would query actual scheduled events for the date
-    return mockEvents;
+      setLocations(locationsRes.results || []);
+      setShifts(shiftsRes.results || []);
+      setFacilities(facilitiesRes.results || []);
+      setIncidentTypes(incidentTypesRes.results || []);
+    } catch (error) {
+      console.error('Failed to load settings data:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  const getScheduledEvents = async (date: string): Promise<ScheduledEvent[]> => {
+    try {
+      const response = await djangoApi.getScheduledEvents();
+      const events = response.results || [];
+      
+      // Filter events for the specific date
+      return events.filter(event => {
+        const eventDate = new Date(event.start_time).toISOString().split('T')[0];
+        return eventDate === date;
+      });
+    } catch (error) {
+      console.error('Failed to load scheduled events:', error);
+      return [];
+    }
+  };
+
+  useEffect(() => {
+    refreshData();
+  }, []);
 
   const value = {
     locations,
     shifts,
     facilities,
     incidentTypes,
-    getScheduledEvents
+    getScheduledEvents,
+    refreshData,
+    isLoading,
   };
 
   return (
