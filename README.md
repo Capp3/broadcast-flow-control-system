@@ -1,73 +1,154 @@
-# Welcome to your Lovable project
+# Broadcast Management System
 
-## Project info
+## Project Overview
 
-**URL**: https://lovable.dev/projects/78845865-e6be-426e-99f7-3b3cc01b4991
+The Broadcast Management System (BMS) is a comprehensive platform designed for media organizations to manage broadcast content, scheduling, and operations. The system enables broadcasters to efficiently organize content, create and maintain broadcast schedules, manage user permissions, and automate various aspects of the broadcasting workflow.
 
-## How can I edit this code?
+## Technology Stack
 
-There are several ways of editing your application.
+### Frontend
 
-**Use Lovable**
+- **Framework**: React 18 with TypeScript
+- **Build Tool**: Vite
+- **Styling**: Tailwind CSS + shadcn/ui components
+- **State Management**: React Context API + TanStack Query
+- **Forms**: React Hook Form + Zod validation
+- **Routing**: React Router v6
+- **Development Platform**: [Lovable](https://lovable.dev/projects/78845865-e6be-426e-99f7-3b3cc01b4991) (with code synchronized to GitHub)
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/78845865-e6be-426e-99f7-3b3cc01b4991) and start prompting.
+### Backend
 
-Changes made via Lovable will be committed automatically to this repo.
+- **Framework**: Django 4.2 with Django REST Framework
+- **Database**: PostgreSQL 14
+- **Caching**: Redis
+- **Task Queue**: Celery
+- **Authentication**: Session-based with CSRF protection
+- **Deployment**: Docker with Docker Compose
 
-**Use your preferred IDE**
+## Project Structure
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+```
+broadcast/
+├── frontend/                # React frontend (synchronized from Lovable to GitHub)
+│   ├── src/                 # Frontend source code
+│   │   ├── components/      # Reusable UI components
+│   │   ├── contexts/        # React context providers
+│   │   ├── hooks/           # Custom React hooks
+│   │   ├── lib/             # Utility functions and constants
+│   │   ├── pages/           # Page components
+│   │   ├── services/        # API service interfaces
+│   │   └── types/           # TypeScript type definitions
+├── backend/                 # Django backend
+│   ├── app/                 # Django project root
+│   │   ├── config/          # Project configuration
+│   │   ├── core/            # Core Django app
+│   │   └── ...              # Other Django apps
+│   ├── Dockerfile           # Docker configuration for Django
+│   └── docker-compose.yml   # Docker Compose for development
+├── docs/                    # Project documentation (MkDocs)
+└── memory-bank/             # Project memory and task tracking
+```
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## Getting Started
 
-Follow these steps:
+### Frontend Development Options
+
+#### Option 1: Using Lovable Platform
+
+The frontend can be developed through the Lovable development platform. Visit the [Lovable Project](https://lovable.dev/projects/78845865-e6be-426e-99f7-3b3cc01b4991) and start developing.
+
+Changes made via Lovable will be committed automatically to the GitHub repository.
+
+#### Option 2: Self-Hosted Local Development (Recommended for Production)
+
+For local development and self-hosting:
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
+# Clone the repository
 git clone <YOUR_GIT_URL>
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+# Navigate to the project directory
+cd broadcast
 
-# Step 3: Install the necessary dependencies.
+# Install the frontend dependencies
 npm i
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Start the frontend development server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+This approach allows you to work directly with the code that Lovable synchronizes to GitHub and gives you full control over your deployment and hosting.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### Backend Development
 
-**Use GitHub Codespaces**
+```sh
+# Navigate to the backend directory
+cd backend
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+# Copy environment files
+cp .env.example .env
 
-## What technologies are used for this project?
+# Start the Docker containers
+docker-compose up -d
 
-This project is built with:
+# Apply migrations
+docker-compose exec web python manage.py migrate
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+# Create a superuser
+docker-compose exec web python manage.py createsuperuser
+```
 
-## How can I deploy this project?
+## Documentation
 
-Simply open [Lovable](https://lovable.dev/projects/78845865-e6be-426e-99f7-3b3cc01b4991) and click on Share -> Publish.
+Comprehensive documentation is available in the `docs/` directory and can be built using MkDocs:
 
-## Can I connect a custom domain to my Lovable project?
+```sh
+# Install documentation dependencies
+pip install -r requirements-docs.txt
 
-Yes, you can!
+# Serve documentation locally
+mkdocs serve
+```
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+Visit `http://localhost:8000` to view the documentation.
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+## Deployment
+
+### Frontend Deployment Options
+
+#### Option 1: Lovable Deployment
+
+Open [Lovable](https://lovable.dev/projects/78845865-e6be-426e-99f7-3b3cc01b4991) and click on Share -> Publish to deploy the frontend through Lovable's platform.
+
+#### Option 2: Self-Hosted Deployment (Recommended for Production)
+
+For complete control over your hosting environment:
+
+```sh
+# Build the frontend
+npm run build
+
+# Deploy the built files from the dist/ directory to your hosting provider
+```
+
+This approach gives you full control over your hosting environment and deployment pipeline.
+
+### Backend Deployment
+
+The backend is containerized with Docker and can be deployed to any container-compatible hosting environment.
+
+```sh
+# Production deployment
+cd backend
+docker-compose -f docker-compose.prod.yml up -d
+```
+
+## Development Status
+
+The project is currently in active development:
+
+- ✅ Frontend development with Lovable platform (with GitHub synchronization)
+- 🚧 Backend implementation with Django and Docker
+- ✅ Documentation system with MkDocs
+
+For detailed information about the development status and upcoming tasks, refer to the project documentation.
