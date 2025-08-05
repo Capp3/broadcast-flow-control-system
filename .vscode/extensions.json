@@ -1,0 +1,25 @@
+{
+  "recommendations": [
+    // Python extensions
+    "charliermarsh.ruff",
+    "anysphere.anysphere-basedpyright",
+
+    // JavaScript/TypeScript extensions
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+
+    // General development extensions
+    "editorconfig.editorconfig",
+    "streetsidesoftware.code-spell-checker",
+
+    // Django extensions
+    "batisteo.vscode-django",
+
+    // Remote development
+    "containers.codspaces",
+
+    // Markdown
+    "davidanson.vscode-markdownlint",
+    "yzhang.markdown-all-in-one"
+  ]
+}

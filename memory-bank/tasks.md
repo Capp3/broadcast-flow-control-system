@@ -1,6 +1,57 @@
 # Tasks
 
-## Active Task: Comprehensive Documentation & Component Analysis
+## Active Task: Backend Implementation with Django and Celery
+
+- **Task ID**: TASK-002
+- **Task Type**: Implementation
+- **Priority**: High
+- **Status**: Implementation Phase 🚧
+
+### Description
+
+Implement a containerized Django backend with Celery for task processing using Docker Compose. The backend will be designed to run independently from the frontend on a separate machine, with appropriate port exposures for inter-service communication.
+
+### Subtasks
+
+#### Planning & Design Phase ✅ COMPLETE
+- [x] Design Docker Compose architecture for Django and Celery
+- [x] Define containerization strategy for development and production
+- [x] Plan network configuration for cross-machine communication
+- [x] Specify required ports and communication protocols
+- [x] Design volume mapping for data persistence
+
+#### Implementation Phase 🚧 IN PROGRESS
+- [x] Create backend folder structure
+- [x] Set up Docker Compose configuration
+- [x] Implement Django project skeleton
+- [x] Configure Celery integration
+- [x] Set up PostgreSQL database
+- [x] Configure Redis for Celery and caching
+- [x] Implement health checks for containers
+- [x] Create environment variable configuration
+
+#### Testing & Validation Phase
+- [ ] Test container startup and communication
+- [ ] Validate Django and Celery integration
+- [ ] Test cross-machine network connectivity
+- [ ] Verify database persistence
+- [ ] Ensure proper service discovery
+
+#### Documentation Phase
+- [ ] Document Docker Compose architecture
+- [ ] Create setup instructions for local development
+- [ ] Document deployment process for production
+- [ ] Create troubleshooting guide
+
+### Notes
+
+- Backend must be fully containerized to ensure consistent environments
+- Ports must be properly exposed to allow for cross-machine communication
+- Environment variables should be used for configuration
+- Volume mappings must be configured for data persistence
+- Health checks should be implemented for all containers
+
+## Previous Task: Comprehensive Documentation & Component Analysis
 
 - **Task ID**: TASK-001
 - **Task Type**: Documentation & Implementation
