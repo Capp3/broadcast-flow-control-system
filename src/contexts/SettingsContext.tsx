@@ -12,7 +12,7 @@ interface SettingsContextType {
   isLoading: boolean;
 }
 
-const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
+export const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
 
 export const SettingsProvider = ({ children }: { children: React.ReactNode }) => {
   const [locations, setLocations] = useState<Location[]>([]);

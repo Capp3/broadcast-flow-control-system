@@ -39,6 +39,7 @@ interface ServiceTicket {
   requestedBy: string;
   facility: string;
   createdAt: string;
+  createdBy: string;
   updatedAt: string;
   category: string;
   type: string;
@@ -61,6 +62,7 @@ const mockServiceTickets = [
     category: "Maintenance",
     type: "scheduled",
     estimatedHours: 4,
+    createdBy: "Mike Operator",
   },
   {
     id: "SRV-002",
@@ -76,6 +78,7 @@ const mockServiceTickets = [
     category: "Upgrade",
     type: "project",
     estimatedHours: 8,
+    createdBy: "Engineering Team",
   },
   {
     id: "SRV-003",
@@ -91,6 +94,7 @@ const mockServiceTickets = [
     category: "Maintenance",
     type: "routine",
     estimatedHours: 2,
+    createdBy: "Maintenance Schedule",
   },
   {
     id: "SRV-004",
@@ -106,6 +110,7 @@ const mockServiceTickets = [
     category: "Security",
     type: "audit",
     estimatedHours: 6,
+    createdBy: "IT Security",
   },
   {
     id: "SRV-005",
@@ -121,6 +126,7 @@ const mockServiceTickets = [
     category: "Facilities",
     type: "repair",
     estimatedHours: 3,
+    createdBy: "Studio Manager",
   },
 ];
 

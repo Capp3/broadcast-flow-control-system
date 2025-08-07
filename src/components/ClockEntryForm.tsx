@@ -79,11 +79,11 @@ const ClockEntryForm = ({
     const formData = new FormData(e.target as HTMLFormElement);
     const data = {
       date: selectedDate,
-      timeIn: formData.get("timeIn"),
-      timeOut: formData.get("timeOut"),
+      timeIn: formData.get("timeIn") as string,
+      timeOut: formData.get("timeOut") as string,
       location: selectedLocation,
       shift: selectedShift,
-      notes: formData.get("notes"),
+      notes: formData.get("notes") as string,
     };
     onSubmit(data);
   };

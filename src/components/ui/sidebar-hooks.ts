@@ -22,4 +22,4 @@ function useSidebar() {
 }
 
 export { SidebarContext, useSidebar }
-export type { SidebarContext } 
+export type { SidebarContext as SidebarContextType }

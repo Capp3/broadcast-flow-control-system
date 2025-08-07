@@ -19,27 +19,30 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 
-interface EventData {
+interface Event {
   id: string;
   title: string;
   startTime: string;
   endTime: string;
   facility: string;
-  type: string;
+  type: "event" | "shift";
   isRecurring: boolean;
   recurrencePattern?: string;
   recurrenceDays?: string[];
-  shifts?: ShiftData[];
+  shifts?: Shift[];
+  color: string;
 }
 
-interface ShiftData {
+interface Shift {
   id: string;
+  eventId?: string;
   title: string;
   startTime: string;
   endTime: string;
   facility: string;
-  assignedStaff: string[];
-  date: Date;
+  assignedStaff?: string[];
+  isRecurring: boolean;
+  color: string;
 }
 
 const Scheduling = () => {
@@ -145,17 +148,17 @@ const Scheduling = () => {
     setCurrentWeek(new Date());
   };
 
-  const handleEventSave = (data: EventData) => {
+  const handleEventSave = (data: any) => {
     console.log("Saving event/shift:", data);
     setShowAddDialog(false);
   };
 
-  const handleEventEdit = (event: EventData) => {
+  const handleEventEdit = (event: Event) => {
     console.log("Editing event:", event);
     setShowAddDialog(true);
   };
 
-  const handleShiftEdit = (shift: ShiftData) => {
+  const handleShiftEdit = (shift: Shift) => {
     console.log("Editing shift:", shift);
     setShowAddDialog(true);
   };

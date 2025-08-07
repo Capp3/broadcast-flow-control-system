@@ -45,6 +45,8 @@ interface IncidentTicket {
   reportedBy: string;
   facility: string;
   createdAt: string;
+  type: string;
+  createdBy: string;
   updatedAt: string;
   category: string;
 }
@@ -63,6 +65,8 @@ const mockIncidentTickets = [
     createdAt: "2024-06-14T08:30:00Z",
     updatedAt: "2024-06-14T09:15:00Z",
     category: "Equipment Failure",
+    type: "incident",
+    createdBy: "Mike Operator",
   },
   {
     id: "INC-002",
@@ -76,6 +80,8 @@ const mockIncidentTickets = [
     createdAt: "2024-06-14T10:00:00Z",
     updatedAt: "2024-06-14T10:30:00Z",
     category: "Signal Quality",
+    type: "incident",
+    createdBy: "Lisa Operator",
   },
   {
     id: "INC-003",
@@ -89,6 +95,8 @@ const mockIncidentTickets = [
     createdAt: "2024-06-13T14:00:00Z",
     updatedAt: "2024-06-13T16:30:00Z",
     category: "Maintenance",
+    type: "incident",
+    createdBy: "System Automated",
   },
   {
     id: "INC-004",
@@ -103,6 +111,8 @@ const mockIncidentTickets = [
     createdAt: "2024-06-14T11:45:00Z",
     updatedAt: "2024-06-14T12:00:00Z",
     category: "Network",
+    type: "incident",
+    createdBy: "Dave Operator",
   },
   {
     id: "INC-005",
@@ -116,6 +126,8 @@ const mockIncidentTickets = [
     createdAt: "2024-06-12T16:20:00Z",
     updatedAt: "2024-06-13T08:00:00Z",
     category: "Facilities",
+    type: "incident",
+    createdBy: "Jane Host",
   },
 ];
 

@@ -48,6 +48,15 @@ interface Ticket {
   category?: string;
   location?: string;
   department?: string;
+  facility?: string;
+  businessJustification?: string;
+  impactAssessment?: string;
+  changeType?: string;
+  reportedBy?: string;
+  requestedBy?: string;
+  proposedDate?: string;
+  estimatedHours?: number;
+  estimatedDuration?: string;
 }
 
 interface TicketDetailProps {

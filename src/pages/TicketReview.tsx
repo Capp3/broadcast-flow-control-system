@@ -38,6 +38,8 @@ interface ReviewTicket {
   reportedBy: string;
   createdAt: string;
   category: string;
+  createdBy: string;
+  updatedAt: string;
   followUpNeeded: boolean;
   timeDown: string | null;
 }
@@ -56,6 +58,8 @@ const mockTicketsForReview = [
     category: "Equipment Failure",
     followUpNeeded: true,
     timeDown: "45 minutes",
+    createdBy: "Mike Operator",
+    updatedAt: "2024-06-14T09:00:00Z",
   },
   {
     id: "TKT-002",
@@ -69,6 +73,8 @@ const mockTicketsForReview = [
     category: "User Error",
     followUpNeeded: false,
     timeDown: "5 minutes",
+    createdBy: "Lisa Operator",
+    updatedAt: "2024-06-14T09:30:00Z",
   },
   {
     id: "TKT-003",
@@ -83,6 +89,8 @@ const mockTicketsForReview = [
     category: "Facilities",
     followUpNeeded: true,
     timeDown: null,
+    createdBy: "Jane Host",
+    updatedAt: "2024-06-14T10:15:00Z",
   },
   {
     id: "TKT-004",
@@ -96,6 +104,8 @@ const mockTicketsForReview = [
     category: "Signal Quality",
     followUpNeeded: true,
     timeDown: "Ongoing",
+    createdBy: "Dave Operator",
+    updatedAt: "2024-06-14T11:45:00Z",
   },
   {
     id: "TKT-005",
@@ -109,6 +119,8 @@ const mockTicketsForReview = [
     category: "Operator Error",
     followUpNeeded: false,
     timeDown: "2 minutes",
+    createdBy: "Tom Operator",
+    updatedAt: "2024-06-14T13:00:00Z",
   },
 ];
 
