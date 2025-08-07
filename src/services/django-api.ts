@@ -16,23 +16,35 @@ import {
 
 const API_BASE_URL = 'https://app.capparelli.ie/api';
 
+console.log('Django API Base URL:', API_BASE_URL);
+
 // CSRF token handling for Django
 let csrfToken: string | null = null;
 
 const getCsrfToken = async (): Promise<string> => {
   if (csrfToken) return csrfToken;
   
-  const response = await fetch(`${API_BASE_URL}/csrf/`, {
-    credentials: 'include',
-  });
+  console.log('Fetching CSRF token from:', `${API_BASE_URL}/csrf/`);
   
-  if (response.ok) {
-    const data = await response.json();
-    csrfToken = data.csrfToken;
-    return csrfToken!;
+  try {
+    const response = await fetch(`${API_BASE_URL}/csrf/`, {
+      credentials: 'include',
+    });
+    
+    console.log('CSRF response:', response.status, response.statusText);
+    
+    if (response.ok) {
+      const data = await response.json();
+      console.log('CSRF token received:', data);
+      csrfToken = data.csrfToken;
+      return csrfToken!;
+    }
+    
+    throw new Error(`Failed to get CSRF token: ${response.status}`);
+  } catch (error) {
+    console.error('CSRF token fetch error:', error);
+    throw error;
   }
-  
-  throw new Error('Failed to get CSRF token');
 };
 
 class DjangoApiService {
@@ -41,6 +53,8 @@ class DjangoApiService {
     options: RequestInit = {}
   ): Promise<T> {
     const url = `${API_BASE_URL}${endpoint}`;
+    
+    console.log('Making request to:', url, 'with options:', options);
     
     const defaultHeaders: HeadersInit = {
       'Content-Type': 'application/json',
@@ -63,8 +77,11 @@ class DjangoApiService {
 
     const response = await fetch(url, config);
 
+    console.log('Response:', response.status, response.statusText);
+
     if (!response.ok) {
       const errorData: ApiError = await response.json().catch(() => ({}));
+      console.error('API Error:', response.status, errorData);
       throw new Error(errorData.detail || errorData.message || `HTTP ${response.status}`);
     }
 
@@ -86,6 +103,11 @@ class DjangoApiService {
 
   async getCurrentUser(): Promise<DjangoUser> {
     return this.request<DjangoUser>('/auth/user/');
+  }
+
+  // Health check to test connectivity
+  async healthCheck(): Promise<{ status: string }> {
+    return this.request<{ status: string }>('/health/');
   }
 
   // Profiles
