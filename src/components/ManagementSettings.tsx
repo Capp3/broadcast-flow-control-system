@@ -1,23 +1,11 @@
-
-import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { Switch } from '@/components/ui/switch';
-import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
-import { 
-  Settings,
-  Clock,
-  DollarSign,
-  Bell,
-  Users,
-  AlertTriangle,
-  Save,
-  Mail
-} from 'lucide-react';
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { Bell, Clock, DollarSign, Save, Settings, Users } from "lucide-react";
+import { useState } from "react";
 
 const ManagementSettings = () => {
   const [settings, setSettings] = useState({
@@ -25,12 +13,12 @@ const ManagementSettings = () => {
       autoApproveTimeunder: 8,
       requireManagerApproval: true,
       allowSelfScheduling: false,
-      maxOvertimeHours: 12
+      maxOvertimeHours: 12,
     },
     departments: {
       operations: { budget: 75000, alertThreshold: 80 },
       engineering: { budget: 125000, alertThreshold: 85 },
-      maintenance: { budget: 45000, alertThreshold: 75 }
+      maintenance: { budget: 45000, alertThreshold: 75 },
     },
     notifications: {
       budgetAlerts: true,
@@ -38,41 +26,49 @@ const ManagementSettings = () => {
       scheduleChanges: true,
       incidentEscalation: true,
       emailNotifications: true,
-      alertThreshold: 80
+      alertThreshold: 80,
     },
     approval: {
       timeClockAutoApprove: false,
       vacationRequiresApproval: true,
       changeRequestAutoAssign: true,
-      incidentEscalationTime: 4
-    }
+      incidentEscalationTime: 4,
+    },
   });
 
   const handleSave = () => {
-    console.log('Saving management settings:', settings);
+    console.log("Saving management settings:", settings);
     // Here you would save to API
   };
 
-  const updateSetting = (category: string, key: string, value: any) => {
-    setSettings(prev => ({
+  const updateSetting = (
+    category: string,
+    key: string,
+    value: string | number | boolean,
+  ) => {
+    setSettings((prev) => ({
       ...prev,
       [category]: {
         ...prev[category as keyof typeof prev],
-        [key]: value
-      }
+        [key]: value,
+      },
     }));
   };
 
-  const updateDepartmentSetting = (dept: string, key: string, value: any) => {
-    setSettings(prev => ({
+  const updateDepartmentSetting = (
+    dept: string,
+    key: string,
+    value: string | number | boolean,
+  ) => {
+    setSettings((prev) => ({
       ...prev,
       departments: {
         ...prev.departments,
         [dept]: {
           ...prev.departments[dept as keyof typeof prev.departments],
-          [key]: value
-        }
-      }
+          [key]: value,
+        },
+      },
     }));
   };
 
@@ -84,7 +80,9 @@ const ManagementSettings = () => {
             <Settings className="h-6 w-6" />
             Management Settings
           </h2>
-          <p className="text-muted-foreground">Configure system-wide settings and policies</p>
+          <p className="text-muted-foreground">
+            Configure system-wide settings and policies
+          </p>
         </div>
         <Button onClick={handleSave}>
           <Save className="h-4 w-4 mr-2" />
@@ -107,7 +105,13 @@ const ManagementSettings = () => {
               <Input
                 type="number"
                 value={settings.system.autoApproveTimeunder}
-                onChange={(e) => updateSetting('system', 'autoApproveTimeunder', parseInt(e.target.value))}
+                onChange={(e) =>
+                  updateSetting(
+                    "system",
+                    "autoApproveTimeunder",
+                    parseInt(e.target.value),
+                  )
+                }
               />
             </div>
             <div className="space-y-2">
@@ -115,21 +119,31 @@ const ManagementSettings = () => {
               <Input
                 type="number"
                 value={settings.system.maxOvertimeHours}
-                onChange={(e) => updateSetting('system', 'maxOvertimeHours', parseInt(e.target.value))}
+                onChange={(e) =>
+                  updateSetting(
+                    "system",
+                    "maxOvertimeHours",
+                    parseInt(e.target.value),
+                  )
+                }
               />
             </div>
             <div className="flex items-center justify-between">
               <Label>Require manager approval for all time entries</Label>
               <Switch
                 checked={settings.system.requireManagerApproval}
-                onCheckedChange={(checked) => updateSetting('system', 'requireManagerApproval', checked)}
+                onCheckedChange={(checked) =>
+                  updateSetting("system", "requireManagerApproval", checked)
+                }
               />
             </div>
             <div className="flex items-center justify-between">
               <Label>Allow employee self-scheduling</Label>
               <Switch
                 checked={settings.system.allowSelfScheduling}
-                onCheckedChange={(checked) => updateSetting('system', 'allowSelfScheduling', checked)}
+                onCheckedChange={(checked) =>
+                  updateSetting("system", "allowSelfScheduling", checked)
+                }
               />
             </div>
           </CardContent>
@@ -148,21 +162,27 @@ const ManagementSettings = () => {
               <Label>Auto-approve time clock entries</Label>
               <Switch
                 checked={settings.approval.timeClockAutoApprove}
-                onCheckedChange={(checked) => updateSetting('approval', 'timeClockAutoApprove', checked)}
+                onCheckedChange={(checked) =>
+                  updateSetting("approval", "timeClockAutoApprove", checked)
+                }
               />
             </div>
             <div className="flex items-center justify-between">
               <Label>Vacation requests require approval</Label>
               <Switch
                 checked={settings.approval.vacationRequiresApproval}
-                onCheckedChange={(checked) => updateSetting('approval', 'vacationRequiresApproval', checked)}
+                onCheckedChange={(checked) =>
+                  updateSetting("approval", "vacationRequiresApproval", checked)
+                }
               />
             </div>
             <div className="flex items-center justify-between">
               <Label>Auto-assign change requests</Label>
               <Switch
                 checked={settings.approval.changeRequestAutoAssign}
-                onCheckedChange={(checked) => updateSetting('approval', 'changeRequestAutoAssign', checked)}
+                onCheckedChange={(checked) =>
+                  updateSetting("approval", "changeRequestAutoAssign", checked)
+                }
               />
             </div>
             <div className="space-y-2">
@@ -170,7 +190,13 @@ const ManagementSettings = () => {
               <Input
                 type="number"
                 value={settings.approval.incidentEscalationTime}
-                onChange={(e) => updateSetting('approval', 'incidentEscalationTime', parseInt(e.target.value))}
+                onChange={(e) =>
+                  updateSetting(
+                    "approval",
+                    "incidentEscalationTime",
+                    parseInt(e.target.value),
+                  )
+                }
               />
             </div>
           </CardContent>
@@ -199,7 +225,13 @@ const ManagementSettings = () => {
                     <Input
                       type="number"
                       value={config.budget}
-                      onChange={(e) => updateDepartmentSetting(dept, 'budget', parseInt(e.target.value))}
+                      onChange={(e) =>
+                        updateDepartmentSetting(
+                          dept,
+                          "budget",
+                          parseInt(e.target.value),
+                        )
+                      }
                     />
                   </div>
                   <div className="space-y-1">
@@ -207,7 +239,13 @@ const ManagementSettings = () => {
                     <Input
                       type="number"
                       value={config.alertThreshold}
-                      onChange={(e) => updateDepartmentSetting(dept, 'alertThreshold', parseInt(e.target.value))}
+                      onChange={(e) =>
+                        updateDepartmentSetting(
+                          dept,
+                          "alertThreshold",
+                          parseInt(e.target.value),
+                        )
+                      }
                     />
                   </div>
                 </div>
@@ -229,35 +267,45 @@ const ManagementSettings = () => {
               <Label>Budget utilization alerts</Label>
               <Switch
                 checked={settings.notifications.budgetAlerts}
-                onCheckedChange={(checked) => updateSetting('notifications', 'budgetAlerts', checked)}
+                onCheckedChange={(checked) =>
+                  updateSetting("notifications", "budgetAlerts", checked)
+                }
               />
             </div>
             <div className="flex items-center justify-between">
               <Label>Overtime alerts</Label>
               <Switch
                 checked={settings.notifications.overtimeAlerts}
-                onCheckedChange={(checked) => updateSetting('notifications', 'overtimeAlerts', checked)}
+                onCheckedChange={(checked) =>
+                  updateSetting("notifications", "overtimeAlerts", checked)
+                }
               />
             </div>
             <div className="flex items-center justify-between">
               <Label>Schedule change notifications</Label>
               <Switch
                 checked={settings.notifications.scheduleChanges}
-                onCheckedChange={(checked) => updateSetting('notifications', 'scheduleChanges', checked)}
+                onCheckedChange={(checked) =>
+                  updateSetting("notifications", "scheduleChanges", checked)
+                }
               />
             </div>
             <div className="flex items-center justify-between">
               <Label>Incident escalation alerts</Label>
               <Switch
                 checked={settings.notifications.incidentEscalation}
-                onCheckedChange={(checked) => updateSetting('notifications', 'incidentEscalation', checked)}
+                onCheckedChange={(checked) =>
+                  updateSetting("notifications", "incidentEscalation", checked)
+                }
               />
             </div>
             <div className="flex items-center justify-between">
               <Label>Email notifications</Label>
               <Switch
                 checked={settings.notifications.emailNotifications}
-                onCheckedChange={(checked) => updateSetting('notifications', 'emailNotifications', checked)}
+                onCheckedChange={(checked) =>
+                  updateSetting("notifications", "emailNotifications", checked)
+                }
               />
             </div>
             <div className="space-y-2">
@@ -265,7 +313,13 @@ const ManagementSettings = () => {
               <Input
                 type="number"
                 value={settings.notifications.alertThreshold}
-                onChange={(e) => updateSetting('notifications', 'alertThreshold', parseInt(e.target.value))}
+                onChange={(e) =>
+                  updateSetting(
+                    "notifications",
+                    "alertThreshold",
+                    parseInt(e.target.value),
+                  )
+                }
               />
             </div>
           </CardContent>

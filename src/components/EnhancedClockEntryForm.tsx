@@ -1,66 +1,93 @@
+import { Button } from "@/components/ui/button";
+import {
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { Clock } from "lucide-react";
+import React, { useState } from "react";
 
-import React, { useState } from 'react';
-import { DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
-import { Clock } from 'lucide-react';
-
-interface EnhancedClockEntryFormProps {
-  onSubmit: (data: any) => void;
-  onCancel: () => void;
-  existingEntries: any[];
+interface ClockEntry {
+  date: string;
+  timeIn: string;
+  timeOut: string;
+  location: string;
+  shift: string;
+  lunchTaken: number;
+  notes: string;
+  hours: number;
 }
 
-const EnhancedClockEntryForm = ({ onSubmit, onCancel, existingEntries }: EnhancedClockEntryFormProps) => {
+interface EnhancedClockEntryFormProps {
+  onSubmit: (data: ClockEntry) => void;
+  onCancel: () => void;
+  existingEntries: ClockEntry[];
+}
+
+const EnhancedClockEntryForm = ({
+  onSubmit,
+  onCancel,
+  existingEntries,
+}: EnhancedClockEntryFormProps) => {
   const [formData, setFormData] = useState({
-    date: new Date().toISOString().split('T')[0],
-    timeIn: '',
-    timeOut: '',
-    location: '',
-    shift: '',
-    lunchTaken: '0.5',
-    notes: ''
+    date: new Date().toISOString().split("T")[0],
+    timeIn: "",
+    timeOut: "",
+    location: "",
+    shift: "",
+    lunchTaken: "0.5",
+    notes: "",
   });
 
   const [isClockIn, setIsClockIn] = useState(true);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     let calculatedHours = 0;
     if (formData.timeIn && formData.timeOut) {
-      const [inHour, inMin] = formData.timeIn.split(':').map(Number);
-      const [outHour, outMin] = formData.timeOut.split(':').map(Number);
+      const [inHour, inMin] = formData.timeIn.split(":").map(Number);
+      const [outHour, outMin] = formData.timeOut.split(":").map(Number);
       const timeInMinutes = inHour * 60 + inMin;
       const timeOutMinutes = outHour * 60 + outMin;
       const totalMinutes = timeOutMinutes - timeInMinutes;
-      calculatedHours = Math.round((totalMinutes / 60 - parseFloat(formData.lunchTaken)) * 10) / 10;
+      calculatedHours =
+        Math.round((totalMinutes / 60 - parseFloat(formData.lunchTaken)) * 10) /
+        10;
     }
-    
+
     onSubmit({
       ...formData,
       hours: calculatedHours,
-      lunchTaken: parseFloat(formData.lunchTaken)
+      lunchTaken: parseFloat(formData.lunchTaken),
     });
   };
 
   const handleClockNow = () => {
     const now = new Date();
     const timeString = now.toTimeString().slice(0, 5);
-    
+
     if (isClockIn) {
-      setFormData(prev => ({ ...prev, timeIn: timeString }));
+      setFormData((prev) => ({ ...prev, timeIn: timeString }));
     } else {
-      setFormData(prev => ({ ...prev, timeOut: timeString }));
+      setFormData((prev) => ({ ...prev, timeOut: timeString }));
     }
   };
 
   // Check if there's an existing entry for today that's only clocked in
-  const todayEntry = existingEntries.find(entry => 
-    entry.date === formData.date && entry.timeOut === '--:--'
+  const todayEntry = existingEntries.find(
+    (entry) => entry.date === formData.date && entry.timeOut === "--:--",
   );
 
   return (
@@ -74,7 +101,7 @@ const EnhancedClockEntryForm = ({ onSubmit, onCancel, existingEntries }: Enhance
           Record your work hours for the day
         </DialogDescription>
       </DialogHeader>
-      
+
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <Label htmlFor="date">Date</Label>
@@ -82,7 +109,9 @@ const EnhancedClockEntryForm = ({ onSubmit, onCancel, existingEntries }: Enhance
             id="date"
             type="date"
             value={formData.date}
-            onChange={(e) => setFormData(prev => ({ ...prev, date: e.target.value }))}
+            onChange={(e) =>
+              setFormData((prev) => ({ ...prev, date: e.target.value }))
+            }
             required
           />
         </div>
@@ -95,7 +124,9 @@ const EnhancedClockEntryForm = ({ onSubmit, onCancel, existingEntries }: Enhance
                 id="timeIn"
                 type="time"
                 value={formData.timeIn}
-                onChange={(e) => setFormData(prev => ({ ...prev, timeIn: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, timeIn: e.target.value }))
+                }
                 required
               />
               <Button
@@ -118,7 +149,9 @@ const EnhancedClockEntryForm = ({ onSubmit, onCancel, existingEntries }: Enhance
                 id="timeOut"
                 type="time"
                 value={formData.timeOut}
-                onChange={(e) => setFormData(prev => ({ ...prev, timeOut: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, timeOut: e.target.value }))
+                }
               />
               <Button
                 type="button"
@@ -137,7 +170,12 @@ const EnhancedClockEntryForm = ({ onSubmit, onCancel, existingEntries }: Enhance
 
         <div>
           <Label htmlFor="lunchTaken">Lunch Break (Hours)</Label>
-          <Select value={formData.lunchTaken} onValueChange={(value) => setFormData(prev => ({ ...prev, lunchTaken: value }))}>
+          <Select
+            value={formData.lunchTaken}
+            onValueChange={(value) =>
+              setFormData((prev) => ({ ...prev, lunchTaken: value }))
+            }
+          >
             <SelectTrigger>
               <SelectValue placeholder="Select lunch duration" />
             </SelectTrigger>
@@ -152,7 +190,12 @@ const EnhancedClockEntryForm = ({ onSubmit, onCancel, existingEntries }: Enhance
 
         <div>
           <Label htmlFor="location">Location</Label>
-          <Select value={formData.location} onValueChange={(value) => setFormData(prev => ({ ...prev, location: value }))}>
+          <Select
+            value={formData.location}
+            onValueChange={(value) =>
+              setFormData((prev) => ({ ...prev, location: value }))
+            }
+          >
             <SelectTrigger>
               <SelectValue placeholder="Select location" />
             </SelectTrigger>
@@ -173,7 +216,9 @@ const EnhancedClockEntryForm = ({ onSubmit, onCancel, existingEntries }: Enhance
             id="shift"
             placeholder="e.g., Morning Show, Evening News"
             value={formData.shift}
-            onChange={(e) => setFormData(prev => ({ ...prev, shift: e.target.value }))}
+            onChange={(e) =>
+              setFormData((prev) => ({ ...prev, shift: e.target.value }))
+            }
           />
         </div>
 
@@ -183,7 +228,9 @@ const EnhancedClockEntryForm = ({ onSubmit, onCancel, existingEntries }: Enhance
             id="notes"
             placeholder="Any additional notes about this shift..."
             value={formData.notes}
-            onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
+            onChange={(e) =>
+              setFormData((prev) => ({ ...prev, notes: e.target.value }))
+            }
             rows={2}
           />
         </div>
@@ -192,7 +239,12 @@ const EnhancedClockEntryForm = ({ onSubmit, onCancel, existingEntries }: Enhance
           <Button type="submit" className="flex-1">
             Submit Entry
           </Button>
-          <Button type="button" variant="outline" onClick={onCancel} className="flex-1">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onCancel}
+            className="flex-1"
+          >
             Cancel
           </Button>
         </div>

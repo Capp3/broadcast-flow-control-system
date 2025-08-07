@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
 import { Save, CheckCircle, AlertCircle } from 'lucide-react';
-import { useSettings } from '@/contexts/SettingsContext';
+import { useSettings } from '@/contexts/settings-hooks';
 import { useToast } from '@/hooks/use-toast';
 import DepartmentChecklist from '@/components/DepartmentChecklist';
 

@@ -4,7 +4,7 @@ import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import AppSidebar from './Sidebar';
 import { Button } from '@/components/ui/button';
 import { LogOut, Bell } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/auth-hooks';
 
 interface LayoutProps {
   children: React.ReactNode;

@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { AlertTriangle, Calendar, Clock, MapPin, User, FileText, Timer, AlertCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { useSettings } from '@/contexts/SettingsContext';
+import { useSettings } from '@/contexts/settings-hooks';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';

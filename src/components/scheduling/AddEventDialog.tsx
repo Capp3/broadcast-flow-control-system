@@ -1,67 +1,113 @@
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
+import { useSettings } from "@/contexts/settings-hooks";
+import { Calendar, Clock, Minus, Plus } from "lucide-react";
+import { useState } from "react";
 
-import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus, Minus, Calendar, Clock } from 'lucide-react';
-import { useSettings } from '@/contexts/SettingsContext';
+interface Shift {
+  id: string;
+  title: string;
+  startTime: string;
+  endTime: string;
+  facility: string;
+  staffCount: number;
+  description: string;
+}
+
+interface EventData {
+  title: string;
+  startDate: string;
+  startTime: string;
+  endTime: string;
+  facility: string;
+  description: string;
+  isRecurring: boolean;
+  recurrencePattern: string;
+  recurrenceDays: string[];
+  shifts: Shift[];
+  type: string;
+  id: string;
+}
 
 interface AddEventDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSave: (data: any) => void;
+  onSave: (data: EventData) => void;
 }
 
-const AddEventDialog = ({ open, onOpenChange, onSave }: AddEventDialogProps) => {
+const AddEventDialog = ({
+  open,
+  onOpenChange,
+  onSave,
+}: AddEventDialogProps) => {
   const { facilities } = useSettings();
-  const [activeTab, setActiveTab] = useState('event');
+  const [activeTab, setActiveTab] = useState("event");
   const [formData, setFormData] = useState({
-    title: '',
-    startDate: '',
-    startTime: '',
-    endTime: '',
-    facility: '',
-    description: '',
+    title: "",
+    startDate: "",
+    startTime: "",
+    endTime: "",
+    facility: "",
+    description: "",
     isRecurring: false,
-    recurrencePattern: 'weekly',
+    recurrencePattern: "weekly",
     recurrenceDays: [] as string[],
-    shifts: [] as any[]
+    shifts: [] as Shift[],
   });
 
   const handleAddShift = () => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      shifts: [...prev.shifts, {
-        id: `shift-${Date.now()}`,
-        title: '',
-        startTime: '',
-        endTime: '',
-        facility: prev.facility,
-        staffCount: 1,
-        description: ''
-      }]
+      shifts: [
+        ...prev.shifts,
+        {
+          id: `shift-${Date.now()}`,
+          title: "",
+          startTime: "",
+          endTime: "",
+          facility: prev.facility,
+          staffCount: 1,
+          description: "",
+        },
+      ],
     }));
   };
 
   const handleRemoveShift = (index: number) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      shifts: prev.shifts.filter((_, i) => i !== index)
+      shifts: prev.shifts.filter((_, i) => i !== index),
     }));
   };
 
-  const handleShiftChange = (index: number, field: string, value: any) => {
-    setFormData(prev => ({
+  const handleShiftChange = (
+    index: number,
+    field: string,
+    value: string | number,
+  ) => {
+    setFormData((prev) => ({
       ...prev,
-      shifts: prev.shifts.map((shift, i) => 
-        i === index ? { ...shift, [field]: value } : shift
-      )
+      shifts: prev.shifts.map((shift, i) =>
+        i === index ? { ...shift, [field]: value } : shift,
+      ),
     }));
   };
 
@@ -69,12 +115,20 @@ const AddEventDialog = ({ open, onOpenChange, onSave }: AddEventDialogProps) => 
     const dataToSave = {
       ...formData,
       type: activeTab,
-      id: `${activeTab}-${Date.now()}`
+      id: `${activeTab}-${Date.now()}`,
     };
     onSave(dataToSave);
   };
 
-  const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  const weekDays = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
+  ];
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -96,19 +150,30 @@ const AddEventDialog = ({ open, onOpenChange, onSave }: AddEventDialogProps) => 
                 <Input
                   id="title"
                   value={formData.title}
-                  onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, title: e.target.value }))
+                  }
                   placeholder="e.g., Morning Show"
                 />
               </div>
               <div>
                 <Label htmlFor="facility">Facility</Label>
-                <Select onValueChange={(value) => setFormData(prev => ({ ...prev, facility: value }))}>
+                <Select
+                  onValueChange={(value) =>
+                    setFormData((prev) => ({ ...prev, facility: value }))
+                  }
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select facility" />
                   </SelectTrigger>
                   <SelectContent>
                     {facilities.map((facility) => (
-                      <SelectItem key={facility.id} value={facility.id.toString()}>{facility.name}</SelectItem>
+                      <SelectItem
+                        key={facility.id}
+                        value={facility.id.toString()}
+                      >
+                        {facility.name}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -122,7 +187,12 @@ const AddEventDialog = ({ open, onOpenChange, onSave }: AddEventDialogProps) => 
                   id="startDate"
                   type="date"
                   value={formData.startDate}
-                  onChange={(e) => setFormData(prev => ({ ...prev, startDate: e.target.value }))}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      startDate: e.target.value,
+                    }))
+                  }
                 />
               </div>
               <div>
@@ -131,7 +201,12 @@ const AddEventDialog = ({ open, onOpenChange, onSave }: AddEventDialogProps) => 
                   id="startTime"
                   type="time"
                   value={formData.startTime}
-                  onChange={(e) => setFormData(prev => ({ ...prev, startTime: e.target.value }))}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      startTime: e.target.value,
+                    }))
+                  }
                 />
               </div>
               <div>
@@ -140,7 +215,12 @@ const AddEventDialog = ({ open, onOpenChange, onSave }: AddEventDialogProps) => 
                   id="endTime"
                   type="time"
                   value={formData.endTime}
-                  onChange={(e) => setFormData(prev => ({ ...prev, endTime: e.target.value }))}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      endTime: e.target.value,
+                    }))
+                  }
                 />
               </div>
             </div>
@@ -150,7 +230,12 @@ const AddEventDialog = ({ open, onOpenChange, onSave }: AddEventDialogProps) => 
               <Textarea
                 id="description"
                 value={formData.description}
-                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    description: e.target.value,
+                  }))
+                }
                 placeholder="Event description..."
               />
             </div>
@@ -162,9 +247,17 @@ const AddEventDialog = ({ open, onOpenChange, onSave }: AddEventDialogProps) => 
                   <Checkbox
                     id="recurring"
                     checked={formData.isRecurring}
-                    onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isRecurring: !!checked }))}
+                    onCheckedChange={(checked) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        isRecurring: !!checked,
+                      }))
+                    }
                   />
-                  <Label htmlFor="recurring" className="flex items-center gap-2">
+                  <Label
+                    htmlFor="recurring"
+                    className="flex items-center gap-2"
+                  >
                     <Calendar className="h-4 w-4" />
                     Recurring Event
                   </Label>
@@ -175,9 +268,14 @@ const AddEventDialog = ({ open, onOpenChange, onSave }: AddEventDialogProps) => 
                   <div className="space-y-4">
                     <div>
                       <Label>Recurrence Pattern</Label>
-                      <Select 
+                      <Select
                         value={formData.recurrencePattern}
-                        onValueChange={(value) => setFormData(prev => ({ ...prev, recurrencePattern: value }))}
+                        onValueChange={(value) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            recurrencePattern: value,
+                          }))
+                        }
                       >
                         <SelectTrigger>
                           <SelectValue />
@@ -189,31 +287,42 @@ const AddEventDialog = ({ open, onOpenChange, onSave }: AddEventDialogProps) => 
                         </SelectContent>
                       </Select>
                     </div>
-                    
-                    {formData.recurrencePattern === 'weekly' && (
+
+                    {formData.recurrencePattern === "weekly" && (
                       <div>
                         <Label>Days of Week</Label>
                         <div className="grid grid-cols-4 gap-2 mt-2">
                           {weekDays.map((day) => (
-                            <div key={day} className="flex items-center space-x-2">
+                            <div
+                              key={day}
+                              className="flex items-center space-x-2"
+                            >
                               <Checkbox
                                 id={day}
                                 checked={formData.recurrenceDays.includes(day)}
                                 onCheckedChange={(checked) => {
                                   if (checked) {
-                                    setFormData(prev => ({
+                                    setFormData((prev) => ({
                                       ...prev,
-                                      recurrenceDays: [...prev.recurrenceDays, day]
+                                      recurrenceDays: [
+                                        ...prev.recurrenceDays,
+                                        day,
+                                      ],
                                     }));
                                   } else {
-                                    setFormData(prev => ({
+                                    setFormData((prev) => ({
                                       ...prev,
-                                      recurrenceDays: prev.recurrenceDays.filter(d => d !== day)
+                                      recurrenceDays:
+                                        prev.recurrenceDays.filter(
+                                          (d) => d !== day,
+                                        ),
                                     }));
                                   }
                                 }}
                               />
-                              <Label htmlFor={day} className="text-sm">{day.substring(0, 3)}</Label>
+                              <Label htmlFor={day} className="text-sm">
+                                {day.substring(0, 3)}
+                              </Label>
                             </div>
                           ))}
                         </div>
@@ -244,9 +353,9 @@ const AddEventDialog = ({ open, onOpenChange, onSave }: AddEventDialogProps) => 
                     <Card key={index} className="p-4">
                       <div className="flex items-center justify-between mb-4">
                         <h4 className="font-medium">Shift {index + 1}</h4>
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
+                        <Button
+                          variant="outline"
+                          size="sm"
                           onClick={() => handleRemoveShift(index)}
                         >
                           <Minus className="h-4 w-4" />
@@ -257,7 +366,9 @@ const AddEventDialog = ({ open, onOpenChange, onSave }: AddEventDialogProps) => 
                           <Label>Shift Title</Label>
                           <Input
                             value={shift.title}
-                            onChange={(e) => handleShiftChange(index, 'title', e.target.value)}
+                            onChange={(e) =>
+                              handleShiftChange(index, "title", e.target.value)
+                            }
                             placeholder="e.g., Show Host"
                           />
                         </div>
@@ -267,7 +378,13 @@ const AddEventDialog = ({ open, onOpenChange, onSave }: AddEventDialogProps) => 
                             type="number"
                             min="1"
                             value={shift.staffCount}
-                            onChange={(e) => handleShiftChange(index, 'staffCount', parseInt(e.target.value))}
+                            onChange={(e) =>
+                              handleShiftChange(
+                                index,
+                                "staffCount",
+                                parseInt(e.target.value),
+                              )
+                            }
                           />
                         </div>
                         <div>
@@ -275,7 +392,13 @@ const AddEventDialog = ({ open, onOpenChange, onSave }: AddEventDialogProps) => 
                           <Input
                             type="time"
                             value={shift.startTime}
-                            onChange={(e) => handleShiftChange(index, 'startTime', e.target.value)}
+                            onChange={(e) =>
+                              handleShiftChange(
+                                index,
+                                "startTime",
+                                e.target.value,
+                              )
+                            }
                           />
                         </div>
                         <div>
@@ -283,7 +406,13 @@ const AddEventDialog = ({ open, onOpenChange, onSave }: AddEventDialogProps) => 
                           <Input
                             type="time"
                             value={shift.endTime}
-                            onChange={(e) => handleShiftChange(index, 'endTime', e.target.value)}
+                            onChange={(e) =>
+                              handleShiftChange(
+                                index,
+                                "endTime",
+                                e.target.value,
+                              )
+                            }
                           />
                         </div>
                       </div>
@@ -291,7 +420,8 @@ const AddEventDialog = ({ open, onOpenChange, onSave }: AddEventDialogProps) => 
                   ))}
                   {formData.shifts.length === 0 && (
                     <div className="text-center text-gray-500 py-8">
-                      No shifts added yet. Click "Add Shift" to create shifts for this event.
+                      No shifts added yet. Click "Add Shift" to create shifts
+                      for this event.
                     </div>
                   )}
                 </div>
@@ -307,19 +437,30 @@ const AddEventDialog = ({ open, onOpenChange, onSave }: AddEventDialogProps) => 
                 <Input
                   id="shift-title"
                   value={formData.title}
-                  onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, title: e.target.value }))
+                  }
                   placeholder="e.g., Technical Support"
                 />
               </div>
               <div>
                 <Label htmlFor="shift-facility">Facility</Label>
-                <Select onValueChange={(value) => setFormData(prev => ({ ...prev, facility: value }))}>
+                <Select
+                  onValueChange={(value) =>
+                    setFormData((prev) => ({ ...prev, facility: value }))
+                  }
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select facility" />
                   </SelectTrigger>
                   <SelectContent>
                     {facilities.map((facility) => (
-                      <SelectItem key={facility.id} value={facility.id.toString()}>{facility.name}</SelectItem>
+                      <SelectItem
+                        key={facility.id}
+                        value={facility.id.toString()}
+                      >
+                        {facility.name}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -334,7 +475,12 @@ const AddEventDialog = ({ open, onOpenChange, onSave }: AddEventDialogProps) => 
                   id="shift-startDate"
                   type="date"
                   value={formData.startDate}
-                  onChange={(e) => setFormData(prev => ({ ...prev, startDate: e.target.value }))}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      startDate: e.target.value,
+                    }))
+                  }
                 />
               </div>
               <div>
@@ -343,7 +489,12 @@ const AddEventDialog = ({ open, onOpenChange, onSave }: AddEventDialogProps) => 
                   id="shift-startTime"
                   type="time"
                   value={formData.startTime}
-                  onChange={(e) => setFormData(prev => ({ ...prev, startTime: e.target.value }))}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      startTime: e.target.value,
+                    }))
+                  }
                 />
               </div>
               <div>
@@ -352,7 +503,12 @@ const AddEventDialog = ({ open, onOpenChange, onSave }: AddEventDialogProps) => 
                   id="shift-endTime"
                   type="time"
                   value={formData.endTime}
-                  onChange={(e) => setFormData(prev => ({ ...prev, endTime: e.target.value }))}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      endTime: e.target.value,
+                    }))
+                  }
                 />
               </div>
             </div>
@@ -364,7 +520,7 @@ const AddEventDialog = ({ open, onOpenChange, onSave }: AddEventDialogProps) => 
             Cancel
           </Button>
           <Button onClick={handleSave}>
-            Save {activeTab === 'event' ? 'Event' : 'Shift'}
+            Save {activeTab === "event" ? "Event" : "Shift"}
           </Button>
         </div>
       </DialogContent>

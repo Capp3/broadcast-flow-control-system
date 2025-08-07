@@ -1,140 +1,190 @@
-import React, { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Wrench, Calendar, Clock, User, Building } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
-import TicketDetail from '@/components/TicketDetail';
-import NewServiceRequestDialog from '@/components/NewServiceRequestDialog';
+import NewServiceRequestDialog from "@/components/NewServiceRequestDialog";
+import TicketDetail from "@/components/TicketDetail";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { useToast } from "@/hooks/use-toast";
+import { Building, Calendar, Clock, User, Wrench } from "lucide-react";
+import { useState } from "react";
+
+interface ServiceTicket {
+  id: string;
+  title: string;
+  description: string;
+  status: string;
+  priority: string;
+  assignedTo: string;
+  requestedBy: string;
+  facility: string;
+  createdAt: string;
+  updatedAt: string;
+  category: string;
+  type: string;
+  estimatedHours: number;
+}
 
 // Mock data for service tickets
 const mockServiceTickets = [
   {
-    id: 'SRV-001',
-    title: 'Antenna Maintenance - Tower 2',
-    description: 'Scheduled maintenance for primary antenna system',
-    status: 'open',
-    priority: 'medium',
-    assignedTo: 'John Engineer',
-    requestedBy: 'Mike Operator',
-    facility: 'Main Transmission Tower',
-    createdAt: '2024-06-14T09:00:00Z',
-    updatedAt: '2024-06-14T09:30:00Z',
-    category: 'Maintenance',
-    type: 'scheduled',
-    estimatedHours: 4
+    id: "SRV-001",
+    title: "Antenna Maintenance - Tower 2",
+    description: "Scheduled maintenance for primary antenna system",
+    status: "open",
+    priority: "medium",
+    assignedTo: "John Engineer",
+    requestedBy: "Mike Operator",
+    facility: "Main Transmission Tower",
+    createdAt: "2024-06-14T09:00:00Z",
+    updatedAt: "2024-06-14T09:30:00Z",
+    category: "Maintenance",
+    type: "scheduled",
+    estimatedHours: 4,
   },
   {
-    id: 'SRV-002',
-    title: 'Audio Processing Unit Upgrade',
-    description: 'Install new digital audio processing equipment',
-    status: 'open',
-    priority: 'high',
-    assignedTo: 'Sarah Tech',
-    requestedBy: 'Engineering Team',
-    facility: 'Studio A',
-    createdAt: '2024-06-14T10:15:00Z',
-    updatedAt: '2024-06-14T11:00:00Z',
-    category: 'Upgrade',
-    type: 'project',
-    estimatedHours: 8
+    id: "SRV-002",
+    title: "Audio Processing Unit Upgrade",
+    description: "Install new digital audio processing equipment",
+    status: "open",
+    priority: "high",
+    assignedTo: "Sarah Tech",
+    requestedBy: "Engineering Team",
+    facility: "Studio A",
+    createdAt: "2024-06-14T10:15:00Z",
+    updatedAt: "2024-06-14T11:00:00Z",
+    category: "Upgrade",
+    type: "project",
+    estimatedHours: 8,
   },
   {
-    id: 'SRV-003',
-    title: 'Generator Oil Change',
-    description: 'Routine oil change for backup generator',
-    status: 'closed',
-    priority: 'low',
-    assignedTo: 'Tom Maintenance',
-    requestedBy: 'Maintenance Schedule',
-    facility: 'Server Room',
-    createdAt: '2024-06-13T08:00:00Z',
-    updatedAt: '2024-06-13T10:30:00Z',
-    category: 'Maintenance',
-    type: 'routine',
-    estimatedHours: 2
+    id: "SRV-003",
+    title: "Generator Oil Change",
+    description: "Routine oil change for backup generator",
+    status: "closed",
+    priority: "low",
+    assignedTo: "Tom Maintenance",
+    requestedBy: "Maintenance Schedule",
+    facility: "Server Room",
+    createdAt: "2024-06-13T08:00:00Z",
+    updatedAt: "2024-06-13T10:30:00Z",
+    category: "Maintenance",
+    type: "routine",
+    estimatedHours: 2,
   },
   {
-    id: 'SRV-004',
-    title: 'Network Infrastructure Review',
-    description: 'Security audit and performance optimization',
-    status: 'open',
-    priority: 'medium',
-    assignedTo: 'Alex Network',
-    requestedBy: 'IT Security',
-    facility: 'Control Room A',
-    createdAt: '2024-06-14T13:00:00Z',
-    updatedAt: '2024-06-14T13:15:00Z',
-    category: 'Security',
-    type: 'audit',
-    estimatedHours: 6
+    id: "SRV-004",
+    title: "Network Infrastructure Review",
+    description: "Security audit and performance optimization",
+    status: "open",
+    priority: "medium",
+    assignedTo: "Alex Network",
+    requestedBy: "IT Security",
+    facility: "Control Room A",
+    createdAt: "2024-06-14T13:00:00Z",
+    updatedAt: "2024-06-14T13:15:00Z",
+    category: "Security",
+    type: "audit",
+    estimatedHours: 6,
   },
   {
-    id: 'SRV-005',
-    title: 'Studio Lighting Replacement',
-    description: 'Replace LED panels in Studio B',
-    status: 'closed',
-    priority: 'low',
-    assignedTo: 'Bob Electrician',
-    requestedBy: 'Studio Manager',
-    facility: 'Studio B',
-    createdAt: '2024-06-12T14:00:00Z',
-    updatedAt: '2024-06-13T16:00:00Z',
-    category: 'Facilities',
-    type: 'repair',
-    estimatedHours: 3
-  }
+    id: "SRV-005",
+    title: "Studio Lighting Replacement",
+    description: "Replace LED panels in Studio B",
+    status: "closed",
+    priority: "low",
+    assignedTo: "Bob Electrician",
+    requestedBy: "Studio Manager",
+    facility: "Studio B",
+    createdAt: "2024-06-12T14:00:00Z",
+    updatedAt: "2024-06-13T16:00:00Z",
+    category: "Facilities",
+    type: "repair",
+    estimatedHours: 3,
+  },
 ];
 
 const ServiceTickets = () => {
-  const [statusFilter, setStatusFilter] = useState('open');
-  const [selectedTicket, setSelectedTicket] = useState(null);
+  const [statusFilter, setStatusFilter] = useState("open");
+  const [selectedTicket, setSelectedTicket] = useState<ServiceTicket | null>(
+    null,
+  );
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isNewRequestOpen, setIsNewRequestOpen] = useState(false);
   const { toast } = useToast();
 
-  const filteredTickets = mockServiceTickets.filter(ticket => 
-    statusFilter === 'all' ? true : ticket.status === statusFilter
+  const filteredTickets = mockServiceTickets.filter((ticket) =>
+    statusFilter === "all" ? true : ticket.status === statusFilter,
   );
 
-  const handleTicketClick = (ticket: any) => {
+  const handleTicketClick = (ticket: ServiceTicket) => {
     setSelectedTicket(ticket);
     setIsDetailOpen(true);
   };
 
   const handleSubmitForApproval = (ticketId: string, notes: string) => {
     // This would typically make an API call to submit for approval
-    console.log('Submitting ticket for approval:', ticketId, notes);
+    console.log("Submitting ticket for approval:", ticketId, notes);
   };
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'high': return 'bg-red-100 text-red-800';
-      case 'medium': return 'bg-yellow-100 text-yellow-800';
-      case 'low': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case "high":
+        return "bg-red-100 text-red-800";
+      case "medium":
+        return "bg-yellow-100 text-yellow-800";
+      case "low":
+        return "bg-green-100 text-green-800";
+      default:
+        return "bg-gray-100 text-gray-800";
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'open': return 'bg-blue-100 text-blue-800';
-      case 'closed': return 'bg-gray-100 text-gray-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case "open":
+        return "bg-blue-100 text-blue-800";
+      case "closed":
+        return "bg-gray-100 text-gray-800";
+      default:
+        return "bg-gray-100 text-gray-800";
     }
   };
 
   const getTypeColor = (type: string) => {
     switch (type) {
-      case 'scheduled': return 'bg-purple-100 text-purple-800';
-      case 'project': return 'bg-indigo-100 text-indigo-800';
-      case 'routine': return 'bg-green-100 text-green-800';
-      case 'audit': return 'bg-orange-100 text-orange-800';
-      case 'repair': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case "scheduled":
+        return "bg-purple-100 text-purple-800";
+      case "project":
+        return "bg-indigo-100 text-indigo-800";
+      case "routine":
+        return "bg-green-100 text-green-800";
+      case "audit":
+        return "bg-orange-100 text-orange-800";
+      case "repair":
+        return "bg-red-100 text-red-800";
+      default:
+        return "bg-gray-100 text-gray-800";
     }
   };
 
@@ -171,7 +221,8 @@ const ServiceTickets = () => {
         <CardHeader>
           <CardTitle>Service Tickets ({filteredTickets.length})</CardTitle>
           <CardDescription>
-            Manage engineering tasks, maintenance, and service requests. Click on a row to view details.
+            Manage engineering tasks, maintenance, and service requests. Click
+            on a row to view details.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -193,8 +244,8 @@ const ServiceTickets = () => {
               </TableHeader>
               <TableBody>
                 {filteredTickets.map((ticket) => (
-                  <TableRow 
-                    key={ticket.id} 
+                  <TableRow
+                    key={ticket.id}
                     className="cursor-pointer hover:bg-muted/50"
                     onClick={() => handleTicketClick(ticket)}
                   >

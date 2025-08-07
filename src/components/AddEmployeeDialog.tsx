@@ -1,17 +1,20 @@
-
-import React from 'react';
-import { useForm } from 'react-hook-form';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-
-interface AddEmployeeDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onEmployeeAdded: (employee: any) => void;
-}
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useForm } from "react-hook-form";
 
 interface EmployeeFormData {
   name: string;
@@ -22,13 +25,28 @@ interface EmployeeFormData {
   startDate: string;
 }
 
-const AddEmployeeDialog = ({ open, onOpenChange, onEmployeeAdded }: AddEmployeeDialogProps) => {
-  const { register, handleSubmit, reset, setValue, watch } = useForm<EmployeeFormData>();
+interface Employee extends EmployeeFormData {
+  status: string;
+}
+
+interface AddEmployeeDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onEmployeeAdded: (employee: Employee) => void;
+}
+
+const AddEmployeeDialog = ({
+  open,
+  onOpenChange,
+  onEmployeeAdded,
+}: AddEmployeeDialogProps) => {
+  const { register, handleSubmit, reset, setValue, watch } =
+    useForm<EmployeeFormData>();
 
   const onSubmit = (data: EmployeeFormData) => {
     onEmployeeAdded({
       ...data,
-      status: 'Active'
+      status: "Active",
     });
     reset();
   };
@@ -44,13 +62,13 @@ const AddEmployeeDialog = ({ open, onOpenChange, onEmployeeAdded }: AddEmployeeD
         <DialogHeader>
           <DialogTitle>Add New Employee</DialogTitle>
         </DialogHeader>
-        
+
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="name">Full Name</Label>
             <Input
               id="name"
-              {...register('name', { required: true })}
+              {...register("name", { required: true })}
               placeholder="Enter full name"
             />
           </div>
@@ -60,7 +78,7 @@ const AddEmployeeDialog = ({ open, onOpenChange, onEmployeeAdded }: AddEmployeeD
             <Input
               id="email"
               type="email"
-              {...register('email', { required: true })}
+              {...register("email", { required: true })}
               placeholder="Enter email address"
             />
           </div>
@@ -69,14 +87,14 @@ const AddEmployeeDialog = ({ open, onOpenChange, onEmployeeAdded }: AddEmployeeD
             <Label htmlFor="position">Position</Label>
             <Input
               id="position"
-              {...register('position', { required: true })}
+              {...register("position", { required: true })}
               placeholder="Enter job position"
             />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="department">Department</Label>
-            <Select onValueChange={(value) => setValue('department', value)}>
+            <Select onValueChange={(value) => setValue("department", value)}>
               <SelectTrigger>
                 <SelectValue placeholder="Select department" />
               </SelectTrigger>
@@ -93,7 +111,7 @@ const AddEmployeeDialog = ({ open, onOpenChange, onEmployeeAdded }: AddEmployeeD
             <Label htmlFor="phone">Phone</Label>
             <Input
               id="phone"
-              {...register('phone', { required: true })}
+              {...register("phone", { required: true })}
               placeholder="Enter phone number"
             />
           </div>
@@ -103,7 +121,7 @@ const AddEmployeeDialog = ({ open, onOpenChange, onEmployeeAdded }: AddEmployeeD
             <Input
               id="startDate"
               type="date"
-              {...register('startDate', { required: true })}
+              {...register("startDate", { required: true })}
             />
           </div>
 
@@ -111,9 +129,7 @@ const AddEmployeeDialog = ({ open, onOpenChange, onEmployeeAdded }: AddEmployeeD
             <Button type="button" variant="outline" onClick={handleCancel}>
               Cancel
             </Button>
-            <Button type="submit">
-              Add Employee
-            </Button>
+            <Button type="submit">Add Employee</Button>
           </div>
         </form>
       </DialogContent>

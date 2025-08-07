@@ -1,67 +1,100 @@
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dialog, DialogTrigger } from '@/components/ui/dialog';
-import { Clock, Calendar, Plus, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
-import EnhancedClockEntryForm from '@/components/EnhancedClockEntryForm';
-import TimeOffRequestForm from '@/components/TimeOffRequestForm';
-import MonthlyTimeCalendar from '@/components/MonthlyTimeCalendar';
-import { useToast } from '@/hooks/use-toast';
-import { SettingsProvider } from '@/contexts/SettingsContext';
+import EnhancedClockEntryForm from "@/components/EnhancedClockEntryForm";
+import MonthlyTimeCalendar from "@/components/MonthlyTimeCalendar";
+import TimeOffRequestForm from "@/components/TimeOffRequestForm";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Dialog, DialogTrigger } from "@/components/ui/dialog";
+import { SettingsProvider } from "@/contexts/SettingsContext";
+import { useToast } from "@/hooks/use-toast";
+import {
+  AlertCircle,
+  Calendar,
+  CheckCircle,
+  Clock,
+  Plus,
+  XCircle,
+} from "lucide-react";
+import { useState } from "react";
+
+interface ClockEntryData {
+  date: string;
+  timeIn: string;
+  timeOut?: string;
+  location: string;
+  shift?: string;
+  hours: number;
+  lunchTaken: number;
+}
+
+interface TimeOffRequestData {
+  startDate: string;
+  endDate: string;
+  hours: number;
+  type: string;
+}
 
 const TimeKeeping = () => {
   const [timeEntries, setTimeEntries] = useState([
     {
       id: 1,
-      date: '2025-06-14',
-      timeIn: '08:00',
-      timeOut: '16:00',
-      location: 'Studio A',
-      shift: 'Morning Show',
-      status: 'approved',
+      date: "2025-06-14",
+      timeIn: "08:00",
+      timeOut: "16:00",
+      location: "Studio A",
+      shift: "Morning Show",
+      status: "approved",
       hours: 8,
-      lunchTaken: 0.5
+      lunchTaken: 0.5,
+      notes: "",
     },
     {
       id: 2,
-      date: '2025-06-13',
-      timeIn: '14:00',
-      timeOut: '22:00',
-      location: 'Studio B',
-      shift: 'Evening News',
-      status: 'pending',
+      date: "2025-06-13",
+      timeIn: "14:00",
+      timeOut: "22:00",
+      location: "Studio B",
+      shift: "Evening News",
+      status: "pending",
       hours: 8,
-      lunchTaken: 0.5
+      lunchTaken: 0.5,
+      notes: "",
     },
     {
       id: 3,
-      date: '2025-06-12',
-      timeIn: '09:00',
-      timeOut: '17:00',
-      location: 'Studio A',
-      shift: 'Morning Show',
-      status: 'approved',
+      date: "2025-06-12",
+      timeIn: "09:00",
+      timeOut: "17:00",
+      location: "Studio A",
+      shift: "Morning Show",
+      status: "approved",
       hours: 8,
-      lunchTaken: 0.5
+      lunchTaken: 0.5,
+      notes: "",
     },
   ]);
 
   const [holidayRequests, setHolidayRequests] = useState([
     {
       id: 1,
-      startDate: '2025-06-25',
-      endDate: '2025-06-27',
+      startDate: "2025-06-25",
+      endDate: "2025-06-27",
       hours: 24,
-      status: 'pending',
-      type: 'Personal Time Off'
+      status: "pending",
+      type: "Personal Time Off",
     },
     {
       id: 2,
-      startDate: '2025-07-01',
-      endDate: '2025-07-01',
+      startDate: "2025-07-01",
+      endDate: "2025-07-01",
       hours: 8,
-      status: 'approved',
-      type: 'Personal Day'
+      status: "approved",
+      type: "Personal Day",
     },
   ]);
 
@@ -72,61 +105,63 @@ const TimeKeeping = () => {
   // Holiday calculations
   const totalHolidayHours = 168; // 22 days * 7.5 hours
   const usedHolidayHours = holidayRequests
-    .filter(req => req.status === 'approved' && req.type !== 'Sick Leave')
+    .filter((req) => req.status === "approved" && req.type !== "Sick Leave")
     .reduce((total, req) => total + req.hours, 0);
   const pendingHolidayHours = holidayRequests
-    .filter(req => req.status === 'pending' && req.type !== 'Sick Leave')
+    .filter((req) => req.status === "pending" && req.type !== "Sick Leave")
     .reduce((total, req) => total + req.hours, 0);
-  const availableHolidayHours = totalHolidayHours - usedHolidayHours - pendingHolidayHours;
+  const availableHolidayHours =
+    totalHolidayHours - usedHolidayHours - pendingHolidayHours;
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'approved':
+      case "approved":
         return <CheckCircle className="h-4 w-4 text-green-500" />;
-      case 'pending':
+      case "pending":
         return <AlertCircle className="h-4 w-4 text-yellow-500" />;
-      case 'rejected':
+      case "rejected":
         return <XCircle className="h-4 w-4 text-red-500" />;
       default:
         return <AlertCircle className="h-4 w-4 text-gray-500" />;
     }
   };
 
-  const handleClockEntrySubmit = (data: any) => {
+  const handleClockEntrySubmit = (data: ClockEntryData) => {
     const newEntry = {
       id: timeEntries.length + 1,
       date: data.date,
       timeIn: data.timeIn,
-      timeOut: data.timeOut || '--:--',
+      timeOut: data.timeOut || "--:--",
       location: data.location,
-      shift: data.shift || 'General',
-      status: 'pending',
+      shift: data.shift || "General",
+      status: "pending",
       hours: data.hours,
-      lunchTaken: data.lunchTaken
+      lunchTaken: data.lunchTaken,
+      notes: "",
     };
 
     setTimeEntries([newEntry, ...timeEntries]);
     setIsClockEntryOpen(false);
-    
+
     toast({
       title: "Clock Entry Created",
       description: "Your time entry has been submitted for approval.",
     });
   };
 
-  const handleTimeOffSubmit = (data: any) => {
+  const handleTimeOffSubmit = (data: TimeOffRequestData) => {
     const newRequest = {
       id: holidayRequests.length + 1,
       startDate: data.startDate,
       endDate: data.endDate,
       hours: data.hours,
-      status: 'pending',
-      type: data.type
+      status: "pending",
+      type: data.type,
     };
 
     setHolidayRequests([newRequest, ...holidayRequests]);
     setIsTimeOffOpen(false);
-    
+
     toast({
       title: "Time Off Request Submitted",
       description: `Your ${data.type.toLowerCase()} request has been submitted for approval.`,
@@ -146,7 +181,7 @@ const TimeKeeping = () => {
                   Clock Entry
                 </Button>
               </DialogTrigger>
-              <EnhancedClockEntryForm 
+              <EnhancedClockEntryForm
                 onSubmit={handleClockEntrySubmit}
                 onCancel={() => setIsClockEntryOpen(false)}
                 existingEntries={timeEntries}
@@ -159,7 +194,7 @@ const TimeKeeping = () => {
                   Time Off Request
                 </Button>
               </DialogTrigger>
-              <TimeOffRequestForm 
+              <TimeOffRequestForm
                 onSubmit={handleTimeOffSubmit}
                 onCancel={() => setIsTimeOffOpen(false)}
               />
@@ -171,26 +206,32 @@ const TimeKeeping = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">Available Holiday</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                Available Holiday
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{availableHolidayHours} hrs</div>
+              <div className="text-2xl font-bold">
+                {availableHolidayHours} hrs
+              </div>
               <p className="text-xs text-gray-600">
                 {usedHolidayHours} hrs used • {pendingHolidayHours} hrs pending
               </p>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">TOIL Balance</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                TOIL Balance
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">12 hrs</div>
               <p className="text-xs text-gray-600">Time off in lieu</p>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium">This Week</CardTitle>
@@ -200,7 +241,7 @@ const TimeKeeping = () => {
               <p className="text-xs text-gray-600">Hours worked</p>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium">Overtime</CardTitle>
@@ -224,7 +265,10 @@ const TimeKeeping = () => {
           <CardContent>
             <div className="space-y-4">
               {timeEntries.map((entry) => (
-                <div key={entry.id} className="flex items-center justify-between p-4 border rounded-lg">
+                <div
+                  key={entry.id}
+                  className="flex items-center justify-between p-4 border rounded-lg"
+                >
                   <div className="flex items-center gap-4">
                     {getStatusIcon(entry.status)}
                     <div>
@@ -242,7 +286,9 @@ const TimeKeeping = () => {
                   </div>
                   <div className="text-right">
                     <div className="font-medium">{entry.hours} hrs</div>
-                    <div className="text-sm text-gray-600 capitalize">{entry.status}</div>
+                    <div className="text-sm text-gray-600 capitalize">
+                      {entry.status}
+                    </div>
                   </div>
                 </div>
               ))}
@@ -257,12 +303,17 @@ const TimeKeeping = () => {
               <Calendar className="h-5 w-5" />
               Time Off Requests
             </CardTitle>
-            <CardDescription>Your time off requests and their status</CardDescription>
+            <CardDescription>
+              Your time off requests and their status
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               {holidayRequests.map((request) => (
-                <div key={request.id} className="flex items-center justify-between p-4 border rounded-lg">
+                <div
+                  key={request.id}
+                  className="flex items-center justify-between p-4 border rounded-lg"
+                >
                   <div className="flex items-center gap-4">
                     {getStatusIcon(request.status)}
                     <div>
@@ -274,7 +325,9 @@ const TimeKeeping = () => {
                   </div>
                   <div className="text-right">
                     <div className="font-medium">{request.hours} hrs</div>
-                    <div className="text-sm text-gray-600 capitalize">{request.status}</div>
+                    <div className="text-sm text-gray-600 capitalize">
+                      {request.status}
+                    </div>
                   </div>
                 </div>
               ))}
@@ -283,9 +336,9 @@ const TimeKeeping = () => {
         </Card>
 
         {/* Monthly Calendar */}
-        <MonthlyTimeCalendar 
-          timeEntries={timeEntries} 
-          holidayRequests={holidayRequests} 
+        <MonthlyTimeCalendar
+          timeEntries={timeEntries}
+          holidayRequests={holidayRequests}
         />
       </div>
     </SettingsProvider>

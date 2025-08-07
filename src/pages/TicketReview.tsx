@@ -1,108 +1,142 @@
-import React, { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { CheckCircle, AlertTriangle, Calendar, Clock, User, X, ArrowRight } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
-import TicketDetail from '@/components/TicketDetail';
+import TicketDetail from "@/components/TicketDetail";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { useToast } from "@/hooks/use-toast";
+import { ArrowRight, Calendar, CheckCircle, User, X } from "lucide-react";
+import { useState } from "react";
+
+interface ReviewTicket {
+  id: string;
+  type: string;
+  title: string;
+  description: string;
+  status: string;
+  priority: string;
+  reportedBy: string;
+  createdAt: string;
+  category: string;
+  followUpNeeded: boolean;
+  timeDown: string | null;
+}
 
 // Mock data for tickets awaiting review
 const mockTicketsForReview = [
   {
-    id: 'TKT-001',
-    type: 'incident',
-    title: 'Transmitter Power Failure - Studio A',
-    description: 'Main transmitter lost power during morning broadcast',
-    status: 'pending_review',
-    priority: 'high',
-    reportedBy: 'Mike Operator',
-    createdAt: '2024-06-14T08:30:00Z',
-    category: 'Equipment Failure',
+    id: "TKT-001",
+    type: "incident",
+    title: "Transmitter Power Failure - Studio A",
+    description: "Main transmitter lost power during morning broadcast",
+    status: "pending_review",
+    priority: "high",
+    reportedBy: "Mike Operator",
+    createdAt: "2024-06-14T08:30:00Z",
+    category: "Equipment Failure",
     followUpNeeded: true,
-    timeDown: '45 minutes'
+    timeDown: "45 minutes",
   },
   {
-    id: 'TKT-002',
-    type: 'incident',
-    title: 'User Error - Wrong Playlist',
-    description: 'Operator accidentally loaded wrong playlist for morning show',
-    status: 'pending_review',
-    priority: 'low',
-    reportedBy: 'Lisa Operator',
-    createdAt: '2024-06-14T09:15:00Z',
-    category: 'User Error',
+    id: "TKT-002",
+    type: "incident",
+    title: "User Error - Wrong Playlist",
+    description: "Operator accidentally loaded wrong playlist for morning show",
+    status: "pending_review",
+    priority: "low",
+    reportedBy: "Lisa Operator",
+    createdAt: "2024-06-14T09:15:00Z",
+    category: "User Error",
     followUpNeeded: false,
-    timeDown: '5 minutes'
+    timeDown: "5 minutes",
   },
   {
-    id: 'TKT-003',
-    type: 'change_request',
-    title: 'Update Studio Lighting Schedule',
-    description: 'Request to modify automated lighting schedule for evening shows',
-    status: 'pending_review',
-    priority: 'medium',
-    reportedBy: 'Jane Host',
-    createdAt: '2024-06-14T10:00:00Z',
-    category: 'Facilities',
+    id: "TKT-003",
+    type: "change_request",
+    title: "Update Studio Lighting Schedule",
+    description:
+      "Request to modify automated lighting schedule for evening shows",
+    status: "pending_review",
+    priority: "medium",
+    reportedBy: "Jane Host",
+    createdAt: "2024-06-14T10:00:00Z",
+    category: "Facilities",
     followUpNeeded: true,
-    timeDown: null
+    timeDown: null,
   },
   {
-    id: 'TKT-004',
-    type: 'incident',
-    title: 'Audio Distortion on FM Channel',
-    description: 'Listeners reporting audio quality issues on 101.5 FM',
-    status: 'pending_review',
-    priority: 'high',
-    reportedBy: 'Dave Operator',
-    createdAt: '2024-06-14T11:30:00Z',
-    category: 'Signal Quality',
+    id: "TKT-004",
+    type: "incident",
+    title: "Audio Distortion on FM Channel",
+    description: "Listeners reporting audio quality issues on 101.5 FM",
+    status: "pending_review",
+    priority: "high",
+    reportedBy: "Dave Operator",
+    createdAt: "2024-06-14T11:30:00Z",
+    category: "Signal Quality",
     followUpNeeded: true,
-    timeDown: 'Ongoing'
+    timeDown: "Ongoing",
   },
   {
-    id: 'TKT-005',
-    type: 'incident',
-    title: 'Operator Error - Missed Cue',
-    description: 'Operator missed commercial break cue during live broadcast',
-    status: 'pending_review',
-    priority: 'low',
-    reportedBy: 'Tom Operator',
-    createdAt: '2024-06-14T12:45:00Z',
-    category: 'Operator Error',
+    id: "TKT-005",
+    type: "incident",
+    title: "Operator Error - Missed Cue",
+    description: "Operator missed commercial break cue during live broadcast",
+    status: "pending_review",
+    priority: "low",
+    reportedBy: "Tom Operator",
+    createdAt: "2024-06-14T12:45:00Z",
+    category: "Operator Error",
     followUpNeeded: false,
-    timeDown: '2 minutes'
-  }
+    timeDown: "2 minutes",
+  },
 ];
 
 const TicketReview = () => {
-  const [statusFilter, setStatusFilter] = useState('pending_review');
+  const [statusFilter, setStatusFilter] = useState("pending_review");
   const [tickets, setTickets] = useState(mockTicketsForReview);
-  const [selectedTicket, setSelectedTicket] = useState(null);
+  const [selectedTicket, setSelectedTicket] = useState<ReviewTicket | null>(
+    null,
+  );
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const { toast } = useToast();
 
-  const filteredTickets = tickets.filter(ticket => 
-    statusFilter === 'all' ? true : ticket.status === statusFilter
+  const filteredTickets = tickets.filter((ticket) =>
+    statusFilter === "all" ? true : ticket.status === statusFilter,
   );
 
-  const handleTicketClick = (ticket: any) => {
+  const handleTicketClick = (ticket: ReviewTicket) => {
     setSelectedTicket(ticket);
     setIsDetailOpen(true);
   };
 
   const handleCloseTicket = (ticketId: string, title: string) => {
-    setTickets(prevTickets => 
-      prevTickets.map(ticket => 
-        ticket.id === ticketId 
-          ? { ...ticket, status: 'closed' }
-          : ticket
-      )
+    setTickets((prevTickets) =>
+      prevTickets.map((ticket) =>
+        ticket.id === ticketId ? { ...ticket, status: "closed" } : ticket,
+      ),
     );
-    
+
     toast({
       title: "Ticket Closed",
       description: `Ticket ${ticketId} has been closed and requires no further action.`,
@@ -110,14 +144,14 @@ const TicketReview = () => {
   };
 
   const handleApproveForEngineering = (ticketId: string, title: string) => {
-    setTickets(prevTickets => 
-      prevTickets.map(ticket => 
-        ticket.id === ticketId 
-          ? { ...ticket, status: 'approved_for_engineering' }
-          : ticket
-      )
+    setTickets((prevTickets) =>
+      prevTickets.map((ticket) =>
+        ticket.id === ticketId
+          ? { ...ticket, status: "approved_for_engineering" }
+          : ticket,
+      ),
     );
-    
+
     toast({
       title: "Ticket Approved",
       description: `Ticket ${ticketId} has been approved and sent to engineering for evaluation.`,
@@ -126,27 +160,38 @@ const TicketReview = () => {
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'high': return 'bg-red-100 text-red-800';
-      case 'medium': return 'bg-yellow-100 text-yellow-800';
-      case 'low': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case "high":
+        return "bg-red-100 text-red-800";
+      case "medium":
+        return "bg-yellow-100 text-yellow-800";
+      case "low":
+        return "bg-green-100 text-green-800";
+      default:
+        return "bg-gray-100 text-gray-800";
     }
   };
 
   const getTypeColor = (type: string) => {
     switch (type) {
-      case 'incident': return 'bg-red-50 text-red-700';
-      case 'change_request': return 'bg-blue-50 text-blue-700';
-      default: return 'bg-gray-50 text-gray-700';
+      case "incident":
+        return "bg-red-50 text-red-700";
+      case "change_request":
+        return "bg-blue-50 text-blue-700";
+      default:
+        return "bg-gray-50 text-gray-700";
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'pending_review': return 'bg-yellow-100 text-yellow-800';
-      case 'closed': return 'bg-gray-100 text-gray-800';
-      case 'approved_for_engineering': return 'bg-blue-100 text-blue-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case "pending_review":
+        return "bg-yellow-100 text-yellow-800";
+      case "closed":
+        return "bg-gray-100 text-gray-800";
+      case "approved_for_engineering":
+        return "bg-blue-100 text-blue-800";
+      default:
+        return "bg-gray-100 text-gray-800";
     }
   };
 
@@ -169,7 +214,9 @@ const TicketReview = () => {
             <SelectContent>
               <SelectItem value="pending_review">Pending Review</SelectItem>
               <SelectItem value="closed">Closed Tickets</SelectItem>
-              <SelectItem value="approved_for_engineering">Approved for Engineering</SelectItem>
+              <SelectItem value="approved_for_engineering">
+                Approved for Engineering
+              </SelectItem>
               <SelectItem value="all">All Tickets</SelectItem>
             </SelectContent>
           </Select>
@@ -178,9 +225,12 @@ const TicketReview = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle>Tickets Awaiting Review ({filteredTickets.length})</CardTitle>
+          <CardTitle>
+            Tickets Awaiting Review ({filteredTickets.length})
+          </CardTitle>
           <CardDescription>
-            Review and manage tickets before they are assigned to engineering teams. Click on a row to view details.
+            Review and manage tickets before they are assigned to engineering
+            teams. Click on a row to view details.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -203,12 +253,12 @@ const TicketReview = () => {
               </TableHeader>
               <TableBody>
                 {filteredTickets.map((ticket) => (
-                  <TableRow 
-                    key={ticket.id} 
+                  <TableRow
+                    key={ticket.id}
                     className="cursor-pointer hover:bg-muted/50"
                     onClick={(e) => {
                       // Don't open detail if clicking on action button
-                      if (!(e.target as HTMLElement).closest('button')) {
+                      if (!(e.target as HTMLElement).closest("button")) {
                         handleTicketClick(ticket);
                       }
                     }}
@@ -216,7 +266,7 @@ const TicketReview = () => {
                     <TableCell className="font-medium">{ticket.id}</TableCell>
                     <TableCell>
                       <Badge className={getTypeColor(ticket.type)}>
-                        {ticket.type.replace('_', ' ').toUpperCase()}
+                        {ticket.type.replace("_", " ").toUpperCase()}
                       </Badge>
                     </TableCell>
                     <TableCell>
@@ -229,7 +279,7 @@ const TicketReview = () => {
                     </TableCell>
                     <TableCell>
                       <Badge className={getStatusColor(ticket.status)}>
-                        {ticket.status.replace('_', ' ').toUpperCase()}
+                        {ticket.status.replace("_", " ").toUpperCase()}
                       </Badge>
                     </TableCell>
                     <TableCell>
@@ -244,10 +294,14 @@ const TicketReview = () => {
                       </div>
                     </TableCell>
                     <TableCell>{ticket.category}</TableCell>
-                    <TableCell>{ticket.timeDown || 'N/A'}</TableCell>
+                    <TableCell>{ticket.timeDown || "N/A"}</TableCell>
                     <TableCell>
-                      <Badge variant={ticket.followUpNeeded ? "destructive" : "secondary"}>
-                        {ticket.followUpNeeded ? 'Required' : 'Not Required'}
+                      <Badge
+                        variant={
+                          ticket.followUpNeeded ? "destructive" : "secondary"
+                        }
+                      >
+                        {ticket.followUpNeeded ? "Required" : "Not Required"}
                       </Badge>
                     </TableCell>
                     <TableCell>
@@ -257,7 +311,7 @@ const TicketReview = () => {
                       </div>
                     </TableCell>
                     <TableCell>
-                      {ticket.status === 'pending_review' && (
+                      {ticket.status === "pending_review" && (
                         <div className="flex gap-2">
                           <Button
                             size="sm"
@@ -274,7 +328,10 @@ const TicketReview = () => {
                             size="sm"
                             onClick={(e) => {
                               e.stopPropagation();
-                              handleApproveForEngineering(ticket.id, ticket.title);
+                              handleApproveForEngineering(
+                                ticket.id,
+                                ticket.title,
+                              );
                             }}
                           >
                             <ArrowRight className="h-4 w-4 mr-2" />
@@ -289,7 +346,7 @@ const TicketReview = () => {
             </Table>
             {filteredTickets.length === 0 && (
               <div className="text-center py-12 text-muted-foreground">
-                No {statusFilter.replace('_', ' ')} tickets found.
+                No {statusFilter.replace("_", " ")} tickets found.
               </div>
             )}
           </ScrollArea>
@@ -298,12 +355,14 @@ const TicketReview = () => {
 
       <TicketDetail
         ticket={selectedTicket}
-        ticketType={selectedTicket?.type === 'change_request' ? 'change' : 'incident'}
+        ticketType={
+          selectedTicket?.type === "change_request" ? "change" : "incident"
+        }
         isOpen={isDetailOpen}
         onClose={() => setIsDetailOpen(false)}
         onSubmitForApproval={(ticketId, notes) => {
           // Handle approval from detail view
-          handleApproveForEngineering(ticketId, selectedTicket?.title || '');
+          handleApproveForEngineering(ticketId, selectedTicket?.title || "");
           setIsDetailOpen(false);
         }}
       />

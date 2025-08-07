@@ -1,13 +1,38 @@
-import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Trash2, Plus, Settings as SettingsIcon, Clock, Users, Bell } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
-import { useSettings } from '@/contexts/SettingsContext';
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useSettings } from "@/contexts/settings-hooks";
+import { useToast } from "@/hooks/use-toast";
+import {
+  Bell,
+  Clock,
+  Plus,
+  Settings as SettingsIcon,
+  Trash2,
+  Users,
+} from "lucide-react";
+import { useEffect, useState } from "react";
+
+interface ManagementSettings {
+  timeClockAutoApprove: boolean;
+  requireManagerApproval: boolean;
+  allowSelfScheduling: boolean;
+  maxOvertimeHours: number;
+  autoApproveTimeunder: number;
+  budgetAlerts: boolean;
+  overtimeAlerts: boolean;
+  emailNotifications: boolean;
+  incidentEscalationTime: number;
+}
 
 const Settings = () => {
   const { locations, shifts, facilities, incidentTypes } = useSettings();
@@ -15,18 +40,18 @@ const Settings = () => {
   const [localShifts, setLocalShifts] = useState<string[]>([]);
   const [localFacilities, setLocalFacilities] = useState<string[]>([]);
   const [localIncidentTypes, setLocalIncidentTypes] = useState<string[]>([]);
-  const [newLocation, setNewLocation] = useState('');
-  const [newShift, setNewShift] = useState('');
-  const [newFacility, setNewFacility] = useState('');
-  const [newIncidentType, setNewIncidentType] = useState('');
+  const [newLocation, setNewLocation] = useState("");
+  const [newShift, setNewShift] = useState("");
+  const [newFacility, setNewFacility] = useState("");
+  const [newIncidentType, setNewIncidentType] = useState("");
   const { toast } = useToast();
 
   // Convert objects to arrays of names for local state
   useEffect(() => {
-    setLocalLocations(locations.map(loc => loc.name));
-    setLocalShifts(shifts.map(shift => shift.name));
-    setLocalFacilities(facilities.map(facility => facility.name));
-    setLocalIncidentTypes(incidentTypes.map(type => type.name));
+    setLocalLocations(locations.map((loc) => loc.name));
+    setLocalShifts(shifts.map((shift) => shift.name));
+    setLocalFacilities(facilities.map((facility) => facility.name));
+    setLocalIncidentTypes(incidentTypes.map((type) => type.name));
   }, [locations, shifts, facilities, incidentTypes]);
 
   // Management settings state
@@ -39,13 +64,13 @@ const Settings = () => {
     budgetAlerts: true,
     overtimeAlerts: true,
     emailNotifications: true,
-    incidentEscalationTime: 4
+    incidentEscalationTime: 4,
   });
 
   const addLocation = () => {
     if (newLocation.trim() && !localLocations.includes(newLocation.trim())) {
       setLocalLocations([...localLocations, newLocation.trim()]);
-      setNewLocation('');
+      setNewLocation("");
       toast({
         title: "Location Added",
         description: `"${newLocation.trim()}" has been added to the locations list.`,
@@ -54,7 +79,7 @@ const Settings = () => {
   };
 
   const removeLocation = (location: string) => {
-    setLocalLocations(localLocations.filter(loc => loc !== location));
+    setLocalLocations(localLocations.filter((loc) => loc !== location));
     toast({
       title: "Location Removed",
       description: `"${location}" has been removed from the locations list.`,
@@ -64,7 +89,7 @@ const Settings = () => {
   const addShift = () => {
     if (newShift.trim() && !localShifts.includes(newShift.trim())) {
       setLocalShifts([...localShifts, newShift.trim()]);
-      setNewShift('');
+      setNewShift("");
       toast({
         title: "Shift Added",
         description: `"${newShift.trim()}" has been added to the shifts list.`,
@@ -73,7 +98,7 @@ const Settings = () => {
   };
 
   const removeShift = (shift: string) => {
-    setLocalShifts(localShifts.filter(s => s !== shift));
+    setLocalShifts(localShifts.filter((s) => s !== shift));
     toast({
       title: "Shift Removed",
       description: `"${shift}" has been removed from the shifts list.`,
@@ -83,7 +108,7 @@ const Settings = () => {
   const addFacility = () => {
     if (newFacility.trim() && !localFacilities.includes(newFacility.trim())) {
       setLocalFacilities([...localFacilities, newFacility.trim()]);
-      setNewFacility('');
+      setNewFacility("");
       toast({
         title: "Facility Added",
         description: `"${newFacility.trim()}" has been added to the facilities list.`,
@@ -92,7 +117,7 @@ const Settings = () => {
   };
 
   const removeFacility = (facility: string) => {
-    setLocalFacilities(localFacilities.filter(f => f !== facility));
+    setLocalFacilities(localFacilities.filter((f) => f !== facility));
     toast({
       title: "Facility Removed",
       description: `"${facility}" has been removed from the facilities list.`,
@@ -100,9 +125,12 @@ const Settings = () => {
   };
 
   const addIncidentType = () => {
-    if (newIncidentType.trim() && !localIncidentTypes.includes(newIncidentType.trim())) {
+    if (
+      newIncidentType.trim() &&
+      !localIncidentTypes.includes(newIncidentType.trim())
+    ) {
       setLocalIncidentTypes([...localIncidentTypes, newIncidentType.trim()]);
-      setNewIncidentType('');
+      setNewIncidentType("");
       toast({
         title: "Incident Type Added",
         description: `"${newIncidentType.trim()}" has been added to the incident types list.`,
@@ -111,7 +139,7 @@ const Settings = () => {
   };
 
   const removeIncidentType = (type: string) => {
-    setLocalIncidentTypes(localIncidentTypes.filter(t => t !== type));
+    setLocalIncidentTypes(localIncidentTypes.filter((t) => t !== type));
     toast({
       title: "Incident Type Removed",
       description: `"${type}" has been removed from the incident types list.`,
@@ -125,10 +153,10 @@ const Settings = () => {
     });
   };
 
-  const updateManagementSetting = (key: string, value: any) => {
-    setManagementSettings(prev => ({
+  const updateManagementSetting = (key: keyof ManagementSettings, value: boolean | number) => {
+    setManagementSettings((prev) => ({
       ...prev,
-      [key]: value
+      [key]: value,
     }));
   };
 
@@ -139,9 +167,7 @@ const Settings = () => {
           <SettingsIcon className="h-8 w-8" />
           System Settings
         </h1>
-        <Button onClick={handleSaveChanges}>
-          Save All Changes
-        </Button>
+        <Button onClick={handleSaveChanges}>Save All Changes</Button>
       </div>
 
       <Tabs defaultValue="system" className="w-full">
@@ -170,7 +196,7 @@ const Settings = () => {
                     placeholder="Enter location name..."
                     value={newLocation}
                     onChange={(e) => setNewLocation(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && addLocation()}
+                    onKeyPress={(e) => e.key === "Enter" && addLocation()}
                   />
                 </div>
                 <div className="flex items-end">
@@ -185,7 +211,10 @@ const Settings = () => {
                 <Label>Current Locations ({localLocations.length})</Label>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-60 overflow-y-auto">
                   {localLocations.map((location, index) => (
-                    <div key={index} className="flex items-center justify-between p-2 border rounded-md">
+                    <div
+                      key={index}
+                      className="flex items-center justify-between p-2 border rounded-md"
+                    >
                       <span className="text-sm">{location}</span>
                       <Button
                         variant="ghost"
@@ -207,7 +236,8 @@ const Settings = () => {
             <CardHeader>
               <CardTitle>Shift/Event Management</CardTitle>
               <CardDescription>
-                Manage the list of available shifts and events for time clock entries.
+                Manage the list of available shifts and events for time clock
+                entries.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -219,7 +249,7 @@ const Settings = () => {
                     placeholder="Enter shift or event name..."
                     value={newShift}
                     onChange={(e) => setNewShift(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && addShift()}
+                    onKeyPress={(e) => e.key === "Enter" && addShift()}
                   />
                 </div>
                 <div className="flex items-end">
@@ -234,7 +264,10 @@ const Settings = () => {
                 <Label>Current Shifts/Events ({localShifts.length})</Label>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-60 overflow-y-auto">
                   {localShifts.map((shift, index) => (
-                    <div key={index} className="flex items-center justify-between p-2 border rounded-md">
+                    <div
+                      key={index}
+                      className="flex items-center justify-between p-2 border rounded-md"
+                    >
                       <span className="text-sm">{shift}</span>
                       <Button
                         variant="ghost"
@@ -267,7 +300,12 @@ const Settings = () => {
                 <Input
                   type="number"
                   value={managementSettings.autoApproveTimeunder}
-                  onChange={(e) => updateManagementSetting('autoApproveTimeunder', parseInt(e.target.value))}
+                  onChange={(e) =>
+                    updateManagementSetting(
+                      "autoApproveTimeunder",
+                      parseInt(e.target.value),
+                    )
+                  }
                 />
               </div>
               <div className="space-y-2">
@@ -275,28 +313,39 @@ const Settings = () => {
                 <Input
                   type="number"
                   value={managementSettings.maxOvertimeHours}
-                  onChange={(e) => updateManagementSetting('maxOvertimeHours', parseInt(e.target.value))}
+                  onChange={(e) =>
+                    updateManagementSetting(
+                      "maxOvertimeHours",
+                      parseInt(e.target.value),
+                    )
+                  }
                 />
               </div>
               <div className="flex items-center justify-between">
                 <Label>Require manager approval for all time entries</Label>
                 <Switch
                   checked={managementSettings.requireManagerApproval}
-                  onCheckedChange={(checked) => updateManagementSetting('requireManagerApproval', checked)}
+                  onCheckedChange={(checked) =>
+                    updateManagementSetting("requireManagerApproval", checked)
+                  }
                 />
               </div>
               <div className="flex items-center justify-between">
                 <Label>Allow employee self-scheduling</Label>
                 <Switch
                   checked={managementSettings.allowSelfScheduling}
-                  onCheckedChange={(checked) => updateManagementSetting('allowSelfScheduling', checked)}
+                  onCheckedChange={(checked) =>
+                    updateManagementSetting("allowSelfScheduling", checked)
+                  }
                 />
               </div>
               <div className="flex items-center justify-between">
                 <Label>Auto-approve time clock entries</Label>
                 <Switch
                   checked={managementSettings.timeClockAutoApprove}
-                  onCheckedChange={(checked) => updateManagementSetting('timeClockAutoApprove', checked)}
+                  onCheckedChange={(checked) =>
+                    updateManagementSetting("timeClockAutoApprove", checked)
+                  }
                 />
               </div>
             </CardContent>
@@ -316,12 +365,18 @@ const Settings = () => {
                 <Input
                   type="number"
                   value={managementSettings.incidentEscalationTime}
-                  onChange={(e) => updateManagementSetting('incidentEscalationTime', parseInt(e.target.value))}
+                  onChange={(e) =>
+                    updateManagementSetting(
+                      "incidentEscalationTime",
+                      parseInt(e.target.value),
+                    )
+                  }
                 />
               </div>
               <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
                 <p className="text-sm text-blue-800">
-                  <strong>Note:</strong> Time clock approvals can be managed from the Management Dashboard → Time Approval tab.
+                  <strong>Note:</strong> Time clock approvals can be managed
+                  from the Management Dashboard → Time Approval tab.
                 </p>
               </div>
             </CardContent>
@@ -346,7 +401,7 @@ const Settings = () => {
                     placeholder="Enter facility name..."
                     value={newFacility}
                     onChange={(e) => setNewFacility(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && addFacility()}
+                    onKeyPress={(e) => e.key === "Enter" && addFacility()}
                   />
                 </div>
                 <div className="flex items-end">
@@ -361,7 +416,10 @@ const Settings = () => {
                 <Label>Current Facilities ({localFacilities.length})</Label>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-60 overflow-y-auto">
                   {localFacilities.map((facility, index) => (
-                    <div key={index} className="flex items-center justify-between p-2 border rounded-md">
+                    <div
+                      key={index}
+                      className="flex items-center justify-between p-2 border rounded-md"
+                    >
                       <span className="text-sm">{facility}</span>
                       <Button
                         variant="ghost"
@@ -383,7 +441,8 @@ const Settings = () => {
             <CardHeader>
               <CardTitle>Incident Type Management</CardTitle>
               <CardDescription>
-                Manage the list of available incident types for incident reports.
+                Manage the list of available incident types for incident
+                reports.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -395,11 +454,14 @@ const Settings = () => {
                     placeholder="Enter incident type..."
                     value={newIncidentType}
                     onChange={(e) => setNewIncidentType(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && addIncidentType()}
+                    onKeyPress={(e) => e.key === "Enter" && addIncidentType()}
                   />
                 </div>
                 <div className="flex items-end">
-                  <Button onClick={addIncidentType} disabled={!newIncidentType.trim()}>
+                  <Button
+                    onClick={addIncidentType}
+                    disabled={!newIncidentType.trim()}
+                  >
                     <Plus className="h-4 w-4 mr-2" />
                     Add
                   </Button>
@@ -407,10 +469,15 @@ const Settings = () => {
               </div>
 
               <div className="space-y-2">
-                <Label>Current Incident Types ({localIncidentTypes.length})</Label>
+                <Label>
+                  Current Incident Types ({localIncidentTypes.length})
+                </Label>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-60 overflow-y-auto">
                   {localIncidentTypes.map((type, index) => (
-                    <div key={index} className="flex items-center justify-between p-2 border rounded-md">
+                    <div
+                      key={index}
+                      className="flex items-center justify-between p-2 border rounded-md"
+                    >
                       <span className="text-sm">{type}</span>
                       <Button
                         variant="ghost"
@@ -442,21 +509,27 @@ const Settings = () => {
                 <Label>Budget utilization alerts</Label>
                 <Switch
                   checked={managementSettings.budgetAlerts}
-                  onCheckedChange={(checked) => updateManagementSetting('budgetAlerts', checked)}
+                  onCheckedChange={(checked) =>
+                    updateManagementSetting("budgetAlerts", checked)
+                  }
                 />
               </div>
               <div className="flex items-center justify-between">
                 <Label>Overtime alerts</Label>
                 <Switch
                   checked={managementSettings.overtimeAlerts}
-                  onCheckedChange={(checked) => updateManagementSetting('overtimeAlerts', checked)}
+                  onCheckedChange={(checked) =>
+                    updateManagementSetting("overtimeAlerts", checked)
+                  }
                 />
               </div>
               <div className="flex items-center justify-between">
                 <Label>Email notifications</Label>
                 <Switch
                   checked={managementSettings.emailNotifications}
-                  onCheckedChange={(checked) => updateManagementSetting('emailNotifications', checked)}
+                  onCheckedChange={(checked) =>
+                    updateManagementSetting("emailNotifications", checked)
+                  }
                 />
               </div>
             </CardContent>
@@ -469,10 +542,22 @@ const Settings = () => {
             </CardHeader>
             <CardContent>
               <div className="text-blue-800 space-y-2">
-                <p>• <strong>Time Clock Approvals:</strong> Go to Management Dashboard → Time Approval tab</p>
-                <p>• <strong>Employee Management:</strong> Access via Management Dashboard → Overview → Employee Management</p>
-                <p>• <strong>Incident Reviews:</strong> Available in Management Dashboard → Overview → Review Pending Tickets</p>
-                <p>• Changes here affect system-wide behavior and require appropriate permissions</p>
+                <p>
+                  • <strong>Time Clock Approvals:</strong> Go to Management
+                  Dashboard → Time Approval tab
+                </p>
+                <p>
+                  • <strong>Employee Management:</strong> Access via Management
+                  Dashboard → Overview → Employee Management
+                </p>
+                <p>
+                  • <strong>Incident Reviews:</strong> Available in Management
+                  Dashboard → Overview → Review Pending Tickets
+                </p>
+                <p>
+                  • Changes here affect system-wide behavior and require
+                  appropriate permissions
+                </p>
               </div>
             </CardContent>
           </Card>

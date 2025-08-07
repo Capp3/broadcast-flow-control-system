@@ -1,36 +1,89 @@
-import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Save, Edit, User, Phone, Mail, Calendar, Shield, Clock } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
-import { Textarea } from '@/components/ui/textarea';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  ArrowLeft,
+  Clock,
+  Edit,
+  Phone,
+  Save,
+  Shield,
+  User,
+} from "lucide-react";
+import { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+
+interface EmployeeEmergencyContact {
+  name: string;
+  relationship: string;
+  phone: string;
+}
+
+interface EmployeePermissions {
+  incidentReporting: boolean;
+  systemCheck: boolean;
+  changeRequests: boolean;
+  employeeManagement: boolean;
+  scheduling: boolean;
+}
+
+interface EmployeeYearlyStats {
+  hoursWorked: number;
+  overtime: number;
+  vacationAllowance: number;
+  vacationUsed: number;
+  sickAllowance: number;
+  sickUsed: number;
+  toilBalance: number;
+  holidayBalance: number;
+}
+
+interface Employee {
+  id: number;
+  name: string;
+  email: string;
+  position: string;
+  department: string;
+  status: string;
+  startDate: string;
+  phone: string;
+  emergencyContact: EmployeeEmergencyContact;
+  permissions: EmployeePermissions;
+  yearlyStats: EmployeeYearlyStats;
+}
 
 // Mock employee data - in real app this would come from API
 const mockEmployeeData = {
   1: {
     id: 1,
-    name: 'John Operator',
-    email: 'john.operator@broadcast.com',
-    position: 'Senior Broadcast Operator',
-    department: 'Operations',
-    status: 'Active',
-    startDate: '2022-01-15',
-    phone: '555-0123',
+    name: "John Operator",
+    email: "john.operator@broadcast.com",
+    position: "Senior Broadcast Operator",
+    department: "Operations",
+    status: "Active",
+    startDate: "2022-01-15",
+    phone: "555-0123",
     emergencyContact: {
-      name: 'Jane Operator',
-      relationship: 'Spouse',
-      phone: '555-0999'
+      name: "Jane Operator",
+      relationship: "Spouse",
+      phone: "555-0999",
     },
     permissions: {
       incidentReporting: true,
       systemCheck: true,
       changeRequests: false,
       employeeManagement: false,
-      scheduling: true
+      scheduling: true,
     },
     yearlyStats: {
       hoursWorked: 1847,
@@ -40,9 +93,9 @@ const mockEmployeeData = {
       sickAllowance: 80,
       sickUsed: 16,
       toilBalance: 32,
-      holidayBalance: 24
-    }
-  }
+      holidayBalance: 24,
+    },
+  },
 };
 
 const EmployeeDetail = () => {
@@ -50,17 +103,23 @@ const EmployeeDetail = () => {
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   const [showTimeAudit, setShowTimeAudit] = useState(false);
-  
+
   // Convert string id to number and get employee data
   const employeeId = id ? parseInt(id, 10) : null;
-  const employee = employeeId ? mockEmployeeData[employeeId as keyof typeof mockEmployeeData] : null;
-  
-  if (!employee) {
+  const employee = employeeId
+    ? mockEmployeeData[employeeId as keyof typeof mockEmployeeData]
+    : null;
+
+  const [formData, setFormData] = useState(employee ? { ...employee } : null);
+
+  if (!employee || !formData) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
-          <h2 className="text-xl font-semibold text-gray-900">Employee not found</h2>
-          <Button className="mt-4" onClick={() => navigate('/employees')}>
+          <h2 className="text-xl font-semibold text-gray-900">
+            Employee not found
+          </h2>
+          <Button className="mt-4" onClick={() => navigate("/employees")}>
             Back to Employee List
           </Button>
         </div>
@@ -68,36 +127,42 @@ const EmployeeDetail = () => {
     );
   }
 
-  const [formData, setFormData] = useState({ ...employee });
-
   const handleSave = () => {
     // Here you would typically save to API
-    console.log('Saving employee data:', formData);
+    console.log("Saving employee data:", formData);
     setIsEditing(false);
   };
 
-  const handleInputChange = (field: string, value: any) => {
+  const handleInputChange = (field: keyof Employee, value: string | number) => {
     setFormData({ ...formData, [field]: value });
   };
 
-  const handleNestedInputChange = (parent: string, field: string, value: any) => {
+  const handleNestedInputChange = (
+    parent: "emergencyContact" | "permissions" | "yearlyStats",
+    field: string,
+    value: string | number | boolean,
+  ) => {
     setFormData({
       ...formData,
       [parent]: {
-        ...formData[parent as keyof typeof formData] as any,
-        [field]: value
-      }
+        ...formData[parent],
+        [field]: value,
+      },
     });
   };
 
-  const handleTimeAdjustment = (field: string, value: number, reason: string) => {
+  const handleTimeAdjustment = (
+    field: keyof EmployeeYearlyStats,
+    value: number,
+    reason: string,
+  ) => {
     console.log(`Adjusting ${field} by ${value} hours. Reason: ${reason}`);
     setFormData({
       ...formData,
       yearlyStats: {
         ...formData.yearlyStats,
-        [field]: Math.max(0, formData.yearlyStats[field as keyof typeof formData.yearlyStats] as number + value)
-      }
+        [field]: Math.max(0, formData.yearlyStats[field] + value),
+      },
     });
   };
 
@@ -106,12 +171,14 @@ const EmployeeDetail = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
-          <Button variant="ghost" onClick={() => navigate('/employees')}>
+          <Button variant="ghost" onClick={() => navigate("/employees")}>
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Employees
           </Button>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">{formData.name}</h1>
+            <h1 className="text-3xl font-bold text-gray-900">
+              {formData.name}
+            </h1>
             <p className="text-gray-600">{formData.position}</p>
           </div>
         </div>
@@ -128,7 +195,10 @@ const EmployeeDetail = () => {
             </>
           ) : (
             <>
-              <Button variant="outline" onClick={() => setShowTimeAudit(!showTimeAudit)}>
+              <Button
+                variant="outline"
+                onClick={() => setShowTimeAudit(!showTimeAudit)}
+              >
                 <Clock className="h-4 w-4 mr-2" />
                 Time Audit
               </Button>
@@ -157,7 +227,7 @@ const EmployeeDetail = () => {
                 <Input
                   id="name"
                   value={formData.name}
-                  onChange={(e) => handleInputChange('name', e.target.value)}
+                  onChange={(e) => handleInputChange("name", e.target.value)}
                   disabled={!isEditing}
                 />
               </div>
@@ -166,27 +236,31 @@ const EmployeeDetail = () => {
                 <Input
                   id="email"
                   value={formData.email}
-                  onChange={(e) => handleInputChange('email', e.target.value)}
+                  onChange={(e) => handleInputChange("email", e.target.value)}
                   disabled={!isEditing}
                 />
               </div>
             </div>
-            
+
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="position">Position</Label>
                 <Input
                   id="position"
                   value={formData.position}
-                  onChange={(e) => handleInputChange('position', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("position", e.target.value)
+                  }
                   disabled={!isEditing}
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="department">Department</Label>
-                <Select 
-                  value={formData.department} 
-                  onValueChange={(value) => handleInputChange('department', value)}
+                <Select
+                  value={formData.department}
+                  onValueChange={(value) =>
+                    handleInputChange("department", value)
+                  }
                   disabled={!isEditing}
                 >
                   <SelectTrigger>
@@ -196,7 +270,9 @@ const EmployeeDetail = () => {
                     <SelectItem value="Operations">Operations</SelectItem>
                     <SelectItem value="Engineering">Engineering</SelectItem>
                     <SelectItem value="Management">Management</SelectItem>
-                    <SelectItem value="Administration">Administration</SelectItem>
+                    <SelectItem value="Administration">
+                      Administration
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -208,7 +284,7 @@ const EmployeeDetail = () => {
                 <Input
                   id="phone"
                   value={formData.phone}
-                  onChange={(e) => handleInputChange('phone', e.target.value)}
+                  onChange={(e) => handleInputChange("phone", e.target.value)}
                   disabled={!isEditing}
                 />
               </div>
@@ -218,7 +294,9 @@ const EmployeeDetail = () => {
                   id="startDate"
                   type="date"
                   value={formData.startDate}
-                  onChange={(e) => handleInputChange('startDate', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("startDate", e.target.value)
+                  }
                   disabled={!isEditing}
                 />
               </div>
@@ -235,8 +313,8 @@ const EmployeeDetail = () => {
                 Time & Leave
               </div>
               {showTimeAudit && (
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   size="sm"
                   onClick={() => setShowTimeAudit(false)}
                 >
@@ -248,23 +326,34 @@ const EmployeeDetail = () => {
           <CardContent className="space-y-4">
             <div className="space-y-3">
               <div className="flex justify-between">
-                <span className="text-sm text-gray-600">Hours Worked (YTD)</span>
-                <span className="font-medium">{formData.yearlyStats.hoursWorked}h</span>
+                <span className="text-sm text-gray-600">
+                  Hours Worked (YTD)
+                </span>
+                <span className="font-medium">
+                  {formData.yearlyStats.hoursWorked}h
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-sm text-gray-600">Overtime (YTD)</span>
-                <span className="font-medium">{formData.yearlyStats.overtime}h</span>
+                <span className="font-medium">
+                  {formData.yearlyStats.overtime}h
+                </span>
               </div>
               <div className="border-t pt-3 space-y-3">
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Vacation Used/Total</span>
+                  <span className="text-sm text-gray-600">
+                    Vacation Used/Total
+                  </span>
                   <div className="flex items-center gap-2">
-                    <span className="font-medium">{formData.yearlyStats.vacationUsed}/{formData.yearlyStats.vacationAllowance}h</span>
+                    <span className="font-medium">
+                      {formData.yearlyStats.vacationUsed}/
+                      {formData.yearlyStats.vacationAllowance}h
+                    </span>
                     {showTimeAudit && (
                       <TimeAdjustmentControls
                         label="Vacation"
                         onAdjust={(value, reason) => {
-                          handleTimeAdjustment('vacationUsed', value, reason);
+                          handleTimeAdjustment("vacationUsed", value, reason);
                         }}
                       />
                     )}
@@ -273,12 +362,15 @@ const EmployeeDetail = () => {
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600">Sick Used/Total</span>
                   <div className="flex items-center gap-2">
-                    <span className="font-medium">{formData.yearlyStats.sickUsed}/{formData.yearlyStats.sickAllowance}h</span>
+                    <span className="font-medium">
+                      {formData.yearlyStats.sickUsed}/
+                      {formData.yearlyStats.sickAllowance}h
+                    </span>
                     {showTimeAudit && (
                       <TimeAdjustmentControls
                         label="Sick"
                         onAdjust={(value, reason) => {
-                          handleTimeAdjustment('sickUsed', value, reason);
+                          handleTimeAdjustment("sickUsed", value, reason);
                         }}
                       />
                     )}
@@ -287,12 +379,14 @@ const EmployeeDetail = () => {
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600">TOIL Balance</span>
                   <div className="flex items-center gap-2">
-                    <span className="font-medium">{formData.yearlyStats.toilBalance}h</span>
+                    <span className="font-medium">
+                      {formData.yearlyStats.toilBalance}h
+                    </span>
                     {showTimeAudit && (
                       <TimeAdjustmentControls
                         label="TOIL"
                         onAdjust={(value, reason) => {
-                          handleTimeAdjustment('toilBalance', value, reason);
+                          handleTimeAdjustment("toilBalance", value, reason);
                         }}
                       />
                     )}
@@ -301,12 +395,14 @@ const EmployeeDetail = () => {
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600">Holiday Balance</span>
                   <div className="flex items-center gap-2">
-                    <span className="font-medium">{formData.yearlyStats.holidayBalance}h</span>
+                    <span className="font-medium">
+                      {formData.yearlyStats.holidayBalance}h
+                    </span>
                     {showTimeAudit && (
                       <TimeAdjustmentControls
                         label="Holiday"
                         onAdjust={(value, reason) => {
-                          handleTimeAdjustment('holidayBalance', value, reason);
+                          handleTimeAdjustment("holidayBalance", value, reason);
                         }}
                       />
                     )}
@@ -331,7 +427,13 @@ const EmployeeDetail = () => {
               <Input
                 id="emergencyName"
                 value={formData.emergencyContact.name}
-                onChange={(e) => handleNestedInputChange('emergencyContact', 'name', e.target.value)}
+                onChange={(e) =>
+                  handleNestedInputChange(
+                    "emergencyContact",
+                    "name",
+                    e.target.value,
+                  )
+                }
                 disabled={!isEditing}
               />
             </div>
@@ -340,7 +442,13 @@ const EmployeeDetail = () => {
               <Input
                 id="relationship"
                 value={formData.emergencyContact.relationship}
-                onChange={(e) => handleNestedInputChange('emergencyContact', 'relationship', e.target.value)}
+                onChange={(e) =>
+                  handleNestedInputChange(
+                    "emergencyContact",
+                    "relationship",
+                    e.target.value,
+                  )
+                }
                 disabled={!isEditing}
               />
             </div>
@@ -349,7 +457,13 @@ const EmployeeDetail = () => {
               <Input
                 id="emergencyPhone"
                 value={formData.emergencyContact.phone}
-                onChange={(e) => handleNestedInputChange('emergencyContact', 'phone', e.target.value)}
+                onChange={(e) =>
+                  handleNestedInputChange(
+                    "emergencyContact",
+                    "phone",
+                    e.target.value,
+                  )
+                }
                 disabled={!isEditing}
               />
             </div>
@@ -371,7 +485,13 @@ const EmployeeDetail = () => {
                 <Switch
                   id="incidentReporting"
                   checked={formData.permissions.incidentReporting}
-                  onCheckedChange={(checked) => handleNestedInputChange('permissions', 'incidentReporting', checked)}
+                  onCheckedChange={(checked) =>
+                    handleNestedInputChange(
+                      "permissions",
+                      "incidentReporting",
+                      checked,
+                    )
+                  }
                   disabled={!isEditing}
                 />
               </div>
@@ -380,7 +500,13 @@ const EmployeeDetail = () => {
                 <Switch
                   id="systemCheck"
                   checked={formData.permissions.systemCheck}
-                  onCheckedChange={(checked) => handleNestedInputChange('permissions', 'systemCheck', checked)}
+                  onCheckedChange={(checked) =>
+                    handleNestedInputChange(
+                      "permissions",
+                      "systemCheck",
+                      checked,
+                    )
+                  }
                   disabled={!isEditing}
                 />
               </div>
@@ -389,7 +515,13 @@ const EmployeeDetail = () => {
                 <Switch
                   id="changeRequests"
                   checked={formData.permissions.changeRequests}
-                  onCheckedChange={(checked) => handleNestedInputChange('permissions', 'changeRequests', checked)}
+                  onCheckedChange={(checked) =>
+                    handleNestedInputChange(
+                      "permissions",
+                      "changeRequests",
+                      checked,
+                    )
+                  }
                   disabled={!isEditing}
                 />
               </div>
@@ -398,7 +530,13 @@ const EmployeeDetail = () => {
                 <Switch
                   id="employeeManagement"
                   checked={formData.permissions.employeeManagement}
-                  onCheckedChange={(checked) => handleNestedInputChange('permissions', 'employeeManagement', checked)}
+                  onCheckedChange={(checked) =>
+                    handleNestedInputChange(
+                      "permissions",
+                      "employeeManagement",
+                      checked,
+                    )
+                  }
                   disabled={!isEditing}
                 />
               </div>
@@ -407,7 +545,13 @@ const EmployeeDetail = () => {
                 <Switch
                   id="scheduling"
                   checked={formData.permissions.scheduling}
-                  onCheckedChange={(checked) => handleNestedInputChange('permissions', 'scheduling', checked)}
+                  onCheckedChange={(checked) =>
+                    handleNestedInputChange(
+                      "permissions",
+                      "scheduling",
+                      checked,
+                    )
+                  }
                   disabled={!isEditing}
                 />
               </div>
@@ -420,22 +564,22 @@ const EmployeeDetail = () => {
 };
 
 // Time Adjustment Controls Component
-const TimeAdjustmentControls = ({ 
-  label, 
-  onAdjust 
-}: { 
-  label: string; 
-  onAdjust: (value: number, reason: string) => void; 
+const TimeAdjustmentControls = ({
+  label,
+  onAdjust,
+}: {
+  label: string;
+  onAdjust: (value: number, reason: string) => void;
 }) => {
   const [showDialog, setShowDialog] = useState(false);
   const [adjustmentValue, setAdjustmentValue] = useState(0);
-  const [reason, setReason] = useState('');
+  const [reason, setReason] = useState("");
 
   const handleSubmit = () => {
     if (adjustmentValue !== 0 && reason.trim()) {
       onAdjust(adjustmentValue, reason);
       setAdjustmentValue(0);
-      setReason('');
+      setReason("");
       setShowDialog(false);
     }
   };
@@ -450,25 +594,27 @@ const TimeAdjustmentControls = ({
       >
         Adjust
       </Button>
-      
+
       {showDialog && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg w-96 space-y-4">
             <h3 className="text-lg font-semibold">Adjust {label} Time</h3>
-            
+
             <div className="space-y-2">
               <Label>Adjustment (hours)</Label>
               <Input
                 type="number"
                 value={adjustmentValue}
-                onChange={(e) => setAdjustmentValue(parseFloat(e.target.value) || 0)}
+                onChange={(e) =>
+                  setAdjustmentValue(parseFloat(e.target.value) || 0)
+                }
                 placeholder="Enter positive or negative hours"
               />
               <p className="text-xs text-gray-500">
                 Use positive numbers to add time, negative to subtract
               </p>
             </div>
-            
+
             <div className="space-y-2">
               <Label>Reason for adjustment</Label>
               <Textarea
@@ -478,14 +624,14 @@ const TimeAdjustmentControls = ({
                 rows={3}
               />
             </div>
-            
+
             <div className="flex gap-2 justify-end">
               <Button
                 variant="outline"
                 onClick={() => {
                   setShowDialog(false);
                   setAdjustmentValue(0);
-                  setReason('');
+                  setReason("");
                 }}
               >
                 Cancel
